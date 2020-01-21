@@ -1,0 +1,30 @@
+= Saagie SDK for External Technologies
+
+== How to contribute?
+
+=== Install dependencies
+
+----
+yarn
+yarn bs
+----
+
+=== Run tests
+
+----
+yarn test
+----
+
+=== Development
+
+Run the `dev` command at the root of the project
+
+----
+yarn dev
+----
+
+Then go to your technology folder (here `cd examples/techno-C`) and run:
+
+----
+yarn start
+----

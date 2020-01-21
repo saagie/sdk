@@ -1,0 +1,24 @@
+{
+  "datasets": [
+    {
+      "id": "1",
+      "name": "Dataset A"
+    },
+    {
+      "id": "2",
+      "name": "Dataset B"
+    }
+  ],
+  "projects": [
+    {
+      "id": "1",
+      "name": "Project A from Dataset A",
+      "datasetId": "1"
+    },
+    {
+      "id": "2",
+      "name": "Project B from Dataset A",
+      "datasetId": "1"
+    }
+  ]
+}

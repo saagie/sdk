@@ -1,0 +1,18 @@
+{
+  "name": "saagie-sdk-extech",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "bs": "lerna bootstrap",
+    "dev": "lerna run dev --parallel --stream",
+    "build": "lerna run build --stream",
+    "test": "lerna run test --parallel --stream"
+  },
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "devDependencies": {
+    "lerna": "3.20.2"
+  }
+}

@@ -1,0 +1,6 @@
+version: v1
+id: example-technology
+label: Example Technology
+logo: ./logo.png
+available: true
+description: An amazing technology

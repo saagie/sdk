@@ -1,0 +1,19 @@
+{
+  "env": {
+    "jest": true,
+  },
+  "plugins": [
+    "security"
+  ],
+  "extends": [
+    "airbnb-base",
+    "plugin:security/recommended"
+  ],
+  "rules": {
+    "global-require": "off",
+    "import/no-dynamic-require": "off",
+    "no-console": "warn",
+    "no-underscore-dangle": "off",
+    "no-unused-vars": "warn"
+  }
+}

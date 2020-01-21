@@ -1,0 +1,13 @@
+{
+  "name": "techno-c",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "SAAGIE_ENV=development sdk-extech-cli start",
+    "build": "sdk-extech-cli build"
+  },
+  "dependencies": {
+    "@saagie/sdk-extech": "1.0.0",
+    "axios": "0.19.2"
+  }
+}

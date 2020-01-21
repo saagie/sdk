@@ -1,0 +1,4 @@
+{
+  "/api/*": "/$1",
+  "/datasets/:id/projects": "/datasets/:id/projects?_expand=dataset"
+}

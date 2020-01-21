@@ -1,0 +1,40 @@
+{
+  "name": "@saagie/sdk-extech",
+  "version": "1.0.0",
+  "private": true,
+  "bin": {
+    "sdk-extech-cli": "src/cli/cli.js"
+  },
+  "main": "build/index.js",
+  "engines": {
+    "node": ">=12.15.0"
+  },
+  "scripts": {
+    "dev": "rollup -c -w",
+    "build": "rollup -c",
+    "test": "jest"
+  },
+  "dependencies": {
+    "chalk": "3.0.0",
+    "commander": "4.1.1",
+    "express": "4.17.1",
+    "globby": "11.0.0",
+    "jsonpath": "1.0.2",
+    "serve-static": "1.14.1",
+    "yaml": "1.7.2",
+    "body-parser": "1.19.0",
+    "parcel-bundler": "1.12.4",
+    "fs-extra": "8.1.0"
+  },
+  "devDependencies": {
+    "eslint": "6.8.0",
+    "eslint-config-airbnb-base": "14.0.0",
+    "eslint-plugin-import": "2.20.1",
+    "eslint-plugin-security": "1.4.0",
+    "jest": "25.1.0",
+    "rollup": "1.31.1",
+    "rollup-plugin-commonjs": "10.1.0",
+    "rollup-plugin-node-resolve": "5.2.0",
+    "@saagie/sdk-extech-webapp": "1.0.0"
+  }
+}
