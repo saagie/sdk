@@ -2,6 +2,7 @@
 
 const program = require('commander');
 
+const init = require('./commands/init');
 const start = require('./commands/start');
 const build = require('./commands/build');
 const { error } = require('./utils/output');
@@ -10,6 +11,10 @@ const { ERROR_CODE } = require('./constants');
 const { version } = require('../../package.json');
 
 program.version(version);
+
+program.command('init')
+  .description('Create an empty Saagie External Technology project')
+  .action(init);
 
 program.command('start')
   .option('-p, --port <port>', 'The port to use')
