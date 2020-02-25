@@ -1,0 +1,63 @@
+= metadata.yml
+
+.Technology header
+[source,yml]
+----
+version: v1 # <1>
+id: example-technology # <2>
+label: Example Technology # <3>
+minimumProductVersion: 1.19.0920292829 # <4>
+type: JOB # <5>
+logo: ./logo.png # <6>
+available: true # <7>
+description: An amazing technology # <8>
+----
+
+<1> `string` the version of the SDK.
+<2> `string` a unique identifier for the technology.
+<3> `string` a descriptive label for the technology.
+<4> `string` the minimum Saagie version required for the technology to work on.
+<5> `string` the type of engine the technology will run on.
+<6> `string` path to the technology logotype.
+<7> `boolean` is the technology available for Saagie users?
+<8> `string` a description for the technology.
+
+.Contexts
+[source,yml]
+----
+contexts: # <1>
+  - id: 11 # <2>
+    label: 11 # <3>
+    available: true # <4>
+    recommended: true # <5>
+    dockerInfo: # <6>
+      image: saagie/java-scala
+      version: 11-1.10.0_merge_certified_experimental
+    trustLevel: "stable" # <7>
+    job: # <8>
+      features: # <9>
+        - field: COMMAND_LINE
+          label: "Command line"
+          mandatory: true
+          comment: "Linux shell command to launch the job."
+          defaultValue: java -jar {file} arg1 arg2
+        - field: ARTIFACT
+          label: "Package"
+          mandatory: true
+          comment: "Compatible upload file : .jar"
+        - field: SCHEDULER
+          label: "Scheduled"
+          mandatory: true
+----
+
+<1> `array` a technology can have multiple contexts.
+<2> `string` a unique identifier for the context.
+<3> `string` a descriptive label for the context.
+<4> `boolean` is the context available for Saagie users?
+<5> `boolean` is this context recommended?
+<6> Docker informations with the image `string` and the version `string`.
+<7> `string` an enumeration (stable, #TODO: add other values#) about the trust level of this context.
+<8> Job informations. A job has multiple configurable features.
+<9> Each feature has a set of configurable keys:
+
+#TODO: describe each key#
