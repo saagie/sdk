@@ -1,1 +1,7 @@
 = Get Started
+
+== sdk-extech-cli
+
+init:: Interactively create a technology.yml file to initialize the current working directory.
+start:: Start the development mode.
+build:: Create production ready files for Saagie External Technology.
