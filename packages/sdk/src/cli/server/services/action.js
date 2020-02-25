@@ -3,6 +3,7 @@ const path = require('path');
 const { Response } = require('../../../sdk');
 
 const { error } = require('../../utils/output');
+const { BUNDLE_FOLDER } = require('../../constants');
 
 module.exports = async (req, res) => {
   try {
@@ -11,8 +12,8 @@ module.exports = async (req, res) => {
     const parcel = new Parcel(
       scriptPath,
       {
-        outDir: process.cwd(),
-        outFile: `${req.body.script.split('.').slice(0, -1).join('.')}.bundle.js`,
+        outDir: path.resolve(process.cwd(), BUNDLE_FOLDER),
+        outFile: `${req.body.script.split('.').slice(0, -1).join('.')}.js`,
         minify: true,
         watch: false,
         target: 'node',

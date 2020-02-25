@@ -5,6 +5,7 @@ dist
 .history
 .cache
 build
+.bundle
 
 # misc
 .DS_Store

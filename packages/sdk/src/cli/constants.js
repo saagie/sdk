@@ -18,4 +18,5 @@ module.exports = {
     TECHNOLOGY_YAML_IS_NOT_VALID: 4,
   },
   BUILD_FOLDER: './build',
+  BUNDLE_FOLDER: './.bundle',
 };
