@@ -42,4 +42,11 @@ describe('each output is successful using', () => {
     output.info(MESSAGE);
     expect(loggedData).toBe(MESSAGE);
   });
+
+  test('a log message', () => {
+    const MESSAGE = 'this is a log message';
+
+    output.log(MESSAGE);
+    expect(loggedData).toBe(MESSAGE);
+  });
 });

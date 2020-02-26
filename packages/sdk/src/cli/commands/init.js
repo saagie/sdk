@@ -1,12 +1,14 @@
 const inquirer = require('inquirer');
 const yaml = require('yaml');
-const fs = require('fs-extra');
+const fse = require('fs-extra');
 const path = require('path');
 
-const { info } = require('../utils/output');
-const { TECHNOLOGY } = require('../constants');
+const output = require('../utils/output');
+const { CONTEXT, TECHNOLOGY, ERROR_CODE } = require('../constants');
 
-module.exports = async () => {
+async function interactivelyCreateTechnologyFile() {
+  output.log('Technology form');
+
   const answers = await inquirer
     .prompt([
       {
@@ -52,7 +54,74 @@ module.exports = async () => {
     ]);
 
   const technologyContent = yaml.stringify(answers);
-  fs.outputFileSync(path.resolve(process.cwd(), `${TECHNOLOGY.FILENAME}.yml`), technologyContent);
+  fse.outputFileSync(path.resolve(process.cwd(), `${TECHNOLOGY.FILENAME}.yml`), technologyContent);
+}
 
-  info('Initialization done');
+async function interactivelyCreateContext() {
+  output.log('\nCreate your first context for the technology:\n');
+
+  const { contextName } = await inquirer
+    .prompt([
+      {
+        type: 'input',
+        name: 'contextName',
+        message: 'Context folder name',
+      },
+    ]);
+
+  if (await fse.pathExists(contextName)) {
+    output.warning('Context folder already exists');
+    process.exit();
+  }
+
+  const contextAnswers = await inquirer
+    .prompt([
+      {
+        type: 'input',
+        name: 'label',
+        message: 'Label',
+      },
+      {
+        type: 'input',
+        name: 'description',
+        message: 'Description',
+      },
+      {
+        type: 'confirm',
+        name: 'available',
+        message: (currentAnswers) => `Is the context ${currentAnswers.label} available to Saagie users ?`,
+      },
+      {
+        type: 'confirm',
+        name: 'recommended',
+        message: (currentAnswers) => `Is the context ${currentAnswers.label} recommended ?`,
+      },
+      {
+        type: 'input',
+        name: 'trustLevel',
+        message: 'Level of trust',
+      },
+    ]);
+
+  try {
+    await fse.ensureDir(contextName);
+  } catch (err) {
+    output.error(`Unable to create context folder for name ${contextName}`);
+    process.exit(ERROR_CODE.CONTEXT_FOLDER_NOT_CREATED);
+  }
+
+  fse.outputFileSync(
+    path.resolve(process.cwd(), contextName, `${CONTEXT.FILENAME}.yml`),
+    yaml.stringify({
+      id: contextName,
+      ...contextAnswers,
+    }),
+  );
+}
+
+module.exports = async () => {
+  await interactivelyCreateTechnologyFile();
+  await interactivelyCreateContext();
+
+  output.success('Initialization done');
 };
