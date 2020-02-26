@@ -39,8 +39,19 @@ exports.generateMetadataFile = async () => {
 
   const technologyContent = fs.readFileSync(technologyPath, 'utf8');
 
-  // TODO: Read file async using Promise.all([]) ???
-  const contextsContent = contextsPaths.map((contextPath) => fs.readFileSync(contextPath, 'utf8'));
+  const contextsContent = await Promise.all(
+    contextsPaths.map(
+      (contextPath) => new Promise((resolve, reject) => {
+        fs.readFile(contextPath, 'utf8', (err, data) => {
+          if (err) {
+            reject(err);
+          }
+
+          resolve(data);
+        });
+      }),
+    ),
+  );
 
   const metadataContent = yaml.parseDocument(technologyContent);
 
