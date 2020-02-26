@@ -6,6 +6,7 @@ dist
 .cache
 build
 .bundle
+coverage
 
 # misc
 .DS_Store

@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+const chalk = require('chalk');
+
 const output = require('../output');
 
 let loggedData;
@@ -19,28 +21,28 @@ describe('each output is successful using', () => {
     const MESSAGE = 'fatal: this is an error message';
 
     output.error(MESSAGE);
-    expect(loggedData).toBe(MESSAGE);
+    expect(loggedData).toBe(chalk.bold.red(MESSAGE));
   });
 
   test('a success message', () => {
     const MESSAGE = 'this is a success message';
 
     output.success(MESSAGE);
-    expect(loggedData).toBe(MESSAGE);
+    expect(loggedData).toBe(chalk.bold.green(MESSAGE));
   });
 
   test('an info message', () => {
     const MESSAGE = 'this is an info message';
 
     output.info(MESSAGE);
-    expect(loggedData).toBe(MESSAGE);
+    expect(loggedData).toBe(chalk.blue(MESSAGE));
   });
 
   test('a warning message', () => {
     const MESSAGE = 'this is a warning message';
 
-    output.info(MESSAGE);
-    expect(loggedData).toBe(MESSAGE);
+    output.warning(MESSAGE);
+    expect(loggedData).toBe(chalk.yellow(MESSAGE));
   });
 
   test('a log message', () => {
