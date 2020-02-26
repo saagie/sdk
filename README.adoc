@@ -2,6 +2,10 @@
 
 == How to contribute?
 
+=== Requirements
+
+* Node.js v12.x.x minimum
+
 === Install dependencies
 
 ----
