@@ -1,0 +1,148 @@
+= technology.yml
+
+:toc:
+
+The `technology.yml` file should be at the root of your technology folder.
+
+== Configuration
+
+=== `version`
+
+|===
+| TYPE | REQUIRED | DEFAULT VALUE
+
+|`string`
+|No
+|`v1`
+|===
+
+The version of the Saagie External Technologies Engine.
+
+=== `id`
+
+#SUGGESTION: rename to `name`#
+
+|===
+| TYPE | REQUIRED | DEFAULT VALUE
+
+|`string`
+|Yes
+|-
+|===
+
+The unique identifier of the technology in your repository.
+
+=== `label`
+
+#SUGGESTION: rename to `displayName`#
+
+|===
+| TYPE | REQUIRED | DEFAULT VALUE
+
+|`string`
+|No
+|Will take the `id` if not provided
+|===
+
+The name of the technology displayed in the User Interface.
+
+=== `minimumProductVersion`
+
+#SUGGESTION: to remove ???#
+
+|===
+| TYPE | REQUIRED | DEFAULT VALUE
+
+|`string`
+|Yes
+|-
+|===
+
+The Saagie Product version supported by the technology.
+
+=== `type`
+
+|===
+| TYPE | REQUIRED | DEFAULT VALUE
+
+|`string`: `JOB` \| `APP`
+|Yes
+|-
+|===
+
+Which type of technology:
+
+JOB:: #TODO: Link to Zendesk job description#
+APP:: #TODO: Link to Zendesk app description#
+
+=== `logo`
+
+|===
+| TYPE | REQUIRED | DEFAULT VALUE
+
+|`string`
+|No
+|-
+|===
+
+Link to logo image (JPG, PNG, SVG). The link can be local or online.
+
+Format: 256 x 256px
+
+[source,yml]
+----
+logo: ./logo.png
+----
+
+[source,yml]
+----
+logo: https://example.com/logo.png
+----
+
+=== `available`
+
+|===
+| TYPE | REQUIRED | DEFAULT VALUE
+
+|`boolean`
+|No
+|`true`
+|===
+
+Set to `false` to prevent Saagie from displaying the technology to the users.
+
+=== `description`
+
+|===
+| TYPE | REQUIRED | DEFAULT VALUE
+
+|`string` (multiline)
+|No
+|-
+|===
+
+The description of the technology displayed in the User Interface.
+
+[source,yml]
+----
+description: >
+  Several lines of text,
+  with some "quotes" of various 'types',
+  plus another line at the end.
+----
+
+
+== Example
+
+.technology.yml
+[source,yml]
+----
+version: v1
+id: example-technology
+label: Example Technology
+minimumProductVersion: 1.19.0920292829
+type: JOB
+logo: ./logo.png
+available: true
+description: An amazing technology
+----
