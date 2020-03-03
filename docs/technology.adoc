@@ -1,5 +1,4 @@
 = technology.yml
-
 :toc:
 
 The `technology.yml` file should be at the root of your technology folder.
@@ -73,7 +72,8 @@ The Saagie Product version supported by the technology.
 Which type of technology:
 
 JOB:: #TODO: Link to Zendesk job description#
-APP:: #TODO: Link to Zendesk app description#
+APP:: Not available yet #TODO: Link to Zendesk job description#
+
 
 === `logo`
 
