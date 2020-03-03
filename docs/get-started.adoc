@@ -1,5 +1,55 @@
 = Get Started
 
+== Create a technology
+
+=== Create a folder for your technology.
+
+[source,bash]
+----
+mkdir my-technology
+----
+
+=== Initialize the package
+
+[source,bash]
+----
+npm init
+----
+
+=== Install Saagie SDK Command Line Interface.
+
+[source,bash]
+----
+npm install @saagie/sdk-extech
+# or
+yarn add @saagie/sdk-extech
+----
+
+=== Add scripts to the package.json.
+
+.package.json
+[source,json]
+----
+{
+  "scripts": {
+    "init": "sdk-extech-cli init",
+    "build": "sdk-extech-cli build",
+    "start": "sdk-extech-cli start"
+  }
+}
+----
+
+=== Initialize the technology folder.
+
+[source,bash]
+----
+npm run init
+# or
+yarn sdk-extech-cli init
+----
+
+and then answer the quetions to create your first technology and context.
+
 == sdk-extech-cli
 
 init:: Interactively create a technology.yml file to initialize the current working directory.
