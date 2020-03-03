@@ -3,43 +3,78 @@ const yaml = require('yaml');
 const fse = require('fs-extra');
 const path = require('path');
 
+const isRoot = require('../validators/isRoot');
 const output = require('../utils/output');
 const { CONTEXT, TECHNOLOGY, ERROR_CODE } = require('../constants');
 
+function validateIntput(input) {
+  return input && input.length !== 0 ? true : 'Please provide a value';
+}
+
 async function interactivelyCreateTechnologyFile() {
+  if (isRoot()) {
+    return;
+  }
+
   output.log('Technology form');
 
   const answers = await inquirer
     .prompt([
       {
-        type: 'input',
+        type: 'list',
         name: 'version',
         message: 'Version',
+        choices: [
+          'v1',
+        ],
       },
       {
         type: 'input',
         name: 'id',
-        message: 'Identifier (id)',
+        message: 'Identifier',
+        validate: validateIntput,
       },
       {
         type: 'input',
         name: 'label',
         message: 'Label',
+        validate: validateIntput,
       },
       {
-        type: 'input',
-        name: 'minimumProductVersion',
-        message: 'Minimum Product Version',
-      },
-      {
-        type: 'input',
+        type: 'list',
         name: 'type',
         message: 'Type',
+        choices: [
+          'JOB',
+          'APP',
+        ],
       },
       {
-        type: 'input',
-        name: 'logo',
-        message: 'Path to the logo of the technology',
+        type: 'list',
+        name: 'icon',
+        message: 'The icon name',
+        choices: [
+          'none',
+          'bash',
+          'docker',
+          'drill',
+          'elastic-search',
+          'hdfs',
+          'hive',
+          'hue',
+          'impala',
+          'java-scala',
+          'jupyter',
+          'kafka',
+          'mongo',
+          'mysql',
+          'postgre-sql',
+          'python',
+          'r',
+          'spark',
+          'sqoop',
+          'talend',
+        ],
       },
       {
         type: 'confirm',
@@ -58,28 +93,31 @@ async function interactivelyCreateTechnologyFile() {
 }
 
 async function interactivelyCreateContext() {
-  output.log('\nCreate your first context for the technology:\n');
-
-  const { contextName } = await inquirer
-    .prompt([
-      {
-        type: 'input',
-        name: 'contextName',
-        message: 'Context folder name',
-      },
-    ]);
-
-  if (await fse.pathExists(contextName)) {
-    output.warning('Context folder already exists');
-    process.exit();
-  }
+  output.log('\nCreate a context for the technology:\n');
 
   const contextAnswers = await inquirer
     .prompt([
       {
         type: 'input',
+        name: 'id',
+        message: 'Identifier (will create a folder with the given value)',
+        validate: async (input) => {
+          if (!input || !input.length === 0) {
+            return 'Please provide a value';
+          }
+
+          if (await fse.pathExists(input)) {
+            return `Context ${input} already exists`;
+          }
+
+          return true;
+        },
+      },
+      {
+        type: 'input',
         name: 'label',
         message: 'Label',
+        validate: validateIntput,
       },
       {
         type: 'input',
@@ -103,25 +141,26 @@ async function interactivelyCreateContext() {
       },
     ]);
 
+  const { id } = contextAnswers;
+
   try {
-    await fse.ensureDir(contextName);
+    await fse.ensureDir(id);
   } catch (err) {
-    output.error(`Unable to create context folder for name ${contextName}`);
+    output.error(`Unable to create context folder for name ${id}`);
     process.exit(ERROR_CODE.CONTEXT_FOLDER_NOT_CREATED);
   }
 
   fse.outputFileSync(
-    path.resolve(process.cwd(), contextName, `${CONTEXT.FILENAME}.yml`),
-    yaml.stringify({
-      id: contextName,
-      ...contextAnswers,
-    }),
+    path.resolve(process.cwd(), id, `${CONTEXT.FILENAME}.yml`),
+    yaml.stringify(contextAnswers),
   );
+
+  output.success(`Context "${id}" created`);
 }
 
 module.exports = async () => {
   await interactivelyCreateTechnologyFile();
   await interactivelyCreateContext();
 
-  output.success('Initialization done');
+  output.success('\nInitialization done');
 };
