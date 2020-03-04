@@ -7,12 +7,13 @@ const isRoot = require('../validators/isRoot');
 const output = require('../utils/output');
 const { CONTEXT, TECHNOLOGY, ERROR_CODE } = require('../constants');
 
-function validateIntput(input) {
+function validateInput(input) {
   return input && input.length !== 0 ? true : 'Please provide a value';
 }
 
 async function interactivelyCreateTechnologyFile() {
-  if (isRoot()) {
+  if (await isRoot()) {
+    output.warning('Technology exists');
     return;
   }
 
@@ -32,13 +33,13 @@ async function interactivelyCreateTechnologyFile() {
         type: 'input',
         name: 'id',
         message: 'Identifier',
-        validate: validateIntput,
+        validate: validateInput,
       },
       {
         type: 'input',
         name: 'label',
         message: 'Label',
-        validate: validateIntput,
+        validate: validateInput,
       },
       {
         type: 'list',
@@ -46,35 +47,12 @@ async function interactivelyCreateTechnologyFile() {
         message: 'Type',
         choices: [
           'JOB',
-          'APP',
         ],
       },
       {
-        type: 'list',
-        name: 'icon',
-        message: 'The icon name',
-        choices: [
-          'none',
-          'bash',
-          'docker',
-          'drill',
-          'elastic-search',
-          'hdfs',
-          'hive',
-          'hue',
-          'impala',
-          'java-scala',
-          'jupyter',
-          'kafka',
-          'mongo',
-          'mysql',
-          'postgre-sql',
-          'python',
-          'r',
-          'spark',
-          'sqoop',
-          'talend',
-        ],
+        type: 'input',
+        name: 'logo',
+        message: 'The logo path',
       },
       {
         type: 'confirm',
@@ -106,6 +84,7 @@ async function interactivelyCreateContext() {
             return 'Please provide a value';
           }
 
+          // TODO: Check for every context.yml id instead of folders.
           if (await fse.pathExists(input)) {
             return `Context ${input} already exists`;
           }
@@ -117,7 +96,7 @@ async function interactivelyCreateContext() {
         type: 'input',
         name: 'label',
         message: 'Label',
-        validate: validateIntput,
+        validate: validateInput,
       },
       {
         type: 'input',
