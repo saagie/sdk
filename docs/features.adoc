@@ -1,0 +1,210 @@
+= `feature`
+:toc:
+
+Think of feature as a composable input. 
+
+== Configuration
+
+Each feature has multiple configuration keys. Most of the keys are basic, the complicated one being `type`.
+
+=== `type`
+
+|===
+| TYPE | REQUIRED | DEFAULT VALUE
+
+|`string`: `URL` \| `TEXT` \| `PASSWORD` \| `ENDPOINT` \| `SELECT`
+|Yes
+|-
+|===
+
+A feature has one type. A type provide more configurable keys.
+
+==== `URL`
+
+Using `URL` type, the user will have an input with URL type validation.
+
+==== `TEXT`
+
+Using `TEXT` type, the user will be free to give any value they want.
+
+==== `PASSWORD`
+
+Using `PASSWORD` type, the user will have an input with password type validation.
+
+==== `ENDPOINT`
+
+Using `ENDPOINT` type, the user will have a select box 
+
+==== `SELECT`
+
+#TODO#
+
+Using `SELECT` type, the user will be able to select a value in a list of options.
+This list can be hard-coded or dynamically loaded using scripts.
+
+==== `options`
+
+===== Hard Coded Options
+
+Hard coded options can be provided using an array made of `id` and `label`. The `label` is what the user will see on the User Interface.
+
+[source,yml]
+----
+- type: SELECT
+  name: project
+  options:
+    - id: first
+      label: First
+    - id: second
+      label: Second
+    - id: third
+      label: Third
+----
+
+===== Dynamic Options
+
+Dynamic options system provide a way to call a web service to get the options.
+Use `script` and `function` keys to provide path to a script and a function to call.
+
+[source,yml]
+----
+- type: SELECT
+  name: project
+  options:
+    script: ./entityForm.js
+    function: getProjects
+----
+
+Check the scripts documentation for more information. #TODO ADD LINK TO DEDICATED DOCUMENTATION#
+
+=== `name`
+
+|===
+| TYPE | REQUIRED | DEFAULT VALUE
+
+|`string`
+|Yes
+|-
+|===
+
+The feature name should be unique in the context.
+
+=== `label`
+
+|===
+| TYPE | REQUIRED | DEFAULT VALUE
+
+|`string`
+|No
+|Will take the `name` if not provided.
+|===
+
+The label of the feature displayed in the User Interface.
+
+=== `helper`
+
+|===
+| TYPE | REQUIRED | DEFAULT VALUE
+
+|`string`
+|No
+|-
+|===
+
+The helper displayed on the User Interface to clarify the feature.
+
+=== `required`
+
+|===
+| TYPE | REQUIRED | DEFAULT VALUE
+
+|`boolean`
+|No
+|false
+|===
+
+The requirement of the feature.
+
+=== `dependsOn`
+
+|===
+| TYPE | REQUIRED | DEFAULT VALUE
+
+|`array`
+|No
+|-
+|===
+
+Identifies any feature that must be successfully filled before this feature shows up in the User Interface.
+
+[source,yml]
+----
+- type: TEXT
+  name: login
+
+- type: PASSWORD
+  name: password
+  dependsOn:
+    - login
+----
+
+== Example
+
+.context.yml 
+[source,yml]
+----
+# [...]
+endpoint:
+  features:
+    - type: URL
+      name: url
+      label: Endpoint URL
+      required: true
+      helper: E.g. https://amazingtech.company.com/api/v1
+
+    - type: TEXT
+      name: login
+      label: Login
+
+    - type: PASSWORD
+      name: password
+      label: Password
+
+job:
+  features:
+    - type: ENDPOINT
+      name: endpoint
+      label: Endpoint
+      required: true
+
+    - type: SELECT
+      name: dataset
+      label: Dataset
+      required: true
+      options:
+        script: ./src/entityForm.js
+        function: getDatasets
+      dependsOn:
+        - connection
+
+    - type: SELECT
+      name: project
+      label: Project
+      required: true
+      options:
+        script: ./src/entityForm.js
+        function: getProjects
+      dependsOn:
+        - dataset
+
+    - type: SELECT
+      name: process
+      label: Process
+      required: true
+      options:
+        script: ./src/entityForm.js
+        function: getProcesses
+      dependsOn:
+        - project
+# [...]
+----

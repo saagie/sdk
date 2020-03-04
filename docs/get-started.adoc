@@ -45,7 +45,7 @@ yarn add @saagie/sdk-extech
 ----
 npm run init
 # or
-yarn sdk-extech-cli init
+yarn run init
 ----
 
 and then answer the quetions to create your first technology and context.
