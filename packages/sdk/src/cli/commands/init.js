@@ -67,7 +67,7 @@ async function interactivelyCreateTechnologyFile() {
     ]);
 
   const technologyContent = yaml.stringify(answers);
-  fse.outputFileSync(path.resolve(process.cwd(), `${TECHNOLOGY.FILENAME}.yml`), technologyContent);
+  fse.outputFileSync(path.resolve(process.cwd(), `${TECHNOLOGY.FILENAME}.yaml`), technologyContent);
 }
 
 async function interactivelyCreateContext() {
@@ -84,7 +84,7 @@ async function interactivelyCreateContext() {
             return 'Please provide a value';
           }
 
-          // TODO: Check for every context.yml id instead of folders.
+          // TODO: Check for every context.yaml id instead of folders.
           if (await fse.pathExists(input)) {
             return `Context ${input} already exists`;
           }
@@ -130,7 +130,7 @@ async function interactivelyCreateContext() {
   }
 
   fse.outputFileSync(
-    path.resolve(process.cwd(), id, `${CONTEXT.FILENAME}.yml`),
+    path.resolve(process.cwd(), id, `${CONTEXT.FILENAME}.yaml`),
     yaml.stringify(contextAnswers),
   );
 
