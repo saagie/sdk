@@ -1,0 +1,18 @@
+= Feature type `SELECT` script
+:toc:
+
+NOTE: Scripts are must be written in link:https://developer.mozilla.org/en-US/docs/Web/JavaScript[JavaScript] and will be run on link:https://nodejs.org/en/[Node.js]. You can use external libraries like link:https://github.com/axios/axios[axios] as the script will be packaged with its dependencies.
+
+TIP: Try to keep the source code of the scripts near the `context.yaml`.
+
+== Script
+
+=== Parameters
+
+#TODO#
+
+=== Return value
+
+An `array` containing the options for the select.
+
+Do not return any other type.

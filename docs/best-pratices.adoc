@@ -1,0 +1,8 @@
+= Best practices
+
+== YAML file extension.
+
+link:https://yaml.org/[YAML] allows two filename extensions: `yml` and `yaml`. Keep it simple and use only one for the extensions while your developping an external technology.
+
+TIP: Saagie recommend to use `yaml` everywhere since it is recommended by the link:https://web.archive.org/web/20060924190202/https://yaml.org/faq.html[official organization].
+
