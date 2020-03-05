@@ -37,8 +37,6 @@ Using `ENDPOINT` type, the user will have a select box
 
 ==== `SELECT`
 
-#TODO#
-
 Using `SELECT` type, the user will be able to select a value in a list of options.
 This list can be hard-coded or dynamically loaded using scripts.
 

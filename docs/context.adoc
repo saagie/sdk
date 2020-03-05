@@ -162,9 +162,7 @@ The name of the exported function to execute when the check endpoint connection 
 
 ==== `endpoint.features`
 
-List of available features in the endpoint creation form.
-
-#Add link to features documentation#
+List of available link:features.adoc[features] in the endpoint creation form.
 
 
 === `job`
@@ -174,9 +172,7 @@ This form allows the user to create one or more job for this technology context.
 
 ==== `job.features`
 
-List of available features in the job creation form.
-
-#Add link to features documentation#
+List of available link:features.adoc[features] in the job creation form.
 
 === `instance`
 
