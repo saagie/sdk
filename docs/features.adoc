@@ -1,44 +1,110 @@
-= `feature`
+= `features`
 :toc:
 
-Think of feature as a composable input. 
+Think of features as a composable fields.
 
-== Configuration
+== Available feature types
 
-Each feature has multiple configuration keys. Most of the keys are basic, the complicated one being `type`.
+=== `URL`
 
-=== `type`
+Using `URL` type, the user will have a field with URL type validation.
 
-|===
-| TYPE | REQUIRED | DEFAULT VALUE
+All the <<Shared configurations,shared configurations>> are available for this feature.
 
-|`string`: `URL` \| `TEXT` \| `PASSWORD` \| `ENDPOINT` \| `SELECT`
-|Yes
-|-
-|===
+.URL Feature
+[source,yaml]
+----
+- type: URL
+  name: url
+  label: Endpoint URL
+  required: true
+  helper: E.g. https://amazingtech.company.com/api/v1
+  dependsOn:
+    - dependency-name
+----
 
-A feature has one type. A type provide more configurable keys.
-
-==== `URL`
-
-Using `URL` type, the user will have an input with URL type validation.
-
-==== `TEXT`
+=== `TEXT`
 
 Using `TEXT` type, the user will be free to give any value they want.
 
-==== `PASSWORD`
+.TEXT Feature
+[source,yaml]
+----
+- type: TEXT
+  name: login
+  label: Login
+  required: true
+  helper: E.g. This is a text
+  dependsOn:
+    - dependency-name
+----
 
-Using `PASSWORD` type, the user will have an input with password type validation.
+=== `PASSWORD`
 
-==== `ENDPOINT`
+Using `PASSWORD` type, the user will have a field with password type validation.
 
-Using `ENDPOINT` type, the user will have a select box 
+.PASSWORD Feature
+[source,yaml]
+----
+- type: PASSWORD
+  name: password
+  label: Password
+  required: true
+  helper: Please provide a password
+  dependsOn:
+    - dependency-name
+----
 
-==== `SELECT`
+=== `ENDPOINT`
+
+Using `ENDPOINT` type, the user will have a select box with the available endpoints previously created.
+
+.ENDPOINT Feature
+[source,yaml]
+----
+- type: ENDPOINT
+  name: endpoint
+  label: Endpoint
+  required: true
+  helper: Please select the endpoint to use
+  dependsOn:
+    - dependency-name
+----
+
+=== `SELECT`
 
 Using `SELECT` type, the user will be able to select a value in a list of options.
 This list can be hard-coded or dynamically loaded using scripts.
+
+.SELECT Feature
+[source,yaml]
+----
+# Using script
+- type: SELECT
+  name: dataset
+  label: Dataset
+  required: true
+  options:
+    script: ./src/script.js
+    function: getDatasets
+  dependsOn:
+    - endpoint
+
+# Using hard coded values
+- type: SELECT
+  name: dataset-hard-coded
+  label: Dataset Hard Coded
+  required: true
+  options:
+    - id: first
+      label: First
+    - id: second
+      label: Second
+    - id: third
+      label: Third
+  dependsOn:
+    - endpoint
+----
 
 ==== `options`
 
@@ -46,7 +112,7 @@ This list can be hard-coded or dynamically loaded using scripts.
 
 Hard coded options can be provided using an array made of `id` and `label`. The `label` is what the user will see on the User Interface.
 
-[source,yml]
+[source,yaml]
 ----
 - type: SELECT
   name: project
@@ -64,7 +130,7 @@ Hard coded options can be provided using an array made of `id` and `label`. The 
 Dynamic options system provide a way to call a web service to get the options.
 Use `script` and `function` keys to provide path to a script and a function to call.
 
-[source,yml]
+[source,yaml]
 ----
 - type: SELECT
   name: project
@@ -74,6 +140,20 @@ Use `script` and `function` keys to provide path to a script and a function to c
 ----
 
 Check the scripts documentation for more information. #TODO ADD LINK TO DEDICATED DOCUMENTATION#
+
+== Shared configurations
+
+Each feature has multiple configuration keys. Most of the keys are basic, the complicated one being `type`.
+
+=== `type`
+
+|===
+| TYPE | REQUIRED | DEFAULT VALUE
+
+|`string` see <<Available feature types>>
+|Yes
+|-
+|===
 
 === `name`
 
@@ -135,7 +215,7 @@ The requirement of the feature.
 
 Identifies any feature that must be successfully filled before this feature shows up in the User Interface.
 
-[source,yml]
+[source,yaml]
 ----
 - type: TEXT
   name: login
@@ -148,8 +228,8 @@ Identifies any feature that must be successfully filled before this feature show
 
 == Example
 
-.context.yml 
-[source,yml]
+.context.yaml 
+[source,yaml]
 ----
 # [...]
 endpoint:
