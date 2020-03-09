@@ -1,5 +1,5 @@
 const axios = require('axios')
-const { Response } = require('@saagie/sdk-extech')
+const { Response } = require('@saagie/sdk')
 
 exports.getDatasets = async ({ custom }) => {
   try {

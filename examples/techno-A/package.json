@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "sdk-extech-cli"
+    "dev": "saagie-sdk"
   },
   "dependencies": {
     "axios": "0.19.2",
-    "@saagie/sdk-extech": "1.0.0"
+    "@saagie/sdk": "1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "7.8.4",

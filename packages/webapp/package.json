@@ -1,14 +1,14 @@
 {
-  "name": "@saagie/sdk-extech-webapp",
+  "name": "@saagie/sdk-webapp",
   "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "5.1.1",
-    "@testing-library/react": "9.4.1",
-    "@testing-library/user-event": "8.1.0",
+    "@testing-library/react": "9.5.0",
+    "@testing-library/user-event": "10.0.0",
     "axios": "0.19.2",
-    "react": "16.12.0",
-    "react-dom": "16.12.0",
+    "react": "16.13.0",
+    "react-dom": "16.13.0",
     "react-scripts": "3.4.0",
     "saagie-ui": "0.62.1",
     "react-codemirror2": "6.0.0",
@@ -19,7 +19,8 @@
     "build": "react-scripts build",
     "postbuild": "cp -r build/. ../sdk/build-webapp",
     "eject": "react-scripts eject",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src",
+    "test": "react-scripts test --watchAll=false"
   },
   "proxy": "http://localhost:4000",
   "eslintConfig": {
@@ -38,12 +39,12 @@
     ]
   },
   "devDependencies": {
-    "eslint": "^6.1.0",
-    "eslint-config-airbnb": "^18.0.1",
-    "eslint-plugin-import": "^2.20.1",
-    "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-react": "^7.18.3",
-    "eslint-plugin-react-hooks": "^1.7.0",
+    "eslint": "6.8.0",
+    "eslint-config-airbnb": "18.0.1",
+    "eslint-plugin-import": "2.20.1",
+    "eslint-plugin-jsx-a11y": "6.2.3",
+    "eslint-plugin-react": "7.19.0",
+    "eslint-plugin-react-hooks": "2.5.0",
     "prop-types": "15.7.2"
   }
 }

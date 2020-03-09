@@ -20,9 +20,9 @@ npm init
 
 [source,bash]
 ----
-npm install @saagie/sdk-extech
+npm install @saagie/sdk
 # or
-yarn add @saagie/sdk-extech
+yarn add @saagie/sdk
 ----
 
 === Add scripts to the package.json.
@@ -32,9 +32,9 @@ yarn add @saagie/sdk-extech
 ----
 {
   "scripts": {
-    "init": "sdk-extech-cli init",
-    "build": "sdk-extech-cli build",
-    "start": "sdk-extech-cli start"
+    "init": "saagie-sdk init",
+    "build": "saagie-sdk build",
+    "start": "saagie-sdk start"
   }
 }
 ----
@@ -50,7 +50,7 @@ yarn run init
 
 and then answer the quetions to create your first technology and context.
 
-== sdk-extech-cli
+== saagie-sdk
 
 init:: Interactively create a technology.yml file to initialize the current working directory.
 start:: Start the development mode.

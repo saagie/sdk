@@ -15,7 +15,7 @@ An object with all the previous values given by the user.
 [source,javascript]
 ----
 const axios = require('axios')
-const { Response } = require('@saagie/sdk-extech')
+const { Response } = require('@saagie/sdk')
 
 exports.getDatasets = async ({ fields }) => {
   try {
@@ -44,4 +44,4 @@ exports.getDatasets = async ({ fields }) => {
 
 === Return value
 
-A `Response` from the `@saagie/sdk-extech` package that contains an `array` of options : `{ id, label }`.
+A `Response` from the `@saagie/sdk` package that contains an `array` of options : `{ id, label }`.

@@ -1,4 +1,4 @@
-const { createMockServer } = require('@saagie/sdk-extech')
+const { createMockServer } = require('@saagie/sdk')
 const { getDatasets, getProjects } = require('../src/entityForm')
 const createApp = require('../apiMock')
 const apiDataEmpty = require('../apiMock/data.empty.json')

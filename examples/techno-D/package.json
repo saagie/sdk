@@ -2,9 +2,9 @@
   "name": "techno-d",
   "version": "1.0.0",
   "dependencies": {
-    "@saagie/sdk-extech": "1.0.0"
+    "@saagie/sdk": "1.0.0"
   },
   "scripts": {
-    "init": "sdk-extech-cli init"
+    "init": "saagie-sdk init"
   }
 }

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Response } from '@saagie/sdk-extech';
+import { Response } from '@saagie/sdk';
 
 export const getDatasets = async ({ custom }) => {
   try {
