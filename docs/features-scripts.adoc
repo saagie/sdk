@@ -3,16 +3,45 @@
 
 NOTE: Scripts are must be written in link:https://developer.mozilla.org/en-US/docs/Web/JavaScript[JavaScript] and will be run on link:https://nodejs.org/en/[Node.js]. You can use external libraries like link:https://github.com/axios/axios[axios] as the script will be packaged with its dependencies.
 
-TIP: Try to keep the source code of the scripts near the `context.yaml`.
-
 == Script
 
 === Parameters
 
-#TODO#
+==== `fields`
+
+An object with all the previous values given by the user.
+
+.Example
+[source,javascript]
+----
+const axios = require('axios')
+const { Response } = require('@saagie/sdk-extech')
+
+exports.getDatasets = async ({ fields }) => {
+  try {
+    const { data: datasets } = await axios.get(
+      `${fields.endpoint.url}/datasets`
+    )
+
+    if (!datasets || !datasets.length) {
+      return Response.empty('No datasets availables')
+    }
+
+    return Response.success(
+      datasets.map(({ name, id }) => ({
+        id,
+        label: name,
+      })),
+    )
+  }
+
+  catch (error) {
+    return Response.error('Can\'t retrieve datasets', { error })
+  }
+}
+----
+
 
 === Return value
 
-An `array` containing the options for the select.
-
-Do not return any other type.
+A `Response` from the `@saagie/sdk-extech` package that contains an `array` of options : `{ id, label }`.
