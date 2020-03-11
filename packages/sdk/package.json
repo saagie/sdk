@@ -15,19 +15,20 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "body-parser": "1.19.0",
     "chalk": "3.0.0",
     "commander": "4.1.1",
     "express": "4.17.1",
+    "fs-extra": "8.1.0",
     "globby": "11.0.0",
     "inquirer": "7.0.6",
     "jsonpath": "1.0.2",
-    "serve-static": "1.14.1",
-    "yaml": "1.8.0",
-    "body-parser": "1.19.0",
     "parcel-bundler": "1.12.4",
-    "fs-extra": "8.1.0"
+    "serve-static": "1.14.1",
+    "yaml": "1.8.0"
   },
   "devDependencies": {
+    "@saagie/sdk-webapp": "^0.1.0",
     "eslint": "6.8.0",
     "eslint-config-airbnb-base": "14.0.0",
     "eslint-plugin-import": "2.20.1",
@@ -35,8 +36,7 @@
     "jest": "25.1.0",
     "rollup": "2.0.2",
     "rollup-plugin-commonjs": "10.1.0",
-    "rollup-plugin-node-resolve": "5.2.0",
-    "@saagie/sdk-webapp": "0.1.0"
+    "rollup-plugin-node-resolve": "5.2.0"
   },
   "repository": {
     "type": "git",
