@@ -1,6 +1,6 @@
 {
   "name": "@saagie/sdk",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
   "bin": {
     "saagie-sdk": "src/cli/cli.js"
@@ -38,5 +38,10 @@
     "rollup-plugin-commonjs": "10.1.0",
     "rollup-plugin-node-resolve": "5.2.0",
     "@saagie/sdk-webapp": "1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/saagie/sdk",
+    "directory": "packages/sdk"
   }
 }

@@ -1,7 +1,6 @@
 {
-  "name": "saagie-sdk-extech",
+  "name": "sdk",
   "private": true,
-  "version": "1.0.0",
   "scripts": {
     "bs": "lerna bootstrap",
     "dev": "lerna run dev --parallel --stream",
@@ -14,5 +13,12 @@
   ],
   "devDependencies": {
     "lerna": "3.20.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/saagie/sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/saagie/sdk/issues"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@saagie/sdk-webapp",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "5.1.1",
@@ -46,5 +46,10 @@
     "eslint-plugin-react": "7.19.0",
     "eslint-plugin-react-hooks": "2.5.0",
     "prop-types": "15.7.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/saagie/sdk",
+    "directory": "packages/webapp"
   }
 }
