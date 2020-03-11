@@ -7,7 +7,7 @@
     "build": "saagie-sdk build"
   },
   "dependencies": {
-    "@saagie/sdk": "1.0.0",
+    "@saagie/sdk": "0.1.0",
     "axios": "0.19.2"
   }
 }
