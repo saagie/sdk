@@ -5,7 +5,8 @@
     "bs": "lerna bootstrap",
     "dev": "lerna run dev --parallel --stream",
     "build": "lerna run build --stream",
-    "test": "lerna run test --parallel --stream"
+    "test": "lerna run test --parallel --stream",
+    "prepare": "yarn build"
   },
   "workspaces": [
     "packages/*",
