@@ -1,12 +1,12 @@
 {
   "name": "example-technology",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "dev": "saagie-sdk"
   },
   "dependencies": {
-    "@saagie/sdk": "^0.1.0",
+    "@saagie/sdk": "^0.1.1",
     "axios": "0.19.2"
   },
   "devDependencies": {

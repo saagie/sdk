@@ -1,6 +1,6 @@
 {
   "name": "@saagie/sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "bin": {
     "saagie-sdk": "src/cli/cli.js"
   },
@@ -28,7 +28,7 @@
     "yaml": "1.8.0"
   },
   "devDependencies": {
-    "@saagie/sdk-webapp": "^0.1.0",
+    "@saagie/sdk-webapp": "^0.1.1",
     "eslint": "6.8.0",
     "eslint-config-airbnb-base": "14.0.0",
     "eslint-plugin-import": "2.20.1",
