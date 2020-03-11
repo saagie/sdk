@@ -1,6 +1,7 @@
 {
   "name": "techno-d",
   "version": "1.0.0",
+  "private": true,
   "dependencies": {
     "@saagie/sdk": "0.1.0"
   },
