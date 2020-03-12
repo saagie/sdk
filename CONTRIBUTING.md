@@ -7,8 +7,9 @@
 ## Install dependencies
 
 ```sh
-yarn     # install npm dependencies
-yarn bs  # bootstrap repository with lerna to link local dependencies
+yarn      # install npm dependencies
+yarn bs   # bootstrap repository with lerna to link local dependencies
+yarn link # to use saagie-sdk everywhere ;)
 ```
 
 ## Run tests
