@@ -6,17 +6,9 @@ The **Saagie Technology SDK** allows you to implements **new technologies** easl
 
 ---
 
-## Installation
-
-### Requirements
+## Requirements
 
 * **[Node.js](https://nodejs.org/)** - Minimum version: `12.15.0`
-
-### Install the CLI in global
-
-```sh
-npm install @saagie/sdk -g
-```
 
 ---
 
@@ -25,9 +17,7 @@ npm install @saagie/sdk -g
 ### 👉 Init your technology
 
 ```sh
-mkdir my-technology # Create a folder
-cd my-technology    # Go to the created folder
-saagie-sdk init     # Init your technology
+npx @saagie/sdk init
 ```
 
 ### 👉 Run your technology locally
