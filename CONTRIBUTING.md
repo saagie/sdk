@@ -30,3 +30,33 @@ Then go to your technology folder and run:
 ```sh
 SAAGIE_ENV=development yarn saagie-sdk start
 ```
+
+## Test NPM publish with Verdaccio
+
+You can use [Verdaccio](https://verdaccio.org/) (a local npm registry) to test dry-run package publication.
+
+### 1. Install Verdaccio globally
+
+```sh
+yarn global add verdaccio
+```
+
+### 2. Run verdaccio
+
+```sh
+verdaccio
+```
+
+### 3. Run dry-run publish
+
+```sh
+yarn verdaccio:publish
+```
+
+Go to [@saagie/sdk on Verdaccio](http://localhost:4873/-/web/detail/@saagie/sdk) to see your package published.
+
+### 4. Revert dry-run publish
+
+```sh
+yarn verdaccio:unpublish
+```

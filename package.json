@@ -3,10 +3,12 @@
   "private": true,
   "scripts": {
     "bs": "lerna bootstrap",
-    "dev": "lerna run dev --parallel --stream",
-    "build": "lerna run build --stream",
-    "test": "lerna run test --parallel --stream",
-    "prepare": "yarn build"
+    "dev": "lerna run dev --scope @saagie/* --stream --parallel",
+    "build": "lerna run build --scope @saagie/* --stream",
+    "test": "lerna run test --scope @saagie/* --stream --parallel",
+    "deploy": "yarn build && lerna publish",
+    "verdaccio:publish": "yarn deploy --canary --force-publish --registry http://localhost:4873",
+    "verdaccio:unpublish": "version=$(npm view @saagie/sdk dist-tags.canary --registry http://localhost:4873) && npm unpublish @saagie/sdk@${version} --registry=http://localhost:4873"
   },
   "workspaces": [
     "packages/*",

@@ -15,6 +15,7 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "@saagie/sdk-webapp": "^0.1.2",
     "body-parser": "1.19.0",
     "chalk": "3.0.0",
     "commander": "4.1.1",
@@ -28,7 +29,6 @@
     "yaml": "1.8.0"
   },
   "devDependencies": {
-    "@saagie/sdk-webapp": "^0.1.2",
     "eslint": "6.8.0",
     "eslint-config-airbnb-base": "14.0.0",
     "eslint-plugin-import": "2.20.1",
