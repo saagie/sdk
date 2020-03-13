@@ -1,0 +1,13 @@
+{
+  "name": "{{id}}",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "saagie-sdk start",
+    "build": "saagie-sdk build"
+  },
+  "dependencies": {
+    "axios": "0.19.2",
+    "@saagie/sdk": "{{version}}"
+  }
+}
