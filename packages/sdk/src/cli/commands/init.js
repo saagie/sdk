@@ -2,76 +2,82 @@ const inquirer = require('inquirer');
 const yaml = require('yaml');
 const fse = require('fs-extra');
 const path = require('path');
+const chalk = require('chalk');
+const slugify = require('slugify');
+const { version } = require('../../../package.json');
 
 const isRoot = require('../validators/isRoot');
 const output = require('../utils/output');
 const { CONTEXT, TECHNOLOGY, ERROR_CODE } = require('../constants');
 
-function validateInput(input) {
-  return input && input.length !== 0 ? true : 'Please provide a value';
-}
+const isRequired = (message) => (input) => (input && input.length !== 0 ? true : (message || 'Please provide a value'));
 
 async function interactivelyCreateTechnologyFile() {
   if (await isRoot()) {
-    output.warning('Technology exists');
-    return;
+    output.log(chalk.bold('ℹ️  This folder already contains a technology.yaml file.'));
+    output.info('    ↳ Technology creation skipped');
+    return {};
   }
 
-  output.log('Technology form');
+  output.log(chalk.bold('👇 New technology'));
 
   const answers = await inquirer
     .prompt([
       {
-        type: 'list',
-        name: 'version',
-        message: 'Version',
-        choices: [
-          'v1',
-        ],
+        type: 'input',
+        name: 'label',
+        message: 'label',
+        default: 'My Technology',
+        validate: isRequired(),
       },
       {
         type: 'input',
         name: 'id',
-        message: 'Identifier',
-        validate: validateInput,
-      },
-      {
-        type: 'input',
-        name: 'label',
-        message: 'Label',
-        validate: validateInput,
-      },
-      {
-        type: 'list',
-        name: 'type',
-        message: 'Type',
-        choices: [
-          'JOB',
-        ],
-      },
-      {
-        type: 'input',
-        name: 'logo',
-        message: 'The logo path',
-      },
-      {
-        type: 'confirm',
-        name: 'available',
-        message: 'Is the technology available?',
+        message: 'id',
+        default: ({ label }) => slugify(label, { lower: true, strict: true }),
+        filter: (input) => slugify(input, { lower: true, strict: true }),
+        validate: isRequired(),
       },
       {
         type: 'input',
         name: 'description',
-        message: 'Description',
+        message: 'description',
+      },
+      {
+        type: 'confirm',
+        name: 'useDefaultFolder',
+        message: ({ id }) => `Generate in ./${id}`,
+      },
+      {
+        type: 'input',
+        name: 'folder',
+        prefix: '↳',
+        message: 'Folder',
+        default: ({ id }) => `./${id}`,
+        when: ({ useDefaultFolder }) => !useDefaultFolder,
       },
     ]);
 
-  const technologyContent = yaml.stringify(answers);
-  fse.outputFileSync(path.resolve(process.cwd(), `${TECHNOLOGY.FILENAME}.yaml`), technologyContent);
+  const technologyConfig = {
+    version: 'v1',
+    id: answers.id,
+    label: answers.label,
+    available: true,
+    description: answers.description,
+    type: 'JOB',
+    logo: './logo.png',
+  };
+
+  const technolgyFolder = answers.useDefaultFolder ? answers.id : answers.folder;
+  fse.outputFileSync(path.resolve(process.cwd(), `${technolgyFolder}/${TECHNOLOGY.FILENAME}.yaml`), yaml.stringify(technologyConfig));
+
+  output.success(`🎉 ${answers.label} created!`);
+
+  return answers;
 }
 
 async function interactivelyCreateContext() {
-  output.log('\nCreate a context for the technology:\n');
+  output.log(chalk.bold('👇 New context'));
 
   const contextAnswers = await inquirer
     .prompt([
@@ -96,7 +102,7 @@ async function interactivelyCreateContext() {
         type: 'input',
         name: 'label',
         message: 'Label',
-        validate: validateInput,
+        validate: isRequired(),
       },
       {
         type: 'input',
@@ -138,6 +144,7 @@ async function interactivelyCreateContext() {
 }
 
 module.exports = async () => {
+  output.log(`Saagie 📦 SDK - v${version}`);
   await interactivelyCreateTechnologyFile();
   await interactivelyCreateContext();
 
