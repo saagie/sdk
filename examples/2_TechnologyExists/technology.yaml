@@ -1,0 +1,7 @@
+version: v1
+id: technology-exists
+label: Technology Exists
+available: true
+description: "This is the description"
+type: JOB
+logo: ./logo.png

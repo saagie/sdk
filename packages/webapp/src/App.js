@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {
-  Page,
-  PageLoader,
-  PageContent,
-  EmptyState,
-} from 'saagie-ui/react';
+import { Page, PageLoader, PageContent, EmptyState } from 'saagie-ui/react';
 import { AppTopbar } from './components/AppTopbar';
 import { EndpointForm } from './components/EndpointForm';
 import { JobForm } from './components/JobForm';
@@ -17,8 +12,9 @@ function App() {
   const [selectedContext, setSelectedContext] = useState();
   const [endpointForm, setEndpointForm] = useState({});
 
-  const contextConfig = config?.contexts
-    ?.find(({ label }) => label === selectedContext);
+  const contextConfig = config?.contexts?.find(
+    ({ label }) => label === selectedContext
+  );
 
   useEffect(() => {
     (async () => {
@@ -68,8 +64,14 @@ function App() {
               setEndpointForm={setEndpointForm}
             />
           </div>
-          <div className="sui-g-grid__item as--2_7" key={JSON.stringify(endpointForm)}>
-            <JobForm contextConfig={contextConfig} endpointForm={endpointForm} />
+          <div
+            className="sui-g-grid__item as--2_7"
+            key={JSON.stringify(endpointForm)}
+          >
+            <JobForm
+              contextConfig={contextConfig}
+              endpointForm={endpointForm}
+            />
           </div>
           <div className="sui-g-grid__item as--3_7">
             <Actions contextConfig={contextConfig} />

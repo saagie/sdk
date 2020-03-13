@@ -1,32 +1,36 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  PageTopbar, Thumbnail, FormHelper, FormControlSelect,
+  PageTopbar,
+  Thumbnail,
+  FormHelper,
+  FormControlSelect,
+  Tooltip,
+  Button
 } from 'saagie-ui/react';
-
 
 const propTypes = {
   config: PropTypes.object,
   contextConfig: PropTypes.object,
   selectedContext: PropTypes.string,
-  setSelectedContext: PropTypes.func,
+  setSelectedContext: PropTypes.func
 };
 
 const defaultProps = {
   config: {},
   contextConfig: {},
   selectedContext: '',
-  setSelectedContext: () => {},
+  setSelectedContext: () => {}
 };
 
 export const AppTopbar = ({
   config,
   contextConfig,
   selectedContext,
-  setSelectedContext,
+  setSelectedContext
 }) => (
   <PageTopbar
-    title={(
+    title={
       <div className="sui-m-media-object">
         <div className="sui-m-media-object__media">
           {config && (
@@ -39,35 +43,52 @@ export const AppTopbar = ({
         </div>
         <div className="sui-m-media-object__content">
           {config?.technology?.label}
-          <FormHelper>
-            {config?.technology?.description}
-          </FormHelper>
+          <FormHelper>{config?.technology?.description}</FormHelper>
         </div>
       </div>
-    )}
-    actions={(
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+    }
+    actions={
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-end'
+        }}
+      >
         <div className="sui-m-form-group as--horizontal">
           <label className="sui-a-form-label as--lg sui-h-mb-none">
             <strong>
-              Context
+              {config?.contexts?.length <= 0 ? (
+                <>No context available</>
+              ) : (
+                <>Context</>
+              )}
+              <Tooltip
+                defaultPlacement="bottom"
+                label="Run 'npx @saagie/sdk init' to create a new context"
+                hideDelay
+                hideDelayCustomTimeOut={6}
+              >
+                <i class="sui-a-icon as--fa-info-circle as--end"></i>
+              </Tooltip>
             </strong>
           </label>
-          <div className="sui-h-mb-none" style={{ minWidth: '15rem' }}>
-            <FormControlSelect
-              onChange={({ value }) => setSelectedContext(value)}
-              menuPortalTarget={document.body}
-              options={config?.contexts?.map(({ label }) => ({ value: label, label }))}
-              value={{ value: selectedContext, label: selectedContext }}
-            />
-          </div>
+          {config?.contexts?.length > 0 && (
+            <div className="sui-h-mb-none" style={{ minWidth: '15rem' }}>
+              <FormControlSelect
+                onChange={({ value }) => setSelectedContext(value)}
+                menuPortalTarget={document.body}
+                options={config?.contexts?.map(({ label }) => ({
+                  value: label,
+                  label
+                }))}
+                value={{ value: selectedContext, label: selectedContext }}
+              />
+            </div>
+          )}
         </div>
-        <FormHelper className="sui-h-text-right sui-h-mt-xs">
-          {!!contextConfig?.mocksServer && `Mock available at ${window.location}mocks/${contextConfig?.label}`}
-          {!contextConfig?.mocksServer && 'No mock server available'}
-        </FormHelper>
       </div>
-    )}
+    }
   />
 );
 

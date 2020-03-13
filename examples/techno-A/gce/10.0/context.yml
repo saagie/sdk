@@ -1,7 +1,0 @@
-label: gce-10.0
-
-# mocksServer: ./mock/index.js
-
-tags:
-  - gce
-  - 10.0

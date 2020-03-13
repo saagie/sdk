@@ -45,15 +45,16 @@ export const Actions = ({
 
   const {
     _folder: contextFolderPath,
-    instance: {
-      actions: {
-        onStart,
-        onStop,
-        getLogs,
-      },
-    },
+    instance,
   } = contextConfig || {};
 
+  const { actions} = instance || {};
+  const {
+    onStart,
+    onStop,
+    getLogs,
+  } = actions || {};
+  
   const isDebugMode = query.get('debug') !== null;
 
   const fetchLogs = async () => {
