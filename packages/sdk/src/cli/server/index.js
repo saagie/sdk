@@ -24,6 +24,14 @@ module.exports = ({ port = DEFAULT_PORT } = {}) => {
   server.get('/api/config', config);
   server.post('/api/action', action);
   server.get('/api/static', serveFiles);
+  server.get('/api/demo', (req, res) => {
+    res.send([
+      { id: '1', name: 'First Dataset' },
+      { id: '2', name: 'Second Dataset' },
+      { id: '3', name: 'Third Dataset' },
+      { id: '4', name: 'Fourth Dataset' },
+    ]);
+  });
 
   server.listen(port);
 

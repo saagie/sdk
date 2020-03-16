@@ -117,7 +117,7 @@ export const SmartField = ({
                 script: `${contextFolderPath}/${options.script}`,
                 function: options.function,
                 params: {
-                  custom: currentFormRef.current,
+                  formParams: currentFormRef.current,
                 },
               });
 
@@ -131,7 +131,7 @@ export const SmartField = ({
         />
       );
 
-    case 'ENDPOINTS':
+    case 'ENDPOINT':
       return (
         <FormControlSelect
           name={name}
