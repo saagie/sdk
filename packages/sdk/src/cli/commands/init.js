@@ -18,45 +18,27 @@ const installDependencies = require('./init/installDependencies');
 
 const TEMPLATE_FOLDER = '../templates';
 
-const isTechnoAlreadyExist = async () => {
-  const isTechnoFolder = await isRoot();
-
-  if (isTechnoFolder) {
-    output.log(chalk.bold('ℹ️  This folder already contains a technology.yaml file.'));
-    output.info('    ↳ Technology creation skipped');
-  }
-
-  return isTechnoFolder;
-};
-
-module.exports = async () => {
-  output.log(`\nSaagie 📦 SDK - v${version}`);
-
+const createTechnology = async () => {
   // 1. Ask user
 
-  const shouldCreateTechno = !(await isTechnoAlreadyExist());
-  const technoAnswers = shouldCreateTechno ? await askTechnologyInfo() : {};
-
+  const technoAnswers = await askTechnologyInfo();
   const shoudlCreateContext = await askShouldCreateContext();
   const contextAnswers = shoudlCreateContext ? await askContextInfo() : {};
-
   const folder = await askFolderDestination(technoAnswers.id);
 
   // 2. Generate files
 
-  if (shouldCreateTechno) {
-    await copyTemplateFolder({
-      src: path.resolve(__dirname, TEMPLATE_FOLDER, TECHNOLOGY.ID),
-      dest: folder,
-      variables: { id: technoAnswers.id, version },
-    });
-    const config = await getTechnologyConfigFromAnswers(technoAnswers);
-    await generateYamlFile({
-      filename: TECHNOLOGY.ID,
-      folder,
-      config,
-    });
-  }
+  await copyTemplateFolder({
+    src: path.resolve(__dirname, TEMPLATE_FOLDER, TECHNOLOGY.ID),
+    dest: folder,
+    variables: { id: technoAnswers.id, version },
+  });
+  const technologyConfig = await getTechnologyConfigFromAnswers(technoAnswers);
+  await generateYamlFile({
+    filename: TECHNOLOGY.ID,
+    folder,
+    content: technologyConfig,
+  });
 
   if (shoudlCreateContext) {
     const contextFolder = path.resolve(folder, contextAnswers.id);
@@ -65,19 +47,19 @@ module.exports = async () => {
       dest: contextFolder,
       variables: {},
     });
-    const config = await getContextConfigFromAnswers(contextAnswers);
+    const contextConfig = await getContextConfigFromAnswers(contextAnswers);
     await generateYamlFile({
       filename: CONTEXT.ID,
       folder: contextFolder,
-      config,
+      content: contextConfig,
     });
   }
 
   // 3. Install
 
-  if (shouldCreateTechno) {
-    await installDependencies(folder);
-  }
+  await installDependencies(folder);
+
+  // 4. Output
 
   output.log(chalk`
 
@@ -91,6 +73,10 @@ Inside that directory, you can run several commands:
 
   {cyan npm run build}
     Bundle the technology for the Saagie platform.
+    Start the development server.
+
+  {cyan npm run new:context}
+    Generate a new context.
 
 We suggest that you begin by typing:
 
@@ -98,4 +84,49 @@ We suggest that you begin by typing:
   {cyan npm start}
 
   `);
+};
+
+const createContext = async () => {
+  // 1. Ask user
+
+  const contextAnswers = await askContextInfo();
+  const folder = await askFolderDestination(contextAnswers.id);
+
+  // 2. Generate files
+
+  await copyTemplateFolder({
+    src: path.resolve(__dirname, TEMPLATE_FOLDER, CONTEXT.ID),
+    dest: folder,
+    variables: {},
+  });
+  const config = await getContextConfigFromAnswers(contextAnswers);
+  await generateYamlFile({
+    filename: CONTEXT.ID,
+    folder,
+    content: config,
+  });
+
+  // 3. Output
+
+  output.log(chalk`
+
+{bold {green Context '${contextAnswers.label}' generated with success}}
+
+New context available in {italic ${folder}}
+  `);
+};
+
+module.exports = async () => {
+  output.log(`\nSaagie 📦 SDK - v${version}`);
+
+  const isTechnoAlreadyExist = await isRoot();
+
+  if (!isTechnoAlreadyExist) {
+    await createTechnology();
+  } else {
+    output.log(chalk`
+ℹ️  {bold This folder already contains a technology.yaml file.}
+    {cyan ↳ Technology creation skipped}`);
+    await createContext();
+  }
 };

@@ -11,8 +11,8 @@ const { error } = require('./output');
 const generateYamlFile = async ({
   filename,
   folder,
-  config,
-}) => fse.outputFile(path.resolve(process.cwd(), `${folder}/${filename}.yaml`), yaml.stringify(config));
+  content,
+}) => fse.outputFile(path.resolve(process.cwd(), `${folder}/${filename}.yaml`), yaml.stringify(content));
 
 exports.generateYamlFile = generateYamlFile;
 
@@ -66,5 +66,9 @@ exports.generateMetadataFile = async () => {
   const contextsNode = contextsContent.map((x) => yaml.parseDocument(x));
   metadataContent.set('contexts', contextsNode);
 
-  generateYamlFile(BUILD_FOLDER, METADATA.FILENAME, metadataContent.toString());
+  generateYamlFile({
+    folder: BUILD_FOLDER,
+    filename: METADATA.FILENAME,
+    content: metadataContent.toJSON(),
+  });
 };

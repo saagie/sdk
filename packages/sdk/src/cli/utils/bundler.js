@@ -4,7 +4,7 @@ const { BUILD_FOLDER } = require('../constants');
 const { error } = require('./output');
 
 exports.buildJS = async () => {
-  const paths = await globby(['./**/*.js', `!${BUILD_FOLDER}`]);
+  const paths = await globby(['./**/*.js', `!${BUILD_FOLDER}`, '!node_modules']);
 
   const parcel = new Parcel(
     paths,

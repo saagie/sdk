@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "saagie-sdk start",
-    "build": "saagie-sdk build"
+    "build": "saagie-sdk build",
+    "new:context": "saagie-sdk init"
   },
   "dependencies": {
     "axios": "0.19.2",
