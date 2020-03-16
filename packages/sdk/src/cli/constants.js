@@ -1,10 +1,12 @@
 module.exports = {
   DEFAULT_PORT: 4000,
   TECHNOLOGY: {
+    ID: 'technology',
     FILENAME: 'technology',
     FILENAME_GLOB: 'technology.{yml,yaml}',
   },
   CONTEXT: {
+    ID: 'context',
     FILENAME: 'context',
     FILENAME_GLOB: 'context.{yml,yaml}',
   },
