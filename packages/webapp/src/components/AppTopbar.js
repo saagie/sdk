@@ -6,31 +6,31 @@ import {
   FormHelper,
   FormControlSelect,
   Tooltip,
-  Button
+  Button,
 } from 'saagie-ui/react';
 
 const propTypes = {
   config: PropTypes.object,
   contextConfig: PropTypes.object,
   selectedContext: PropTypes.string,
-  setSelectedContext: PropTypes.func
+  setSelectedContext: PropTypes.func,
 };
 
 const defaultProps = {
   config: {},
   contextConfig: {},
   selectedContext: '',
-  setSelectedContext: () => {}
+  setSelectedContext: () => {},
 };
 
 export const AppTopbar = ({
   config,
   contextConfig,
   selectedContext,
-  setSelectedContext
+  setSelectedContext,
 }) => (
   <PageTopbar
-    title={
+    title={(
       <div className="sui-m-media-object">
         <div className="sui-m-media-object__media">
           {config && (
@@ -46,13 +46,13 @@ export const AppTopbar = ({
           <FormHelper>{config?.technology?.description}</FormHelper>
         </div>
       </div>
-    }
-    actions={
+    )}
+    actions={(
       <div
         style={{
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'flex-end'
+          alignItems: 'flex-end',
         }}
       >
         <div className="sui-m-form-group as--horizontal">
@@ -69,7 +69,7 @@ export const AppTopbar = ({
                 hideDelay
                 hideDelayCustomTimeOut={6}
               >
-                <i class="sui-a-icon as--fa-info-circle as--end"></i>
+                <i className="sui-a-icon as--fa-info-circle as--end" />
               </Tooltip>
             </strong>
           </label>
@@ -80,7 +80,7 @@ export const AppTopbar = ({
                 menuPortalTarget={document.body}
                 options={config?.contexts?.map(({ label }) => ({
                   value: label,
-                  label
+                  label,
                 }))}
                 value={{ value: selectedContext, label: selectedContext }}
               />
@@ -88,7 +88,7 @@ export const AppTopbar = ({
           )}
         </div>
       </div>
-    }
+    )}
   />
 );
 

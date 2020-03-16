@@ -43,4 +43,20 @@ module.exports = async ({
       },
     ],
   },
+  instance: {
+    actions: {
+      onStart: {
+        script: './instanceActions.js',
+        function: 'start',
+      },
+      onStop: {
+        script: './instanceActions.js',
+        function: 'stop',
+      },
+      getStatus: {
+        script: './instanceActions.js',
+        function: 'getStatus',
+      },
+    },
+  },
 });

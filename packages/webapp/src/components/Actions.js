@@ -7,10 +7,12 @@ import axios from 'axios';
 
 const propTypes = {
   contextConfig: PropTypes.object,
+  jobForm: PropTypes.object,
 };
 
 const defaultProps = {
   contextConfig: {},
+  jobForm: {},
 };
 
 function useQuery() {
@@ -18,15 +20,18 @@ function useQuery() {
 }
 
 const INTERVAL_FETCH_LOGS = 15000;
+const INTERVAL_FETCH_STATUS = 2000;
 
 export const Actions = ({
-  contextConfig,
+  contextConfig, jobForm,
 }) => {
+  const [status, setStatus] = useState('created');
   const [logs, setLogs] = useState('');
   const [isRunActionLoading, setIsRunActionLoading] = useState(false);
   const [isStopActionLoading, setIsStopActionLoading] = useState(false);
 
   // We store the fetch logs interval key in here
+  // ? TODO use SWR from ZEIT
   const intervalRef = useRef();
 
   const stopFetchLogsInterval = () => {
@@ -35,40 +40,68 @@ export const Actions = ({
   };
 
   // Clear interval before unmount
-  useEffect(() => {
-    return () => {
-      stopFetchLogsInterval();
-    };
+  useEffect(() => () => {
+    stopFetchLogsInterval();
   }, []);
 
   const query = useQuery();
 
   const {
-    _folder: contextFolderPath,
+    __folderPath: contextFolderPath,
     instance,
   } = contextConfig || {};
 
-  const { actions} = instance || {};
+  const { actions } = instance || {};
   const {
     onStart,
     onStop,
-    getLogs,
+    getStatus,
+    // getLogs,
   } = actions || {};
-  
+
   const isDebugMode = query.get('debug') !== null;
 
-  const fetchLogs = async () => {
+  // const fetchLogs = async () => {
+  //   try {
+  //     const data = await axios.post('/api/action', {
+  //       script: `${contextFolderPath}/${getLogs?.script}`,
+  //       function: getLogs?.function,
+  //       params: {
+  //         // custom: currentFormRef.current,
+  //         // name: 'job_name'
+  //       },
+  //     });
+
+  //     setLogs(data);
+
+  //     setIsRunActionLoading(false);
+  //   } catch (err) {
+  //     setIsRunActionLoading(false);
+  //   }
+  // };
+
+  // const startLogsPolling = () => {
+  //   fetchLogs();
+
+  //   intervalRef.current = setInterval(() => {
+  //     console.log('Fetching logs');
+  //     fetchLogs();
+  //   }, INTERVAL_FETCH_LOGS);
+  // };
+
+
+  const fetchStatus = async () => {
     try {
-      const data = await axios.post('/api/action', {
-        script: `${contextFolderPath}/${getLogs?.script}`,
-        function: getLogs?.function,
+      const response = await axios.post('/api/action', {
+        script: `${contextFolderPath}/${getStatus?.script}`,
+        function: getStatus?.function,
         params: {
-          // custom: currentFormRef.current,
+          formParams: jobForm,
           // name: 'job_name'
         },
       });
 
-      setLogs(data);
+      setStatus(response.data.data);
 
       setIsRunActionLoading(false);
     } catch (err) {
@@ -76,13 +109,13 @@ export const Actions = ({
     }
   };
 
-  const startLogsPolling = () => {
-    fetchLogs();
+  const startStatusPolling = () => {
+    fetchStatus();
 
     intervalRef.current = setInterval(() => {
-      console.log('Fetching logs');
-      fetchLogs();
-    }, INTERVAL_FETCH_LOGS);
+      console.log('Fetching status');
+      fetchStatus();
+    }, INTERVAL_FETCH_STATUS);
   };
 
   const handleRunAction = async () => {
@@ -93,12 +126,13 @@ export const Actions = ({
         script: `${contextFolderPath}/${onStart?.script}`,
         function: onStart?.function,
         params: {
-          // custom: currentFormRef.current,
+          formParams: jobForm,
           // name: 'job_name'
         },
       });
 
-      startLogsPolling();
+      // startLogsPolling();
+      startStatusPolling();
       setIsRunActionLoading(false);
     } catch (err) {
       setIsRunActionLoading(false);
@@ -113,12 +147,13 @@ export const Actions = ({
         script: `${contextFolderPath}/${onStop?.script}`,
         function: onStop?.function,
         params: {
-          // custom: currentFormRef.current,
+          formParams: jobForm,
           // name: 'job_name'
         },
       });
 
       stopFetchLogsInterval();
+      setStatus('killed');
       setIsStopActionLoading(false);
     } catch (err) {
       setIsStopActionLoading(false);
@@ -157,10 +192,12 @@ export const Actions = ({
                   Stop
                 </Button>
               </div>
-              <div className="sui-g-grid__item as--1_6">
-                <Status name="running" size="xl" />
-              </div>
-              <div className="sui-g-grid__item as--1_1">
+              {status !== 'created' && (
+                <div className="sui-g-grid__item as--1_6">
+                  <Status name={status.toLowerCase()} size="xl" />
+                </div>
+              )}
+              {/* <div className="sui-g-grid__item as--1_1">
                 <CodeMirror
                   value={logs}
                   options={{
@@ -168,7 +205,7 @@ export const Actions = ({
                     readOnly: true,
                   }}
                 />
-              </div>
+              </div> */}
             </div>
           </>
         )

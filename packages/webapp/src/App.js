@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Page, PageLoader, PageContent, EmptyState } from 'saagie-ui/react';
+import {
+  Page, PageLoader, PageContent, EmptyState,
+} from 'saagie-ui/react';
 import { AppTopbar } from './components/AppTopbar';
 import { EndpointForm } from './components/EndpointForm';
 import { JobForm } from './components/JobForm';
@@ -11,6 +13,7 @@ function App() {
   const [config, setConfig] = useState();
   const [selectedContext, setSelectedContext] = useState();
   const [endpointForm, setEndpointForm] = useState({});
+  const [jobForm, setJobForm] = useState({});
 
   const contextConfig = config?.contexts?.find(
     ({ label }) => label === selectedContext
@@ -71,10 +74,15 @@ function App() {
             <JobForm
               contextConfig={contextConfig}
               endpointForm={endpointForm}
+              jobForm={jobForm}
+              setJobForm={setJobForm}
             />
           </div>
           <div className="sui-g-grid__item as--3_7">
-            <Actions contextConfig={contextConfig} />
+            <Actions
+              contextConfig={contextConfig}
+              jobForm={jobForm}
+            />
           </div>
         </div>
       </PageContent>

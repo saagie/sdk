@@ -8,6 +8,19 @@ const action = require('./services/action');
 const config = require('./services/config');
 const serveFiles = require('./services/static');
 
+const STATUS = {
+  KILLED: 'KILLED',
+  RUNNING: 'RUNNING',
+  CREATED: 'CREATED',
+};
+
+const datasets = [
+  { id: '1', name: 'First Dataset', status: STATUS.CREATED },
+  { id: '2', name: 'Second Dataset', status: STATUS.CREATED },
+  { id: '3', name: 'Third Dataset', status: STATUS.CREATED },
+  { id: '4', name: 'Fourth Dataset', status: STATUS.CREATED },
+];
+
 module.exports = ({ port = DEFAULT_PORT } = {}) => {
   const server = express();
 
@@ -25,12 +38,24 @@ module.exports = ({ port = DEFAULT_PORT } = {}) => {
   server.post('/api/action', action);
   server.get('/api/static', serveFiles);
   server.get('/api/demo', (req, res) => {
-    res.send([
-      { id: '1', name: 'First Dataset' },
-      { id: '2', name: 'Second Dataset' },
-      { id: '3', name: 'Third Dataset' },
-      { id: '4', name: 'Fourth Dataset' },
-    ]);
+    res.send(datasets);
+  });
+
+  server.get('/api/demo/datasets/:id/start', (req, res) => {
+    const selectedDataset = datasets[datasets.findIndex((dataset) => dataset.id === req.params.id)];
+    selectedDataset.status = STATUS.RUNNING;
+    res.send(selectedDataset);
+  });
+
+  server.get('/api/demo/datasets/:id/stop', (req, res) => {
+    const selectedDataset = datasets[datasets.findIndex((dataset) => dataset.id === req.params.id)];
+    selectedDataset.status = STATUS.KILLED;
+    res.send(selectedDataset);
+  });
+
+  server.get('/api/demo/datasets/:id', (req, res) => {
+    const selectedDataset = datasets[datasets.findIndex((dataset) => dataset.id === req.params.id)];
+    res.send(selectedDataset);
   });
 
   server.listen(port);

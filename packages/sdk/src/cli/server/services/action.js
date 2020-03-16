@@ -8,6 +8,7 @@ const { BUNDLE_FOLDER } = require('../../constants');
 module.exports = async (req, res) => {
   try {
     const scriptPath = path.resolve(process.cwd(), req.body.script);
+    console.log(scriptPath);
 
     const parcel = new Parcel(
       scriptPath,
