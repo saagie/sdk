@@ -1,5 +1,5 @@
 const globby = require('globby');
-const fs = require('fs-extra');
+const fse = require('fs-extra');
 const yaml = require('yaml');
 const path = require('path');
 const {
@@ -7,6 +7,14 @@ const {
 } = require('../constants');
 
 const { error } = require('./output');
+
+const generateYamlFile = async ({
+  filename,
+  folder,
+  config,
+}) => fse.outputFile(path.resolve(process.cwd(), `${folder}/${filename}.yaml`), yaml.stringify(config));
+
+exports.generateYamlFile = generateYamlFile;
 
 exports.parseFilesToJSON = async ({
   folder = '.',
@@ -20,7 +28,7 @@ exports.parseFilesToJSON = async ({
     );
 
     return paths.map((filePath) => {
-      const content = fs.readFileSync(filePath, 'utf8');
+      const content = fse.readFileSync(filePath, 'utf8');
       const jsonContent = yaml.parse(content);
       jsonContent.__folderPath = filePath.split('/').slice(0, -1).join('/');
       return jsonContent;
@@ -37,12 +45,12 @@ exports.generateMetadataFile = async () => {
 
   const contextsPaths = await globby([`./**/${CONTEXT.FILENAME_GLOB}`]) || [];
 
-  const technologyContent = fs.readFileSync(technologyPath, 'utf8');
+  const technologyContent = fse.readFileSync(technologyPath, 'utf8');
 
   const contextsContent = await Promise.all(
     contextsPaths.map(
       (contextPath) => new Promise((resolve, reject) => {
-        fs.readFile(contextPath, 'utf8', (err, data) => {
+        fse.readFile(contextPath, 'utf8', (err, data) => {
           if (err) {
             reject(err);
           }
@@ -58,5 +66,5 @@ exports.generateMetadataFile = async () => {
   const contextsNode = contextsContent.map((x) => yaml.parseDocument(x));
   metadataContent.set('contexts', contextsNode);
 
-  fs.outputFileSync(path.resolve(BUILD_FOLDER, `${METADATA.FILENAME}.yml`), metadataContent.toString());
+  generateYamlFile(BUILD_FOLDER, METADATA.FILENAME, metadataContent.toString());
 };
