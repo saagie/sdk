@@ -10,24 +10,23 @@ import {
 
 const propTypes = {
   onUpdate: PropTypes.func,
-  endpointForm: PropTypes.object,
-  currentForm: PropTypes.object,
+  formName: PropTypes.string.isRequired,
+  formValues: PropTypes.object,
   contextFolderPath: PropTypes.string,
   field: PropTypes.object,
 };
 
 const defaultProps = {
   onUpdate: () => {},
-  endpointForm: {},
-  currentForm: {},
+  formValues: {},
   contextFolderPath: '',
   field: {},
 };
 
 export const SmartField = ({
   onUpdate = () => {},
-  endpointForm = {},
-  currentForm = {},
+  formValues = {},
+  formName,
   contextFolderPath,
   field: {
     type,
@@ -40,8 +39,8 @@ export const SmartField = ({
   },
 }) => {
   const [error, setError] = useState();
-
   const onUpdateRef = useRef();
+  const currentForm = formValues?.[formName] || {};
   onUpdateRef.current = onUpdate;
 
   const currentFormRef = useRef();
@@ -134,8 +133,8 @@ export const SmartField = ({
         <FormControlSelect
           name={name}
           isClearable
-          options={[{ value: endpointForm, label: 'Use test endpoint' }]}
-          onChange={(value) => onUpdate({ name, value: value ? endpointForm : undefined })}
+          options={[{ value: formValues?.endpoint, label: 'Use test endpoint' }]}
+          onChange={(value) => onUpdate({ name, value: value ? formValues?.endpoint : undefined })}
         />
       );
 

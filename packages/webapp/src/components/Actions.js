@@ -7,12 +7,12 @@ import axios from 'axios';
 
 const propTypes = {
   contextConfig: PropTypes.object,
-  jobForm: PropTypes.object,
+  formValues: PropTypes.object,
 };
 
 const defaultProps = {
   contextConfig: {},
-  jobForm: {},
+  formValues: {},
 };
 
 function useQuery() {
@@ -23,7 +23,7 @@ const INTERVAL_FETCH_LOGS = 15000;
 const INTERVAL_FETCH_STATUS = 2000;
 
 export const Actions = ({
-  contextConfig, jobForm,
+  contextConfig, formValues,
 }) => {
   const [status, setStatus] = useState('created');
   const [logs, setLogs] = useState('');
@@ -95,7 +95,7 @@ export const Actions = ({
         script: `${contextFolderPath}/${getStatus?.script}`,
         function: getStatus?.function,
         params: {
-          formParams: jobForm,
+          formParams: formValues.job,
           // name: 'job_name'
         },
       });
@@ -124,7 +124,7 @@ export const Actions = ({
         script: `${contextFolderPath}/${onStart?.script}`,
         function: onStart?.function,
         params: {
-          formParams: jobForm,
+          formParams: formValues.job,
           // name: 'job_name'
         },
       });
@@ -145,7 +145,7 @@ export const Actions = ({
         script: `${contextFolderPath}/${onStop?.script}`,
         function: onStop?.function,
         params: {
-          formParams: jobForm,
+          formParams: formValues.job,
           // name: 'job_name'
         },
       });
@@ -192,7 +192,7 @@ export const Actions = ({
               </div>
               {status !== 'created' && (
                 <div className="sui-g-grid__item as--1_6">
-                  <Status name={status.toLowerCase()} size="xl" />
+                  <Status name={status?.toLowerCase() ?? ''} size="xl" />
                 </div>
               )}
               {/* <div className="sui-g-grid__item as--1_1">

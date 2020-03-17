@@ -4,16 +4,14 @@ import {
   Page, PageLoader, PageContent, EmptyState,
 } from 'saagie-ui/react';
 import { AppTopbar } from './components/AppTopbar';
-import { EndpointForm } from './components/EndpointForm';
-import { JobForm } from './components/JobForm';
+import { SmartForm } from './components/SmartForm';
 import { Actions } from './components/Actions';
 
 function App() {
   const [status, setStatus] = useState('loading');
   const [config, setConfig] = useState();
   const [selectedContext, setSelectedContext] = useState();
-  const [endpointForm, setEndpointForm] = useState({});
-  const [jobForm, setJobForm] = useState({});
+  const [formValues, setFormValues] = useState({});
 
   const contextConfig = config?.contexts?.find(
     ({ label }) => label === selectedContext
@@ -31,6 +29,16 @@ function App() {
       }
     })();
   }, []);
+
+  const updateForm = (form) => ({ name, value }) => {
+    setFormValues((state) => ({
+      ...state,
+      [form]: {
+        ...state[form],
+        [name]: value,
+      },
+    }));
+  };
 
   if (status === 'loading') {
     return (
@@ -61,27 +69,28 @@ function App() {
       <PageContent>
         <div className="sui-g-grid as--gutter-xxl">
           <div className="sui-g-grid__item as--2_7">
-            <EndpointForm
-              contextConfig={contextConfig}
-              endpointForm={endpointForm}
-              setEndpointForm={setEndpointForm}
+            <SmartForm
+              contextConfig={contextConfig} // -> context
+              name="endpoint"
+              formValues={formValues}
+              updateForm={updateForm}
             />
           </div>
           <div
             className="sui-g-grid__item as--2_7"
-            key={JSON.stringify(endpointForm)}
+            key={JSON.stringify(formValues.endpoint)}
           >
-            <JobForm
-              contextConfig={contextConfig}
-              endpointForm={endpointForm}
-              jobForm={jobForm}
-              setJobForm={setJobForm}
+            <SmartForm
+              contextConfig={contextConfig} // -> context
+              name="job"
+              formValues={formValues}
+              updateForm={updateForm}
             />
           </div>
           <div className="sui-g-grid__item as--3_7">
             <Actions
-              contextConfig={contextConfig}
-              jobForm={jobForm}
+              contextConfig={contextConfig} // -> context
+              formValues={formValues}
             />
           </div>
         </div>
