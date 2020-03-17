@@ -10,21 +10,18 @@ import {
 
 const propTypes = {
   config: PropTypes.object,
-  contextConfig: PropTypes.object,
   selectedContext: PropTypes.string,
   setSelectedContext: PropTypes.func,
 };
 
 const defaultProps = {
   config: {},
-  contextConfig: {},
   selectedContext: '',
   setSelectedContext: () => {},
 };
 
 export const AppTopbar = ({
   config,
-  contextConfig,
   selectedContext,
   setSelectedContext,
 }) => (

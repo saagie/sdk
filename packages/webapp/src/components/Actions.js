@@ -84,7 +84,6 @@ export const Actions = ({
   //   fetchLogs();
 
   //   intervalRef.current = setInterval(() => {
-  //     console.log('Fetching logs');
   //     fetchLogs();
   //   }, INTERVAL_FETCH_LOGS);
   // };
@@ -113,7 +112,6 @@ export const Actions = ({
     fetchStatus();
 
     intervalRef.current = setInterval(() => {
-      console.log('Fetching status');
       fetchStatus();
     }, INTERVAL_FETCH_STATUS);
   };

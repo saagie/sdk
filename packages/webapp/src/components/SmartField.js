@@ -101,8 +101,6 @@ export const SmartField = ({
           loadOptions={async () => {
             setError(null);
 
-            console.log('loading', name, { options, shouldBeDisplayed, form: currentFormRef.current });
-
             if (
               !shouldBeDisplayed
               || !options
