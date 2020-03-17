@@ -1,6 +1,6 @@
 {
   "name": "@saagie/sdk",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "bin": {
     "saagie-sdk": "src/cli/cli.js"
   },
@@ -26,8 +26,8 @@
     "inquirer": "7.0.6",
     "jsonpath": "1.0.2",
     "parcel-bundler": "1.12.4",
-    "serve-static": "1.14.1",
     "semver": "7.1.3",
+    "serve-static": "1.14.1",
     "slugify": "1.4.0",
     "yaml": "1.8.0"
   },
