@@ -4,7 +4,9 @@
   "scripts": {
     "bs": "lerna bootstrap",
     "dev": "lerna run dev --scope @saagie/* --stream --parallel",
-    "build": "lerna run build --scope @saagie/* --stream",
+    "build": "yarn build:webapp && yarn build:sdk",
+    "build:webapp": "lerna run build --scope @saagie/sdk-webapp --stream",
+    "build:sdk": "lerna run build --scope @saagie/sdk --stream",
     "test": "lerna run test --scope @saagie/* --stream --parallel",
     "deploy": "yarn build && lerna publish",
     "verdaccio:publish": "yarn deploy --canary --force-publish --registry http://localhost:4873",
