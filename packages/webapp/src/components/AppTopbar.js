@@ -2,11 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
   PageTopbar,
-  Thumbnail,
   FormHelper,
   FormControlSelect,
   Tooltip,
-  Button,
+  Icon,
 } from 'saagie-ui/react';
 
 const propTypes = {
@@ -34,11 +33,7 @@ export const AppTopbar = ({
       <div className="sui-m-media-object">
         <div className="sui-m-media-object__media">
           {config && (
-            <Thumbnail
-              size="xs"
-              src={`/api/static?path=${config?.technology?.logo}`}
-              alt={`Icon of ${config?.technology?.label}`}
-            />
+            <Icon name={config?.technology?.logo || 'job'} />
           )}
         </div>
         <div className="sui-m-media-object__content">

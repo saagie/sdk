@@ -9,5 +9,5 @@ module.exports = async ({
   description,
   available: true,
   type: 'JOB',
-  logo: './logo.png',
+  icon: 'job',
 });
