@@ -22,8 +22,8 @@ module.exports = async () => {
         type: 'input',
         name: 'id',
         message: 'id',
-        default: ({ label }) => slugify(label, { lower: true, strict: true }),
-        filter: (input) => slugify(input, { lower: true, strict: true }),
+        default: ({ label }) => slugify(label, { lower: true }),
+        filter: (input) => slugify(input, { lower: true }),
         validate: isRequired(),
       },
       {
