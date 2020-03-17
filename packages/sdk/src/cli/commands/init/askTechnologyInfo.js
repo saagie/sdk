@@ -7,8 +7,23 @@ const output = require('../../utils/output');
 const { isRequired } = require('../../validators/inquirer');
 
 module.exports = async () => {
+  output.log('');
+
+  await inquirer
+    .prompt([
+      {
+        type: 'list',
+        name: 'isExternal',
+        message: 'Choose a technology implementation',
+        choices: [
+          { id: 'external', name: 'External technology' },
+          { id: 'internal', name: chalk`{strikethrough Internal technology}`, disabled: 'Not available now' },
+        ],
+      },
+    ]);
+
   output.log(chalk`
-👇 {bold New technology}
+👇 {bold New external technology}
 ${figures.pointerSmall} {bold label} {gray will be diplayed in the User Interface}
 ${figures.pointerSmall} {bold id} {gray must be {bold unique} in your repository}
 ${figures.pointerSmall} {bold description} {gray will be diplayed in the User Interface}

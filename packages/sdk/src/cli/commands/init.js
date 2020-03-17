@@ -1,6 +1,6 @@
 const path = require('path');
 const chalk = require('chalk');
-const figures = require('figures');
+const slugify = require('slugify');
 
 const { version } = require('../../../package.json');
 const isRoot = require('../validators/isRoot');
@@ -32,7 +32,11 @@ const createTechnology = async () => {
   await copyTemplateFolder({
     src: path.resolve(__dirname, TEMPLATE_FOLDER, TECHNOLOGY.ID),
     dest: folder,
-    variables: { id: technoAnswers.id, version },
+    variables: {
+      id: technoAnswers.id,
+      version,
+      npmName: slugify(technoAnswers.id, { strict: true }),
+    },
   });
   const technologyConfig = await getTechnologyConfigFromAnswers(technoAnswers);
   await generateYamlFile({

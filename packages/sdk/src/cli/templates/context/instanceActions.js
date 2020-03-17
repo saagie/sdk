@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { Response } = require('@saagie/sdk');
+const { Response, JobStatus } = require('@saagie/sdk');
 
 exports.start = async ({ name, formParams }) => {
   try {
@@ -31,7 +31,14 @@ exports.getStatus = async ({ formParams }) => {
       `${formParams.endpoint.url}/api/demo/datasets/${formParams.dataset.id}`,
     );
 
-    return Response.success(data.status);
+    switch (data.status) {
+      case 'IN_PROGRESS':
+        return Response.success(JobStatus.RUNNING);
+      case 'STOPPED':
+        return Response.success(JobStatus.KILLED);
+      default:
+        return Response.success(JobStatus.AWAITING);
+    }
   } catch (error) {
     return Response.error(`Failed to get status for dataset ${formParams.dataset.id}`, { error });
   }

@@ -9,16 +9,15 @@ const config = require('./services/config');
 const serveFiles = require('./services/static');
 
 const STATUS = {
-  KILLED: 'KILLED',
-  RUNNING: 'RUNNING',
-  CREATED: 'CREATED',
+  STOPPED: 'STOPPED',
+  IN_PROGRESS: 'IN_PROGRESS',
 };
 
 const datasets = [
-  { id: '1', name: 'First Dataset', status: STATUS.CREATED },
-  { id: '2', name: 'Second Dataset', status: STATUS.CREATED },
-  { id: '3', name: 'Third Dataset', status: STATUS.CREATED },
-  { id: '4', name: 'Fourth Dataset', status: STATUS.CREATED },
+  { id: '1', name: 'First Dataset', status: undefined },
+  { id: '2', name: 'Second Dataset', status: undefined },
+  { id: '3', name: 'Third Dataset', status: undefined },
+  { id: '4', name: 'Fourth Dataset', status: undefined },
 ];
 
 module.exports = ({ port = DEFAULT_PORT } = {}) => {
@@ -43,7 +42,7 @@ module.exports = ({ port = DEFAULT_PORT } = {}) => {
 
   server.get('/api/demo/datasets/:id/start', (req, res) => {
     const selectedDataset = datasets[datasets.findIndex((dataset) => dataset.id === req.params.id)];
-    selectedDataset.status = STATUS.RUNNING;
+    selectedDataset.status = STATUS.IN_PROGRESS;
     res.send(selectedDataset);
   });
 
