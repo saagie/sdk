@@ -57,7 +57,7 @@ module.exports = ({ port = DEFAULT_PORT } = {}) => {
     res.send(selectedDataset);
   });
 
-  server.listen(port);
+  server.listen(port, '0.0.0.0');
 
   return { port };
 };
