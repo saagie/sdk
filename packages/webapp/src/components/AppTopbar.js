@@ -62,7 +62,7 @@ export const AppTopbar = ({
                 defaultPlacement="bottom"
                 label="Run 'npx @saagie/sdk init' to create a new context"
                 hideDelay
-                hideDelayCustomTimeOut={6}
+                hideDelayCustomTimeOut={1}
               >
                 <i className="sui-a-icon as--fa-info-circle as--end" />
               </Tooltip>

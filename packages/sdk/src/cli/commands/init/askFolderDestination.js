@@ -11,7 +11,7 @@ module.exports = async (defaultName) => {
       {
         type: 'confirm',
         name: 'useDefaultFolder',
-        message: `Generate in ./${defaultName}?`,
+        message: `Generate in ./${defaultName} folder?`,
       },
       {
         type: 'input',

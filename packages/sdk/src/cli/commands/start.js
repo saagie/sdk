@@ -1,3 +1,4 @@
+const chalk = require('chalk');
 const { DEFAULT_PORT, ERROR_CODE } = require('../constants');
 const { error, success, info } = require('../utils/output');
 const server = require('../server');
@@ -15,5 +16,5 @@ module.exports = async ({ port = DEFAULT_PORT }) => {
   }
 
   const { port: serverPort } = server({ port });
-  success(`🚀  Server running on http://localhost:${serverPort}`);
+  success(chalk`🚀  Server running on {underline http://localhost:${serverPort}}`);
 };
