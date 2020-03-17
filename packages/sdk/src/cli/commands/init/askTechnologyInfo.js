@@ -1,12 +1,18 @@
 const slugify = require('slugify');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
+const figures = require('figures');
 
 const output = require('../../utils/output');
 const { isRequired } = require('../../validators/inquirer');
 
 module.exports = async () => {
-  output.log(chalk`\n👇 {bold New technology}`);
+  output.log(chalk`
+👇 {bold New technology}
+${figures.pointerSmall} {bold label} {gray will be diplayed in the User Interface}
+${figures.pointerSmall} {bold id} {gray must be {bold unique} in your repository}
+${figures.pointerSmall} {bold description} {gray will be diplayed in the User Interface}
+`);
 
   return inquirer
     .prompt([
@@ -30,8 +36,7 @@ module.exports = async () => {
         type: 'input',
         name: 'description',
         message: 'description',
-        default: 'no description',
-        filter: (input) => (input === 'no description' ? '' : input),
+        transformer: (input) => (!input ? chalk`{gray (no description)}` : input),
       },
     ]);
 };

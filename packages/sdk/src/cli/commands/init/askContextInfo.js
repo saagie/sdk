@@ -2,6 +2,7 @@ const slugify = require('slugify');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 const fse = require('fs-extra');
+const figures = require('figures');
 
 const output = require('../../utils/output');
 const { isRequired } = require('../../validators/inquirer');
@@ -15,9 +16,14 @@ const isContextAlreadyExist = async (contextId) => {
   return false;
 };
 
-
 module.exports = async () => {
-  output.log(chalk.bold('\n👇 New context'));
+  output.log(chalk`
+  👇 {bold New context}
+${figures.pointerSmall} {bold label} {gray will be diplayed in the User Interface}
+${figures.pointerSmall} {bold id} {gray must be {bold unique} in your technology}
+${figures.pointerSmall} {bold description} {gray will be diplayed in the User Interface}
+${figures.pointerSmall} {bold recommended} {gray will recommend this context to users}
+`);
 
   return inquirer
     .prompt([
@@ -47,8 +53,14 @@ module.exports = async () => {
         type: 'input',
         name: 'description',
         message: 'description',
-        default: 'no description',
-        filter: (input) => (input === 'no description' ? '' : input),
+        transformer: (input) => (!input ? chalk`{gray (no description)}` : input),
+      },
+      {
+        type: 'list',
+        name: 'recommended',
+        message: 'recommended',
+        choices: ['true', 'false'],
+        filter: (input) => input === 'true',
       },
     ]);
 };

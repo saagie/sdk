@@ -1,7 +1,8 @@
 const path = require('path');
 const chalk = require('chalk');
-const { version } = require('../../../package.json');
+const figures = require('figures');
 
+const { version } = require('../../../package.json');
 const isRoot = require('../validators/isRoot');
 const output = require('../utils/output');
 const { generateYamlFile } = require('../utils/yaml');
@@ -116,7 +117,9 @@ New context available in {italic ${folder}}
 };
 
 module.exports = async () => {
-  output.log(`\nSaagie 📦 SDK - v${version}`);
+  output.log(chalk`
+{bold Saagie 📦 SDK - v${version}}
+📚 {italic Full documentation:} {cyan http://go.saagie.com/sdk-docs}`);
 
   const isTechnoAlreadyExist = await isRoot();
 
