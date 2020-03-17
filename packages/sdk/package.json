@@ -1,6 +1,6 @@
 {
   "name": "@saagie/sdk",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "bin": {
     "saagie-sdk": "src/cli/cli.js"
   },
@@ -15,7 +15,7 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
-    "@saagie/sdk-webapp": "^0.1.2",
+    "@saagie/sdk-webapp": "^0.2.0",
     "body-parser": "1.19.0",
     "chalk": "3.0.0",
     "commander": "4.1.1",
