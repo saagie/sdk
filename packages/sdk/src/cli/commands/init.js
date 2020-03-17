@@ -63,7 +63,7 @@ const createTechnology = async () => {
 
   output.log(chalk`
 
-{bold {green 🎉 ${technoAnswers.label} generated with success 🎉}}
+{bold {green 🎉 ${technoAnswers.label} technology generated with success 🎉}}
 
 New technology available in {italic ${folder}}
 Inside that directory, you can run several commands:
@@ -73,7 +73,6 @@ Inside that directory, you can run several commands:
 
   {cyan npm run build}
     Bundle the technology for the Saagie platform.
-    Start the development server.
 
   {cyan npm run new:context}
     Generate a new context.
