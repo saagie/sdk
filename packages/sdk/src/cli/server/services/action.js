@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
         res.send(data);
     }
   } catch (err) {
-    error(err);
+    output.error(err);
 
     res.status(500).send(Response.error(err.message, { error: err.stack }));
   }

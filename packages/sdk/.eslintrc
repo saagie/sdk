@@ -1,6 +1,6 @@
 {
   "env": {
-    "jest": true,
+    "jest": true
   },
   "plugins": [
     "security"
@@ -10,10 +10,12 @@
     "plugin:security/recommended"
   ],
   "rules": {
+    "security/detect-non-literal-fs-filename": "off",
     "global-require": "off",
     "import/no-dynamic-require": "off",
     "no-console": "warn",
     "no-underscore-dangle": "off",
-    "no-unused-vars": "warn"
+    "no-unused-vars": "warn",
+    "security/detect-child-process": "off"
   }
 }
