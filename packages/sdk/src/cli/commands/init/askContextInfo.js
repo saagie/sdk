@@ -7,7 +7,7 @@ const figures = require('figures');
 const output = require('../../utils/output');
 const { isRequired } = require('../../validators/inquirer');
 
-const isContextAlreadyExist = async (contextId) => {
+const doesContextAlreadyExist = async (contextId) => {
   // TODO: Check in every context.yaml id instead.
   if (await fse.pathExists(contextId)) {
     return true;
@@ -18,7 +18,7 @@ const isContextAlreadyExist = async (contextId) => {
 
 module.exports = async () => {
   output.log(chalk`
-  👇 {bold New context}
+👇 {bold New context}
 ${figures.pointerSmall} {bold label} {gray will be diplayed in the User Interface}
 ${figures.pointerSmall} {bold id} {gray must be {bold unique} in your technology}
 ${figures.pointerSmall} {bold description} {gray will be diplayed in the User Interface}
@@ -42,7 +42,7 @@ ${figures.pointerSmall} {bold recommended} {gray will recommend this context to 
         default: ({ label }) => slugify(label, { lower: true }),
         filter: (input) => slugify(input, { lower: true }),
         validate: async (input) => {
-          if (await isContextAlreadyExist(input)) {
+          if (await doesContextAlreadyExist(input)) {
             return `Context ${input} already exists`;
           }
 

@@ -1,14 +1,21 @@
-const Parcel = require('parcel-bundler');
+const fse = require('fs-extra');
 const path = require('path');
+const Parcel = require('parcel-bundler');
 const { Response } = require('../../../sdk');
 
-const { error } = require('../../utils/output');
+const output = require('../../utils/output');
 const { BUNDLE_FOLDER } = require('../../constants');
 
 module.exports = async (req, res) => {
   try {
     const scriptPath = path.resolve(process.cwd(), req.body.script);
-    console.log(scriptPath);
+
+    if (!await fse.pathExists(scriptPath)) {
+      const message = `Unable to find file ${scriptPath}, please check the path in context.yaml`;
+      output.error(message);
+      res.status(500).send(Response.error(message, { error: message }));
+      return;
+    }
 
     const parcel = new Parcel(
       scriptPath,
@@ -27,19 +34,23 @@ module.exports = async (req, res) => {
     const bundle = await parcel.bundle();
 
     delete require.cache[bundle.name];
+
+    // We need this non literal require so we can execute the given script.
+    // eslint-disable-next-line security/detect-non-literal-require
     const importedScript = require(bundle.name);
 
     const data = await importedScript[req.body.function || 'default'](req.body.params);
 
-    if (data.status === 'ERROR') {
-      res.status(500);
+    switch (data.status) {
+      case 'ERROR':
+        res.status(500);
+        break;
+      case 'EMPTY':
+        res.status(400);
+        break;
+      default:
+        res.send(data);
     }
-
-    if (data.status === 'EMPTY') {
-      res.status(400);
-    }
-
-    res.send(data);
   } catch (err) {
     error(err);
 

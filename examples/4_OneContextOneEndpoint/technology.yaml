@@ -1,0 +1,7 @@
+version: v1
+id: one-context
+label: One Context
+available: true
+description: ""
+type: JOB
+logo: ./logo.png
