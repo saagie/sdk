@@ -18,6 +18,16 @@ module.exports = async ({
         required: true,
         helper: 'e.g. use http://localhost:4000',
       },
+      {
+        type: 'TEXT',
+        name: 'username',
+        label: 'Username',
+      },
+      {
+        type: 'PASSWORD',
+        name: 'password',
+        label: 'Password',
+      },
     ],
   },
   job: {
