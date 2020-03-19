@@ -1,4 +1,4 @@
-const isYAMLValid = require('../isYAMLValid');
+const isYAMLValid = require('../../../src/cli/validators/isYAMLValid');
 
 test('valid yaml', () => {
   expect(isYAMLValid('valid: yaml')).toBe(true);

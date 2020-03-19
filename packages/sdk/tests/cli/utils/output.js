@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const chalk = require('chalk');
 
-const output = require('../output');
+const output = require('../../../src/cli/utils/output');
 
 let loggedData;
 const storeLog = (inputs) => { loggedData += inputs; };
@@ -35,7 +35,7 @@ describe('each output is successful using', () => {
     const MESSAGE = 'this is an info message';
 
     output.info(MESSAGE);
-    expect(loggedData).toBe(chalk.blue(MESSAGE));
+    expect(loggedData).toBe(chalk.cyan(MESSAGE));
   });
 
   test('a warning message', () => {
