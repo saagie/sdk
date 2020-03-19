@@ -1,6 +1,6 @@
-**⚠️ Work in progress repository**
-
 # Saagie 📦 SDK for Technologies
+
+![Master Build](https://github.com/saagie/sdk/workflows/Master%20Build/badge.svg)
 
 The **Saagie Technology SDK** allows you to implements **new technologies** easly within the [Saagie](https://www.saagie.com/) platform.
 
