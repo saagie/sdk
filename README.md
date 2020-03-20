@@ -1,6 +1,10 @@
 # Saagie 📦 SDK for Technologies
 
-![Master Build](https://github.com/saagie/sdk/workflows/Master%20Build/badge.svg)
+[![build](https://img.shields.io/github/workflow/status/saagie/sdk/Master%20Build)][build]
+[![npm](https://img.shields.io/npm/v/@saagie/sdk)][npm]
+
+[build]: https://github.com/saagie/sdk/actions?query=workflow%3A%22Master+Build%22
+[npm]: https://www.npmjs.com/package/@saagie/sdk
 
 The **Saagie Technology SDK** allows you to implements **new technologies** easly within the [Saagie](https://www.saagie.com/) platform.
 
