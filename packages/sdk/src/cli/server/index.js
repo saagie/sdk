@@ -7,18 +7,7 @@ const { DEFAULT_PORT } = require('../constants');
 const action = require('./services/action');
 const config = require('./services/config');
 const serveFiles = require('./services/static');
-
-const STATUS = {
-  STOPPED: 'STOPPED',
-  IN_PROGRESS: 'IN_PROGRESS',
-};
-
-const datasets = [
-  { id: '1', name: 'First Dataset', status: undefined },
-  { id: '2', name: 'Second Dataset', status: undefined },
-  { id: '3', name: 'Third Dataset', status: undefined },
-  { id: '4', name: 'Fourth Dataset', status: undefined },
-];
+const demo = require('./services/demo');
 
 module.exports = ({ port = DEFAULT_PORT } = {}) => {
   const server = express();
@@ -36,26 +25,8 @@ module.exports = ({ port = DEFAULT_PORT } = {}) => {
   server.get('/api/config', config);
   server.post('/api/action', action);
   server.get('/api/static', serveFiles);
-  server.get('/api/demo', (req, res) => {
-    res.send(datasets);
-  });
 
-  server.get('/api/demo/datasets/:id/start', (req, res) => {
-    const selectedDataset = datasets[datasets.findIndex((dataset) => dataset.id === req.params.id)];
-    selectedDataset.status = STATUS.IN_PROGRESS;
-    res.send(selectedDataset);
-  });
-
-  server.get('/api/demo/datasets/:id/stop', (req, res) => {
-    const selectedDataset = datasets[datasets.findIndex((dataset) => dataset.id === req.params.id)];
-    selectedDataset.status = STATUS.KILLED;
-    res.send(selectedDataset);
-  });
-
-  server.get('/api/demo/datasets/:id', (req, res) => {
-    const selectedDataset = datasets[datasets.findIndex((dataset) => dataset.id === req.params.id)];
-    res.send(selectedDataset);
-  });
+  server.use('/api/demo', demo);
 
   server.listen(port, '0.0.0.0');
 

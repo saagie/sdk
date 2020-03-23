@@ -1,32 +1,36 @@
 const axios = require('axios');
 const { Response, JobStatus } = require('@saagie/sdk');
 
-exports.start = async ({ name, formParams }) => {
+exports.start = async ({ formParams, instance }) => {
   try {
-    await axios.get(
+    console.log('START INSTANCE:', instance);
+    const { data } = await axios.get(
       `${formParams.endpoint.url}/api/demo/datasets/${formParams.dataset.id}/start`,
     );
 
-    return Response.success();
+    // You can return any payload you want to get in the stop and getStatus functions.
+    return Response.success({ customId: data.id });
   } catch (error) {
-    return Response.error(`Fail to job "${name}"`, { error, url: `${formParams.endpoint.url}/api/demo/datasets/${formParams.dataset.id}/start` });
+    return Response.error('Fail to start job', { error, url: `${formParams.endpoint.url}/api/demo/datasets/${formParams.dataset.id}/start` });
   }
 };
 
-exports.stop = async ({ name, formParams }) => {
+exports.stop = async ({ formParams, instance }) => {
   try {
+    console.log('STOP INSTANCE:', instance);
     await axios.get(
       `${formParams.endpoint.url}/api/demo/datasets/${formParams.dataset.id}/stop`,
     );
 
     return Response.success();
   } catch (error) {
-    return Response.error(`Fail to stop job "${name}"`, { error });
+    return Response.error('Fail to stop job', { error });
   }
 };
 
-exports.getStatus = async ({ formParams }) => {
+exports.getStatus = async ({ formParams, instance }) => {
   try {
+    console.log('GET STATUS INSTANCE:', instance);
     const { data } = await axios.get(
       `${formParams.endpoint.url}/api/demo/datasets/${formParams.dataset.id}`,
     );

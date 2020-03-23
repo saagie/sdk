@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageEmptyState, Button } from 'saagie-ui/react';
 import { Status } from 'saagie-ui/react/projects';
 import axios from 'axios';
 import { useMutation } from 'react-query';
+import { v4 as uuidv4 } from 'uuid';
 import { useYAMLConfigContext } from '../contexts/YAMLConfigContext';
 import { useFormContext } from '../contexts/FormContext';
 
@@ -15,6 +16,8 @@ function useDebug() {
 }
 
 export const Actions = () => {
+  const [lastInstance, setLastInstance] = useState();
+
   const isDebugMode = useDebug();
 
   const { selectedContext } = useYAMLConfigContext();
@@ -33,19 +36,31 @@ export const Actions = () => {
     // getLogs,
   } = actions || {};
 
+  const createInstance = () => {
+    const newInstance = {
+      id: uuidv4(),
+    };
+
+    setLastInstance(newInstance);
+
+    return newInstance;
+  };
+
   const [getJobStatus, { status: getJobStatusStatus, data: jobStatus }] = useMutation(() => axios.post('/api/action', {
     script: `${contextFolderPath}/${getStatus?.script}`,
     function: getStatus?.function,
     params: {
       formParams: formValues.job,
+      instance: lastInstance,
     },
   }));
 
-  const [runJob, { status: runJobStatus }] = useMutation(() => axios.post('/api/action', {
+  const [runJob, { status: runJobStatus, data: instancePayloadResponse }] = useMutation(() => axios.post('/api/action', {
     script: `${contextFolderPath}/${onStart?.script}`,
     function: onStart?.function,
     params: {
       formParams: formValues.job,
+      instance: createInstance(),
     },
   }));
 
@@ -54,8 +69,16 @@ export const Actions = () => {
     function: onStop?.function,
     params: {
       formParams: formValues.job,
+      instance: lastInstance,
     },
   }));
+
+  useEffect(() => {
+    setLastInstance((i) => ({
+      ...i,
+      payload: instancePayloadResponse?.data,
+    }));
+  }, [instancePayloadResponse]);
 
   return (
     <>

@@ -4,7 +4,7 @@ const { Response } = require('@saagie/sdk');
 exports.getDatasets = async ({ formParams }) => {
   try {
     const { data: datasets } = await axios.get(
-      `${formParams.endpoint.url}/api/demo`,
+      `${formParams.endpoint.url}/api/demo/datasets`,
     );
 
     if (!datasets || !datasets.length) {
