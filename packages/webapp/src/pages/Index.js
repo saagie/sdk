@@ -16,7 +16,7 @@ const defaultProps = {
 
 export const Index = () => {
   const { status } = useYAMLConfigContext();
-  const { formValues, updateForm } = useFormContext();
+  const { formValues } = useFormContext();
 
   if (status === 'loading') {
     return (
