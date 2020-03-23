@@ -133,7 +133,7 @@ export const SmartField = ({
         <FormControlSelect
           name={name}
           isClearable
-          options={[{ value: formValues?.endpoint, label: 'Use test endpoint' }]}
+          options={[{ value: formValues?.endpoint, label: 'Use Endpoint Form' }]}
           onChange={(value) => onUpdate({ name, value: value ? formValues?.endpoint : undefined })}
         />
       );
