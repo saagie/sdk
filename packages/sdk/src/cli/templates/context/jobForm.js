@@ -1,10 +1,15 @@
 const axios = require('axios');
 const { Response } = require('@saagie/sdk');
 
-exports.getDatasets = async ({ formParams }) => {
+/**
+ * Example of function to retrieve select options from an external endpoint.
+ * @param {Object} entity - Contains entity data including featuresValues.
+ * @param {Object} entity.featuresValues - Contains all the values from the entity features declared in the context.yaml
+ */
+exports.getDatasets = async ({ featuresValues }) => {
   try {
     const { data: datasets } = await axios.get(
-      `${formParams.endpoint.url}/api/demo/datasets`,
+      `${featuresValues.endpoint.url}/api/demo/datasets`,
     );
 
     if (!datasets || !datasets.length) {

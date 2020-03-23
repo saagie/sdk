@@ -50,7 +50,7 @@ export const Actions = () => {
     script: `${contextFolderPath}/${getStatus?.script}`,
     function: getStatus?.function,
     params: {
-      formParams: formValues.job,
+      job: { featuresValues: formValues.job },
       instance: lastInstance,
     },
   }));
@@ -59,7 +59,7 @@ export const Actions = () => {
     script: `${contextFolderPath}/${onStart?.script}`,
     function: onStart?.function,
     params: {
-      formParams: formValues.job,
+      job: { featuresValues: formValues.job },
       instance: createInstance(),
     },
   }));
@@ -68,7 +68,7 @@ export const Actions = () => {
     script: `${contextFolderPath}/${onStop?.script}`,
     function: onStop?.function,
     params: {
-      formParams: formValues.job,
+      job: { featuresValues: formValues.job },
       instance: lastInstance,
     },
   }));

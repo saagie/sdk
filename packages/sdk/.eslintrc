@@ -13,6 +13,13 @@
     "security/detect-non-literal-fs-filename": "off",
     "global-require": "off",
     "import/no-dynamic-require": "off",
+    "max-len": ["error", 100, 2, {
+      "ignoreUrls": true,
+      "ignoreComments": true,
+      "ignoreRegExpLiterals": true,
+      "ignoreStrings": true,
+      "ignoreTemplateLiterals": true
+    }],
     "no-console": "warn",
     "no-underscore-dangle": "off",
     "no-unused-vars": "warn",

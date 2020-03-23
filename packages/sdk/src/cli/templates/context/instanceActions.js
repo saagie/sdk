@@ -1,25 +1,37 @@
 const axios = require('axios');
 const { Response, JobStatus } = require('@saagie/sdk');
 
-exports.start = async ({ formParams, instance }) => {
+/**
+ * Logic to start the external job instance.
+ * @param {Object} params
+ * @param {Object} params.job - Contains job data including featuresValues.
+ * @param {Object} params.instance - Contains instance data.
+ */
+exports.start = async ({ job, instance }) => {
   try {
     console.log('START INSTANCE:', instance);
-    const { data } = await axios.get(
-      `${formParams.endpoint.url}/api/demo/datasets/${formParams.dataset.id}/start`,
+    const { data } = await axios.post(
+      `${job.featuresValues.endpoint.url}/api/demo/datasets/${job.featuresValues.dataset.id}/start`,
     );
 
     // You can return any payload you want to get in the stop and getStatus functions.
     return Response.success({ customId: data.id });
   } catch (error) {
-    return Response.error('Fail to start job', { error, url: `${formParams.endpoint.url}/api/demo/datasets/${formParams.dataset.id}/start` });
+    return Response.error('Fail to start job', { error, url: `${job.featuresValues.endpoint.url}/api/demo/datasets/${job.featuresValues.dataset.id}/start` });
   }
 };
 
-exports.stop = async ({ formParams, instance }) => {
+/**
+ * Logic to stop the external job instance.
+ * @param {Object} params
+ * @param {Object} params.job - Contains job data including featuresValues.
+ * @param {Object} params.instance - Contains instance data including the payload returned in the start function.
+ */
+exports.stop = async ({ job, instance }) => {
   try {
     console.log('STOP INSTANCE:', instance);
-    await axios.get(
-      `${formParams.endpoint.url}/api/demo/datasets/${formParams.dataset.id}/stop`,
+    await axios.post(
+      `${job.featuresValues.endpoint.url}/api/demo/datasets/${job.featuresValues.dataset.id}/stop`,
     );
 
     return Response.success();
@@ -28,11 +40,17 @@ exports.stop = async ({ formParams, instance }) => {
   }
 };
 
-exports.getStatus = async ({ formParams, instance }) => {
+/**
+ * Logic to retrieve the external job instance status.
+ * @param {Object} params
+ * @param {Object} params.job - Contains job data including featuresValues.
+ * @param {Object} params.instance - Contains instance data including the payload returned in the start function.
+ */
+exports.getStatus = async ({ job, instance }) => {
   try {
     console.log('GET STATUS INSTANCE:', instance);
     const { data } = await axios.get(
-      `${formParams.endpoint.url}/api/demo/datasets/${formParams.dataset.id}`,
+      `${job.featuresValues.endpoint.url}/api/demo/datasets/${job.featuresValues.dataset.id}`,
     );
 
     switch (data.status) {
@@ -44,6 +62,6 @@ exports.getStatus = async ({ formParams, instance }) => {
         return Response.success(JobStatus.AWAITING);
     }
   } catch (error) {
-    return Response.error(`Failed to get status for dataset ${formParams.dataset.id}`, { error });
+    return Response.error(`Failed to get status for dataset ${job.featuresValues.dataset.id}`, { error });
   }
 };

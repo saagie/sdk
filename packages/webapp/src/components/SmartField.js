@@ -114,7 +114,7 @@ export const SmartField = ({
                 script: `${contextFolderPath}/${options.script}`,
                 function: options.function,
                 params: {
-                  formParams: currentFormRef.current,
+                  featuresValues: currentFormRef.current,
                 },
               });
 
