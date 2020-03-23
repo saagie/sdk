@@ -118,7 +118,7 @@ export const SmartField = ({
                 },
               });
 
-              return data?.data?.map((x) => ({ value: x.id, label: x.label }));
+              return data?.map((x) => ({ value: x.id, label: x.label }));
             } catch (err) {
               setError(err.response?.data);
             }

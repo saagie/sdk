@@ -1,27 +1,24 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import { PageEmptyState, Button } from 'saagie-ui/react';
 import { Status } from 'saagie-ui/react/projects';
 import axios from 'axios';
+import { useMutation } from 'react-query';
 import { useYAMLConfigContext } from '../contexts/YAMLConfigContext';
 import { useFormContext } from '../contexts/FormContext';
 
 const propTypes = {};
 const defaultProps = {};
 
-function useQuery() {
-  return new URLSearchParams(window.location.search);
+function useDebug() {
+  const query = new URLSearchParams(window.location.search);
+  return query.get('debug') !== null;
 }
 
 export const Actions = () => {
-  const [status, setStatus] = useState('created');
-  const [isRunActionLoading, setIsRunActionLoading] = useState(false);
-  const [isStopActionLoading, setIsStopActionLoading] = useState(false);
+  const isDebugMode = useDebug();
 
   const { selectedContext } = useYAMLConfigContext();
   const { formValues } = useFormContext();
-
-  const query = useQuery();
 
   const {
     __folderPath: contextFolderPath,
@@ -32,50 +29,33 @@ export const Actions = () => {
   const {
     onStart,
     onStop,
-    // getStatus,
+    getStatus,
     // getLogs,
   } = actions || {};
 
-  const isDebugMode = query.get('debug') !== null;
+  const [getJobStatus, { status: getJobStatusStatus, data: jobStatus }] = useMutation(() => axios.post('/api/action', {
+    script: `${contextFolderPath}/${getStatus?.script}`,
+    function: getStatus?.function,
+    params: {
+      formParams: formValues.job,
+    },
+  }));
 
-  const handleRunAction = async () => {
-    setIsRunActionLoading(true);
+  const [runJob, { status: runJobStatus }] = useMutation(() => axios.post('/api/action', {
+    script: `${contextFolderPath}/${onStart?.script}`,
+    function: onStart?.function,
+    params: {
+      formParams: formValues.job,
+    },
+  }));
 
-    try {
-      await axios.post('/api/action', {
-        script: `${contextFolderPath}/${onStart?.script}`,
-        function: onStart?.function,
-        params: {
-          formParams: formValues.job,
-          // name: 'job_name'
-        },
-      });
-
-      setIsRunActionLoading(false);
-    } catch (err) {
-      setIsRunActionLoading(false);
-    }
-  };
-
-  const handleStopAction = async () => {
-    setIsStopActionLoading(true);
-
-    try {
-      await axios.post('/api/action', {
-        script: `${contextFolderPath}/${onStop?.script}`,
-        function: onStop?.function,
-        params: {
-          formParams: formValues.job,
-          // name: 'job_name'
-        },
-      });
-
-      setStatus('killed');
-      setIsStopActionLoading(false);
-    } catch (err) {
-      setIsStopActionLoading(false);
-    }
-  };
+  const [stopJob, { status: stopJobStatus }] = useMutation(() => axios.post('/api/action', {
+    script: `${contextFolderPath}/${onStop?.script}`,
+    function: onStop?.function,
+    params: {
+      formParams: formValues.job,
+    },
+  }));
 
   return (
     <>
@@ -88,29 +68,36 @@ export const Actions = () => {
           </PageEmptyState>
         ) : (
           <>
-            <div className="sui-g-grid as--start as--middle">
-              <div className="sui-g-grid__item as--1_6">
+            <div className="sui-g-grid as--start as--middle as--auto">
+              <div className="sui-g-grid__item">
                 <Button
                   color="action-play"
-                  onClick={handleRunAction}
-                  isLoading={isRunActionLoading}
-                  disabled={isStopActionLoading}
+                  onClick={() => runJob()}
+                  isLoading={runJobStatus === 'loading'}
                 >
                   Run
                 </Button>
               </div>
-              <div className="sui-g-grid__item as--1_6">
+              <div className="sui-g-grid__item">
                 <Button
                   color="action-stop"
-                  onClick={handleStopAction}
-                  isLoading={isStopActionLoading}
+                  onClick={() => stopJob()}
+                  isLoading={stopJobStatus === 'loading'}
                 >
                   Stop
                 </Button>
               </div>
-              {status !== 'created' && (
-                <div className="sui-g-grid__item as--1_6">
-                  <Status name={status?.toLowerCase() ?? ''} size="xl" />
+              <div className="sui-g-grid__item ">
+                <Button
+                  onClick={() => getJobStatus()}
+                  isLoading={getJobStatusStatus === 'loading'}
+                >
+                  Get Status
+                </Button>
+              </div>
+              {jobStatus?.data && (
+                <div className="sui-g-grid__item">
+                  <Status name={jobStatus?.data?.toLowerCase() ?? ''} size="xl" />
                 </div>
               )}
             </div>

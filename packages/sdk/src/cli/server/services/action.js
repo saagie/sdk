@@ -10,7 +10,8 @@ module.exports = async (req, res) => {
   try {
     const scriptPath = path.resolve(process.cwd(), req.body.script);
 
-    if (!await fse.pathExists(scriptPath)) {
+
+    if (!await fse.pathExists(scriptPath || '')) {
       const message = `Unable to find file ${scriptPath}, please check the path in context.yaml`;
       output.error(message);
       res.status(500).send(Response.error(message, { error: message }));

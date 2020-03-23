@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from 'react-query';
-import fetch from '../utils/fetch';
+import axios from 'axios';
 
 const propTypes = {
   children: PropTypes.node,
@@ -19,7 +19,7 @@ export const useYAMLConfigContext = () => useContext(YAMLConfigContext);
 export const YAMLConfigContextProvider = ({ children }) => {
   const [selectedContext, setSelectedContext] = useState();
 
-  const { status, data: config } = useQuery('config', () => fetch('/api/config'));
+  const { status, data: config } = useQuery('config', () => axios('/api/config'));
 
   useEffect(() => {
     setSelectedContext(config?.contexts?.[0]);
