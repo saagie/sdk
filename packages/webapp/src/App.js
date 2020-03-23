@@ -1,11 +1,14 @@
 import React from 'react';
 import { YAMLConfigContextProvider } from './contexts/YAMLConfigContext';
 import { Index } from './pages/Index';
+import { FormContextProvider } from './contexts/FormContext';
 
 function App() {
   return (
     <YAMLConfigContextProvider>
-      <Index />
+      <FormContextProvider>
+        <Index />
+      </FormContextProvider>
     </YAMLConfigContextProvider>
   );
 }

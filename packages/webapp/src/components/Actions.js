@@ -4,27 +4,22 @@ import { PageEmptyState, Button } from 'saagie-ui/react';
 import { Status } from 'saagie-ui/react/projects';
 import axios from 'axios';
 import { useYAMLConfigContext } from '../contexts/YAMLConfigContext';
+import { useFormContext } from '../contexts/FormContext';
 
-const propTypes = {
-  formValues: PropTypes.object,
-};
-
-const defaultProps = {
-  formValues: {},
-};
+const propTypes = {};
+const defaultProps = {};
 
 function useQuery() {
   return new URLSearchParams(window.location.search);
 }
 
-export const Actions = ({
-  formValues,
-}) => {
+export const Actions = () => {
   const [status, setStatus] = useState('created');
   const [isRunActionLoading, setIsRunActionLoading] = useState(false);
   const [isStopActionLoading, setIsStopActionLoading] = useState(false);
 
   const { selectedContext } = useYAMLConfigContext();
+  const { formValues } = useFormContext();
 
   const query = useQuery();
 
@@ -37,31 +32,11 @@ export const Actions = ({
   const {
     onStart,
     onStop,
-    getStatus,
+    // getStatus,
     // getLogs,
   } = actions || {};
 
   const isDebugMode = query.get('debug') !== null;
-
-
-  const fetchStatus = async () => {
-    try {
-      const response = await axios.post('/api/action', {
-        script: `${contextFolderPath}/${getStatus?.script}`,
-        function: getStatus?.function,
-        params: {
-          formParams: formValues.job,
-          // name: 'job_name'
-        },
-      });
-
-      setStatus(response.data.data);
-
-      setIsRunActionLoading(false);
-    } catch (err) {
-      setIsRunActionLoading(false);
-    }
-  };
 
   const handleRunAction = async () => {
     setIsRunActionLoading(true);

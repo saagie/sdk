@@ -2,24 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { SmartField } from './SmartField';
 import { useYAMLConfigContext } from '../contexts/YAMLConfigContext';
+import { useFormContext } from '../contexts/FormContext';
 
 const propTypes = {
   name: PropTypes.string.isRequired,
-  formValues: PropTypes.object,
-  updateForm: PropTypes.func,
 };
 
-const defaultProps = {
-  formValues: {},
-  updateForm: () => {},
-};
+const defaultProps = {};
 
-export const SmartForm = ({
-  name,
-  formValues,
-  updateForm,
-}) => {
+export const SmartForm = ({ name }) => {
   const { selectedContext } = useYAMLConfigContext();
+  const { formValues, updateForm } = useFormContext();
 
   return (
     <>
