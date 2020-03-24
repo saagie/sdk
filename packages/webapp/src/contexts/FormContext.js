@@ -1,5 +1,5 @@
 import React, {
-  createContext, useContext, useState, useCallback, useRef, useEffect,
+  createContext, useContext, useState, useCallback, useEffect,
 } from 'react';
 import PropTypes from 'prop-types';
 import { useYAMLConfigContext } from './YAMLConfigContext';
