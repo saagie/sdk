@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import {
@@ -39,25 +39,15 @@ export const SmartField = ({
   },
 }) => {
   const [error, setError] = useState();
-  const onUpdateRef = useRef();
   const currentForm = formValues?.[formName] || {};
-  onUpdateRef.current = onUpdate;
 
   const currentFormRef = useRef();
   currentFormRef.current = currentForm;
 
   const shouldBeDisplayed = !dependsOn || dependsOn?.every((x) => currentForm[x]);
-
   const dependsOnValues = JSON.stringify(dependsOn?.map((x) => currentForm[x]));
 
-  useEffect(() => {
-    onUpdateRef.current({ name, value: undefined });
-  },
-  [
-    name,
-    shouldBeDisplayed,
-    dependsOnValues,
-  ]);
+  const fieldValue = currentForm[name];
 
   const getField = () => {
     switch (type) {
@@ -65,6 +55,7 @@ export const SmartField = ({
       return (
         <FormControlInput
           name={name}
+          value={fieldValue || ''}
           autoComplete={name}
           onChange={(e) => onUpdate({ name, value: e.target.value })}
         />
@@ -74,6 +65,7 @@ export const SmartField = ({
       return (
         <FormControlInput
           name={name}
+          value={fieldValue || ''}
           autoComplete={name}
           type="url"
           onChange={(e) => onUpdate({ name, value: e.target.value })}
@@ -84,6 +76,7 @@ export const SmartField = ({
       return (
         <FormPassword
           name={name}
+          value={fieldValue || ''}
           autoComplete={name}
           onChange={(e) => onUpdate({ name, value: e.target.value })}
         />
@@ -93,8 +86,15 @@ export const SmartField = ({
       return (
         <FormControlSelect
           name={name}
-          onChange={({ value, ...item }) => onUpdate({ name, value: { ...item, id: value } })}
+          onChange={({ payload }) => {
+            onUpdate({ name, value: payload });
+          }}
           isAsync
+          value={fieldValue ? {
+            label: fieldValue.label,
+            value: fieldValue.id,
+            payload: fieldValue,
+          } : null}
           cacheOptions
           defaultOptions
           loadOptions={async () => {
@@ -118,7 +118,7 @@ export const SmartField = ({
                 },
               });
 
-              return data?.map((x) => ({ value: x.id, label: x.label }));
+              return data?.map((x) => ({ value: x.id, label: x.label, payload: x }));
             } catch (err) {
               setError(err.response?.data);
             }
@@ -129,6 +129,13 @@ export const SmartField = ({
       );
 
     case 'ENDPOINT':
+      if (formName === 'endpoint') {
+        return (
+          <div className="sui-m-message as--light as--danger">
+            You can&apos;t use a type <code>ENDPOINT</code> in endpoint features.
+          </div>
+        );
+      }
       return (
         <FormControlSelect
           name={name}

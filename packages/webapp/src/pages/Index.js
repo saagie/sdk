@@ -15,7 +15,7 @@ const defaultProps = {
 };
 
 export const Index = () => {
-  const { status } = useYAMLConfigContext();
+  const { status, selectedContext } = useYAMLConfigContext();
   const { formValues } = useFormContext();
 
   if (status === 'loading') {
@@ -39,7 +39,7 @@ export const Index = () => {
   return (
     <Page size="xxl">
       <AppTopbar />
-      <PageContent>
+      <PageContent key={selectedContext?.id}>
         <div className="sui-g-grid as--gutter-xxl">
           <div className="sui-g-grid__item as--2_7">
             <h3>Endpoint Form</h3>

@@ -8,12 +8,12 @@
     "@testing-library/user-event": "10.0.0",
     "axios": "0.19.2",
     "codemirror": "5.52.0",
-    "react": "16.13.0",
+    "react": "16.13.1",
     "react-codemirror2": "6.0.0",
-    "react-dom": "16.13.0",
-    "react-query": "1.0.33",
+    "react-dom": "16.13.1",
+    "react-query": "1.0.35",
     "react-scripts": "3.4.0",
-    "saagie-ui": "0.62.1",
+    "saagie-ui": "0.62.2",
     "uuid": "7.0.2"
   },
   "scripts": {
