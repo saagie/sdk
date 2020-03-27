@@ -5,7 +5,6 @@ const slugify = require('slugify');
 const { version } = require('../../../package.json');
 const isRoot = require('../validators/isRoot');
 const output = require('../utils/output');
-const { generateYamlFile } = require('../utils/yaml');
 const copyTemplateFolder = require('../utils/copyTemplateFolder');
 const { CONTEXT, TECHNOLOGY } = require('../constants');
 
@@ -13,8 +12,6 @@ const askTechnologyInfo = require('./init/askTechnologyInfo');
 const askContextInfo = require('./init/askContextInfo');
 const askShouldCreateContext = require('./init/askShouldCreateContext');
 const askFolderDestination = require('./init/askFolderDestination');
-const getContextConfigFromAnswers = require('./init/getContextConfigFromAnswers');
-const getTechnologyConfigFromAnswers = require('./init/getTechnologyConfigFromAnswers');
 const installDependencies = require('./init/installDependencies');
 
 const TEMPLATE_FOLDER = '../templates';
@@ -33,16 +30,10 @@ const createTechnology = async () => {
     src: path.resolve(__dirname, TEMPLATE_FOLDER, TECHNOLOGY.ID),
     dest: folder,
     variables: {
-      id: technoAnswers.id,
-      version,
+      ...technoAnswers,
+      npmVersion: version,
       npmName: slugify(technoAnswers.id, { strict: true }),
     },
-  });
-  const technologyConfig = await getTechnologyConfigFromAnswers(technoAnswers);
-  await generateYamlFile({
-    filename: TECHNOLOGY.ID,
-    folder,
-    content: technologyConfig,
   });
 
   if (shoudlCreateContext) {
@@ -50,13 +41,7 @@ const createTechnology = async () => {
     await copyTemplateFolder({
       src: path.resolve(__dirname, TEMPLATE_FOLDER, CONTEXT.ID),
       dest: contextFolder,
-      variables: {},
-    });
-    const contextConfig = await getContextConfigFromAnswers(contextAnswers);
-    await generateYamlFile({
-      filename: CONTEXT.ID,
-      folder: contextFolder,
-      content: contextConfig,
+      variables: { ...contextAnswers },
     });
   }
 
@@ -101,13 +86,7 @@ const createContext = async () => {
   await copyTemplateFolder({
     src: path.resolve(__dirname, TEMPLATE_FOLDER, CONTEXT.ID),
     dest: folder,
-    variables: {},
-  });
-  const config = await getContextConfigFromAnswers(contextAnswers);
-  await generateYamlFile({
-    filename: CONTEXT.ID,
-    folder,
-    content: config,
+    variables: { ...contextAnswers },
   });
 
   // 3. Output
