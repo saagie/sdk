@@ -1,16 +1,15 @@
 # This GitHub Actions Workflow allows you to trigger a release by adding the label
-# "release" on the last merged Pull Request.
+# "release" on the last merged Pull Request
 name: Post Merge Release
 
 on:
   pull_request:
-    types:
-      - labeled
+    types: [ labeled ]
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: "github.event.pull_request.merged && contains(github.event.pull_request.labels.*.name, 'release') && !contains(github.event.pull_request.labels.*.name, 'released')"
+    if: "github.event.pull_request.merged && github.event.label.name == 'release' && !contains(github.event.pull_request.labels.*.name, 'released')"
     steps:
       - uses: actions/checkout@v2
         with:
