@@ -1,0 +1,45 @@
+# This GitHub Actions Workflow allows you to trigger a release by adding the label
+# "release" on the last merged Pull Request.
+name: Post Merge Release
+
+on:
+  pull_request:
+    types:
+      - labeled
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: "github.event.pull_request.merged && contains(github.event.pull_request.labels.*.name, 'release') && !contains(github.event.pull_request.labels.*.name, 'released')"
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: 'master'
+      
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
+      # - name: Prepare repository
+      #   run: git fetch --unshallow --tags
+
+      # - name: Use Node.js 12.x
+      #   uses: actions/setup-node@v1
+      #   with:
+      #     node-version: 12.x
+
+      # - name: Cache node modules
+      #   uses: actions/cache@v1
+      #   with:
+      #     path: node_modules
+      #     key: yarn-deps-${{ hashFiles('yarn.lock') }}
+      #     restore-keys: |
+      #       yarn-deps-${{ hashFiles('yarn.lock') }}
+
+      # - name: Create Release
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      #   run: |
+      #     scripts/release.sh
