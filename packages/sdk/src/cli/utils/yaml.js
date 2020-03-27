@@ -19,7 +19,7 @@ exports.generateYamlFile = generateYamlFile;
 exports.parseFilesToJSON = async ({
   folder = '.',
   filename = '*',
-  ignore = 'node_modules',
+  ignore = '**/node_modules',
 } = {}) => {
   try {
     const paths = await globby(
