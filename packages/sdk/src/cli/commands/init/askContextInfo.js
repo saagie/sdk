@@ -31,7 +31,7 @@ ${figures.pointerSmall} {bold recommended} {gray will recommend this context to 
         type: 'input',
         name: 'label',
         message: 'label',
-        default: 'My Context',
+        default: 'Default',
         filter: (input) => input.trim(),
         validate: isRequired(),
       },
