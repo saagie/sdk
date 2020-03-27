@@ -83,21 +83,20 @@ export const SmartField = ({
       );
 
     case 'SELECT':
-      return (
-        <FormControlSelect
-          name={name}
-          onChange={({ payload }) => {
-            onUpdate({ name, value: payload });
-          }}
-          isAsync
-          value={fieldValue ? {
-            label: fieldValue.label,
-            value: fieldValue.id,
-            payload: fieldValue,
-          } : null}
-          cacheOptions
-          defaultOptions
-          loadOptions={async () => {
+      // eslint-disable-next-line no-case-declarations
+      const selectProps = Array.isArray(options)
+        // Hard coded options in context.yaml
+        ? {
+          options: options?.map((option) => (
+            { value: option.id, label: option.label, payload: option }
+          )),
+        }
+        // Dynamic options in custom JavaScript files
+        : {
+          isAsync: true,
+          cacheOptions: true,
+          defaultOptions: true,
+          loadOptions: async () => {
             setError(null);
 
             if (
@@ -124,7 +123,21 @@ export const SmartField = ({
             }
 
             return [];
+          },
+        };
+
+      return (
+        <FormControlSelect
+          name={name}
+          onChange={({ payload }) => {
+            onUpdate({ name, value: payload });
           }}
+          value={fieldValue ? {
+            label: fieldValue.label,
+            value: fieldValue.id,
+            payload: fieldValue,
+          } : null}
+          {...selectProps}
         />
       );
 
