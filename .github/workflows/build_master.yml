@@ -66,6 +66,8 @@ jobs:
           VERSION=`auto version`
           
           if [ ! -z "$VERSION" ]; then
+            git config --global user.name "Yoann Fleury"
+            git config --global user.email "yoann.fleury@saagie.com"
             yarn deploy --yes $VERSION -m '%v [skip ci]'
             auto release
           fi
