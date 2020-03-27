@@ -18,7 +18,8 @@
     "examples/*"
   ],
   "devDependencies": {
-    "lerna": "3.20.2"
+    "lerna": "3.20.2",
+    "auto": "9.21.0"
   },
   "repository": {
     "type": "git",
@@ -26,5 +27,13 @@
   },
   "bugs": {
     "url": "https://github.com/saagie/sdk/issues"
+  },
+  "author": "Yoann Fleury <yoann.fleury@saagie.com>",
+  "auto": {
+    "plugins": [
+      "npm",
+      "released"
+    ],
+    "onlyPublishWithReleaseLabel": true
   }
 }
