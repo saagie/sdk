@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { Response, JobStatus } = require('@saagie/sdk');
+const { Response, JobStatus, Log } = require('@saagie/sdk');
 
 /**
  * Logic to start the external job instance.
@@ -63,5 +63,24 @@ exports.getStatus = async ({ job, instance }) => {
     }
   } catch (error) {
     return Response.error(`Failed to get status for dataset ${job.featuresValues.dataset.id}`, { error });
+  }
+};
+
+/**
+ * Logic to retrieve the external job instance logs.
+ * @param {Object} params
+ * @param {Object} params.job - Contains job data including featuresValues.
+ * @param {Object} params.instance - Contains instance data including the payload returned in the start function.
+ */
+exports.getLogs = async ({ job, instance }) => {
+  try {
+    console.log('GET LOG INSTANCE:', instance);
+    const { data } = await axios.get(
+      `${job.featuresValues.endpoint.url}/api/demo/datasets/${job.featuresValues.dataset.id}/logs`,
+    );
+
+    return Response.success(data.logs.map((item) => Log(item.log, item.output)));
+  } catch (error) {
+    return Response.error(`Failed to get log for dataset ${job.featuresValues.dataset.id}`, { error });
   }
 };

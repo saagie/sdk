@@ -29,7 +29,8 @@ yarn dev
 Then go to your technology folder and run:
 
 ```sh
-SAAGIE_ENV=development yarn saagie-sdk start
+yarn link @saagie/sdk
+SAAGIE_ENV=development yarn start
 ```
 
 ## Test NPM publish with Verdaccio
