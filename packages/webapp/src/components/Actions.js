@@ -6,6 +6,7 @@ import { useMutation } from 'react-query';
 import { v4 as uuidv4 } from 'uuid';
 import { useYAMLConfigContext } from '../contexts/YAMLConfigContext';
 import { useFormContext } from '../contexts/FormContext';
+import { Logs } from './Logs/index';
 
 const propTypes = {};
 const defaultProps = {};
@@ -17,6 +18,7 @@ function useDebug() {
 
 export const Actions = () => {
   const [lastInstance, setLastInstance] = useState();
+  const [logs, setLogs] = useState();
 
   const isDebugMode = useDebug();
 
@@ -33,7 +35,7 @@ export const Actions = () => {
     onStart,
     onStop,
     getStatus,
-    // getLogs,
+    getLogs,
   } = actions || {};
 
   const createInstance = () => {
@@ -73,6 +75,17 @@ export const Actions = () => {
     },
   }));
 
+  const [getJobLogs, { status: getJobLogsStatus }] = useMutation(() => axios.post('/api/action', {
+    script: `${contextFolderPath}/${getLogs?.script}`,
+    function: getLogs?.function,
+    params: {
+      job: { featuresValues: formValues.job },
+      instance: lastInstance,
+    },
+  }), {
+    onSuccess: (res) => setLogs(res.data),
+  });
+
   useEffect(() => {
     setLastInstance((i) => ({
       ...i,
@@ -110,7 +123,7 @@ export const Actions = () => {
                   Stop
                 </Button>
               </div>
-              <div className="sui-g-grid__item ">
+              <div className="sui-g-grid__item">
                 <Button
                   onClick={() => getJobStatus()}
                   isLoading={getJobStatusStatus === 'loading'}
@@ -118,11 +131,26 @@ export const Actions = () => {
                   Get Status
                 </Button>
               </div>
+              <div className="sui-g-grid__item">
+                <Button
+                  onClick={() => getJobLogs()}
+                  isLoading={getJobLogsStatus === 'loading'}
+                >
+                  Get Logs
+                </Button>
+              </div>
               {jobStatus?.data && (
                 <div className="sui-g-grid__item">
                   <Status name={jobStatus?.data?.toLowerCase() ?? ''} size="xl" />
                 </div>
               )}
+            </div>
+            <div className="sui-g-grid">
+              <div className="sui-g-grid__item">
+                <div style={{ height: '60vh' }}>
+                  <Logs logs={logs} />
+                </div>
+              </div>
             </div>
           </>
         )

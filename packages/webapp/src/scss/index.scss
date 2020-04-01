@@ -1,0 +1,36 @@
+@import "~saagie-ui/src/scss/index.scss";
+
+.sui-a-logs {
+  background-color: $sui-color-brand-denim-800;
+  color: $sui-color-brand-denim-100;
+  border-radius: $sui-border-radius-md;
+  font-family: $sui-font-family-code;
+  height: 100%;
+
+  &__line {
+    padding-left: $sui-size-xxs;
+    display: flex;
+    font-size: $sui-font-size-sm;
+
+    &:hover {
+      background-color: $sui-color-brand-denim-700;
+    }
+
+    &-index {
+      min-width: $sui-size-xs;
+      text-align: right;
+      color: $sui-color-brand-denim-500;
+      user-select: none;
+    }
+
+    &-content {
+      margin-left: $sui-size-xxs;
+      white-space: nowrap;
+
+      &.as--error {
+        color: $sui-color-brand-akane;
+        font-weight: bold;
+      }
+    }
+  }
+}
