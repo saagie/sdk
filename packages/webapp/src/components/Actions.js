@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PageEmptyState, Button } from 'saagie-ui/react';
+import { PageEmptyState, Button, Tooltip } from 'saagie-ui/react';
 import { Status } from 'saagie-ui/react/projects';
 import axios from 'axios';
 import { useMutation } from 'react-query';
@@ -10,6 +10,17 @@ import { Logs } from './Logs/index';
 
 const propTypes = {};
 const defaultProps = {};
+
+const JobStatus = {
+  AWAITING: 'AWAITING',
+  REQUESTED: 'REQUESTED',
+  QUEUED: 'QUEUED',
+  RUNNING: 'RUNNING',
+  SUCCEEDED: 'SUCCEEDED',
+  KILLING: 'KILLING',
+  KILLED: 'KILLED',
+  FAILED: 'FAILED',
+};
 
 function useDebug() {
   const query = new URLSearchParams(window.location.search);
@@ -141,7 +152,28 @@ export const Actions = () => {
               </div>
               {jobStatus?.data && (
                 <div className="sui-g-grid__item">
-                  <Status name={jobStatus?.data?.toLowerCase() ?? ''} size="xl" />
+                  {
+                    Object.values(JobStatus).find(
+                      (value) => value.toLowerCase() === jobStatus?.data?.toLowerCase())
+                      ? <Status name={jobStatus?.data ?? ''} size="xl" />
+                      : (
+                        <Status name="" size="xl">
+                          {jobStatus?.data?.toUpperCase()}
+                          <Tooltip
+                            defaultPlacement="left"
+                            label={(
+                              <div>
+                                Not supported, go to <a href="https://go.saagie.com/design-system" target="_blank" rel="noopener noreferrer">Saagie Design System</a> for supported status
+                              </div>
+                            )}
+                            hideDelay
+                            hideDelayCustomTimeOut={1}
+                          >
+                            <i className="sui-a-icon as--fa-info-circle as--end" />
+                          </Tooltip>
+                        </Status>
+                      )
+                  }
                 </div>
               )}
             </div>
