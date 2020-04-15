@@ -8,11 +8,8 @@ import { Actions } from '../components/Actions';
 import { useYAMLConfigContext } from '../contexts/YAMLConfigContext';
 import { useFormContext } from '../contexts/FormContext';
 
-const propTypes = {
-};
-
-const defaultProps = {
-};
+const propTypes = {};
+const defaultProps = {};
 
 export const Index = () => {
   const { status, selectedContext } = useYAMLConfigContext();

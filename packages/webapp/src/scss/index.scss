@@ -1,5 +1,7 @@
-@import "~saagie-ui/src/scss/index.scss";
+@import '~saagie-ui/src/scss/index.scss';
 
+// TODO rename to sdk-m
+// TODO use space and not size for padding and margin
 .sui-a-logs {
   background-color: $sui-color-brand-denim-800;
   color: $sui-color-brand-denim-100;
@@ -32,5 +34,32 @@
         font-weight: bold;
       }
     }
+  }
+}
+
+.sdk-o-side-panel {
+  &__trigger {
+    background: $sui-color-brand-denim-800;
+    position: absolute;
+    top: 50%;
+    z-index: 12;
+    margin-top: -40px;
+    padding: $sui-space-lg $sui-space-sm $sui-space-lg $sui-space-sm;
+    border-radius: 0 $sui-border-radius-md $sui-border-radius-md 0;
+  }
+}
+
+.sdk-m-card {
+  border-radius: $sui-border-radius-md;
+  padding: $sui-space-sm;
+  cursor: pointer;
+
+  &.as--error {
+    background: $sui-color-danger;
+    color: white;
+  }
+
+  &.as--success {
+    background: $sui-color-success;
   }
 }

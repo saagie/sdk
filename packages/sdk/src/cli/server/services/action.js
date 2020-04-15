@@ -44,10 +44,10 @@ module.exports = async (req, res) => {
 
     switch (data.status) {
       case 'ERROR':
-        res.status(500);
+        res.status(500).send(data);
         break;
       case 'EMPTY':
-        res.status(400);
+        res.status(400).send(data);
         break;
       default:
         res.send(data);
