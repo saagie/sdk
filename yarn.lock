@@ -2621,10 +2621,10 @@
     dom-accessibility-api "^0.4.2"
     pretty-format "^25.1.0"
 
-"@testing-library/jest-dom@5.3.0":
-  version "5.3.0"
-  resolved "https://registry.yarnpkg.com/@testing-library/jest-dom/-/jest-dom-5.3.0.tgz#2ae813b8b0eb69e8808f75d3af8efa3f0dc4d7ec"
-  integrity sha512-Cdhpc3BHL888X55qBNyra9eM0UG63LCm/FqCWTa1Ou/0MpsUbQTM9vW1NU6/jBQFoSLgkFfDG5XVpm2V0dOm/A==
+"@testing-library/jest-dom@5.5.0":
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/@testing-library/jest-dom/-/jest-dom-5.5.0.tgz#4707023e8f572021e8a84f65721303ff60828d88"
+  integrity sha512-7sWHrpxG4Yd8TmryI7Rtbx8Ff4mbs3ASye3oshQIuHvsCR+QHgr7rTR/PfeXvOmwUwR36wSTTAvrLKsPmr6VEQ==
   dependencies:
     "@babel/runtime" "^7.9.2"
     "@types/testing-library__jest-dom" "^5.0.2"
@@ -12921,10 +12921,10 @@ react-popper@1.3.3:
     typed-styles "^0.0.7"
     warning "^4.0.2"
 
-react-query@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/react-query/-/react-query-1.2.0.tgz#a4216dcd1e71f4bf73a07beb3c7f029c2b8cb27a"
-  integrity sha512-BtMfJqRTFY1D4T6FvTp8JD+xNjA7tsCpxUhz9JihfJ7zsbRywD7hf1ypSuCO38Ifdo1pe4ID4Bw9HWl/wvc2Ng==
+react-query@1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/react-query/-/react-query-1.2.4.tgz#3de46c12250423f16e131a7b3841da03d7351bd7"
+  integrity sha512-NCy35GiXbiLUarjj6xtA8vxJo9W29bFB7t40GpwPRH/aIqFu3tJz/KpD+IvVUUuMKWOpeVMEgprSpgLAd/Ft3Q==
   dependencies:
     "@scarf/scarf" "^0.1.3"
 
@@ -13763,10 +13763,10 @@ rxjs@^6.4.0, rxjs@^6.5.3:
   dependencies:
     tslib "^1.9.0"
 
-saagie-ui@0.62.2:
-  version "0.62.2"
-  resolved "https://registry.yarnpkg.com/saagie-ui/-/saagie-ui-0.62.2.tgz#ed25020458a8fa8207701107a43b78cb85022430"
-  integrity sha512-mNiLdO7Picc/lwPjMzM93OSl4PmY4lBgdMKaGGwNCwDp69EqUoUVKuv7MMNX1977zJq74UVoVAMgZpfJdGL0yA==
+saagie-ui@0.62.3:
+  version "0.62.3"
+  resolved "https://registry.yarnpkg.com/saagie-ui/-/saagie-ui-0.62.3.tgz#aaad170d6e5ce2ed69558d56a9470f3efb6316f6"
+  integrity sha512-zB/HS8L499M2Srf+8XucImP3zpW04Olk16GofCczmMYafzc7vJAoa1NaiKEsADQSwrnuYO4v5wCf3vXqbWQc3A==
   dependencies:
     "@reach/auto-id" "0.4.0"
     classnames "2.2.5"
@@ -15564,10 +15564,10 @@ utils-merge@1.0.1:
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
 
-uuid@7.0.2:
-  version "7.0.2"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-7.0.2.tgz#7ff5c203467e91f5e0d85cfcbaaf7d2ebbca9be6"
-  integrity sha512-vy9V/+pKG+5ZTYKf+VcphF5Oc6EFiu3W8Nv3P3zIh0EqVI80ZxOzuPfe9EHjkFNvf8+xuTHVeei4Drydlx4zjw==
+uuid@7.0.3:
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-7.0.3.tgz#c5c9f2c8cf25dc0a372c4df1441c41f5bd0c680b"
+  integrity sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==
 
 uuid@^3.0.1, uuid@^3.3.2:
   version "3.4.0"

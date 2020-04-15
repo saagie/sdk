@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useYAMLConfigContext } from '../contexts/YAMLConfigContext';
 import { useFormContext } from '../contexts/FormContext';
 import { Logs } from './Logs/index';
+import { useErrorContext } from '../contexts/ErrorContext';
 
 const propTypes = {};
 const defaultProps = {};
@@ -35,6 +36,7 @@ export const Actions = () => {
 
   const { selectedContext } = useYAMLConfigContext();
   const { formValues } = useFormContext();
+  const { addError } = useErrorContext();
 
   const {
     __folderPath: contextFolderPath,
@@ -66,7 +68,9 @@ export const Actions = () => {
       job: { featuresValues: formValues.job },
       instance: lastInstance,
     },
-  }));
+  }), {
+    onError: (err) => addError({ ...err, on: { action: 'Get Status', date: new Date() } }),
+  });
 
   const [runJob, { status: runJobStatus, data: instancePayloadResponse }] = useMutation(() => axios.post('/api/action', {
     script: `${contextFolderPath}/${onStart?.script}`,
@@ -75,7 +79,9 @@ export const Actions = () => {
       job: { featuresValues: formValues.job },
       instance: createInstance(),
     },
-  }));
+  }), {
+    onError: (err) => addError({ ...err, on: { action: 'Start', date: new Date() } }),
+  });
 
   const [stopJob, { status: stopJobStatus }] = useMutation(() => axios.post('/api/action', {
     script: `${contextFolderPath}/${onStop?.script}`,
@@ -84,7 +90,9 @@ export const Actions = () => {
       job: { featuresValues: formValues.job },
       instance: lastInstance,
     },
-  }));
+  }), {
+    onError: (err) => addError({ ...err, on: { action: 'Stop', date: new Date() } }),
+  });
 
   const [getJobLogs, { status: getJobLogsStatus }] = useMutation(() => axios.post('/api/action', {
     script: `${contextFolderPath}/${getLogs?.script}`,
@@ -95,6 +103,7 @@ export const Actions = () => {
     },
   }), {
     onSuccess: (res) => setLogs(res.data),
+    onError: (err) => addError({ ...err, on: { action: 'Get Logs', date: new Date() } }),
   });
 
   useEffect(() => {
@@ -122,7 +131,7 @@ export const Actions = () => {
                   onClick={() => runJob()}
                   isLoading={runJobStatus === 'loading'}
                 >
-                  Run
+                  Start
                 </Button>
               </div>
               <div className="sui-g-grid__item">
