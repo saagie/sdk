@@ -1,7 +1,9 @@
 import React from 'react';
+import { useQuery } from 'react-query';
 import {
-  Page, PageLoader, PageContent, EmptyState,
+  Page, PageLoader, PageContent, EmptyState, PageFooter,
 } from 'saagie-ui/react';
+import axios from 'axios';
 import { AppTopbar } from '../components/AppTopbar';
 import { SmartForm } from '../components/SmartForm';
 import { Actions } from '../components/Actions';
@@ -14,6 +16,7 @@ const defaultProps = {};
 export const Index = () => {
   const { status, selectedContext } = useYAMLConfigContext();
   const { formValues } = useFormContext();
+  const { infoStatus, data: info } = useQuery('info', () => axios('/api/info'));
 
   if (status === 'loading') {
     return (
@@ -55,6 +58,11 @@ export const Index = () => {
           </div>
         </div>
       </PageContent>
+      <PageFooter>
+        <small>
+          You are running this SDK UI in <code>{process.env.NODE_ENV}</code> using build <code>{process.env.REACT_APP_GIT_SHA}</code> with <code>@saagie/sdk@{infoStatus === 'loading' || infoStatus === 'error' ? '...' : info?.version}</code> CLI
+        </small>
+      </PageFooter>
     </Page>
   );
 };
