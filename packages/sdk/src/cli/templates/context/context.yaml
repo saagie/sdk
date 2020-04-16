@@ -2,7 +2,7 @@ id: {{id}}
 label: {{label}}
 description: "{{description}}"
 recommended: {{recommended}}
-trustLevel: stable
+trustLevel: experimental
 endpoint:
   features:
     - type: URL
