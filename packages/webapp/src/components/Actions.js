@@ -134,15 +134,17 @@ export const Actions = () => {
                   Start
                 </Button>
               </div>
-              <div className="sui-g-grid__item">
-                <Button
-                  color="action-stop"
-                  onClick={() => stopJob()}
-                  isLoading={stopJobStatus === 'loading'}
-                >
-                  Stop
-                </Button>
-              </div>
+              {onStop && (
+                <div className="sui-g-grid__item">
+                  <Button
+                    color="action-stop"
+                    onClick={() => stopJob()}
+                    isLoading={stopJobStatus === 'loading'}
+                  >
+                    Stop
+                  </Button>
+                </div>
+              )}
               <div className="sui-g-grid__item">
                 <Button
                   onClick={() => getJobStatus()}
@@ -151,14 +153,16 @@ export const Actions = () => {
                   Get Status
                 </Button>
               </div>
-              <div className="sui-g-grid__item">
-                <Button
-                  onClick={() => getJobLogs()}
-                  isLoading={getJobLogsStatus === 'loading'}
-                >
-                  Get Logs
-                </Button>
-              </div>
+              {getLogs && (
+                <div className="sui-g-grid__item">
+                  <Button
+                    onClick={() => getJobLogs()}
+                    isLoading={getJobLogsStatus === 'loading'}
+                  >
+                    Get Logs
+                  </Button>
+                </div>
+              )}
               {jobStatus?.data && (
                 <div className="sui-g-grid__item">
                   {
