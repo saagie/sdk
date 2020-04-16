@@ -18,8 +18,8 @@
     "uuid": "7.0.3"
   },
   "scripts": {
-    "dev": "react-scripts start",
-    "build": "react-scripts build",
+    "dev": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-scripts start",
+    "build": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-scripts build",
     "postbuild": "cp -r build/. ../sdk/build-webapp",
     "eject": "react-scripts eject",
     "lint": "eslint ./src",
