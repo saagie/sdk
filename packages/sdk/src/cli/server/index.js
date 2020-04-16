@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const serveStatic = require('serve-static');
 const path = require('path');
+const nocache = require('nocache');
 
 const { DEFAULT_PORT } = require('../constants');
 const action = require('./services/action');
@@ -14,14 +15,18 @@ const { version } = require('../../../package.json');
 module.exports = ({ port = DEFAULT_PORT } = {}) => {
   const server = express();
 
+  server.use(nocache());
   server.use(bodyParser.json({
     limit: '50mb',
   }));
 
   if (process.env.SAAGIE_ENV !== 'development') {
-    server.use('/', serveStatic(path.resolve(__dirname, '../../../build-webapp')));
+    server.use('/', serveStatic(path.resolve(__dirname, '../../../build-webapp'), {
+      cacheControl: false,
+      etag: false,
+    }));
   } else {
-    server.get('/', (req, res) => res.redirect('http://localhost:3000'));
+    server.get('/', (_, res) => res.redirect('http://localhost:3000'));
   }
 
   server.get('/api/config', config);
