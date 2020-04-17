@@ -79,7 +79,7 @@ exports.getLogs = async ({ job, instance }) => {
       `${job.featuresValues.endpoint.url}/api/demo/datasets/${job.featuresValues.dataset.id}/logs`,
     );
 
-    return Response.success(data.logs.map((item) => Log(item.log, item.output)));
+    return Response.success(data.logs.map((item) => Log(item.log, item.output, item.time)));
   } catch (error) {
     return Response.error(`Failed to get log for dataset ${job.featuresValues.dataset.id}`, { error });
   }

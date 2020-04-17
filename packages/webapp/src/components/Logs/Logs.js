@@ -37,7 +37,7 @@ export const Logs = ({ logs }) => {
 
   return (
     <LogsContext.Provider value={{ setSize, windowWidth }}>
-      <div className="sui-a-logs">
+      <div className="sdk-a-logs">
         <AutoSizer>
           {({ height, width }) =>
             (
