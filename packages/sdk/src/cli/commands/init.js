@@ -9,6 +9,7 @@ const copyTemplateFolder = require('../utils/copyTemplateFolder');
 const { CONTEXT, TECHNOLOGY } = require('../constants');
 
 const askTechnologyInfo = require('./init/askTechnologyInfo');
+const askForDependencies = require('./init/askForDependencies');
 const askContextInfo = require('./init/askContextInfo');
 const askShouldCreateContext = require('./init/askShouldCreateContext');
 const askFolderDestination = require('./init/askFolderDestination');
@@ -20,6 +21,7 @@ const createTechnology = async () => {
   // 1. Ask user
 
   const technoAnswers = await askTechnologyInfo();
+  const { dependencies } = await askForDependencies();
   const shoudlCreateContext = await askShouldCreateContext();
   const contextAnswers = shoudlCreateContext ? await askContextInfo() : {};
   const folder = await askFolderDestination(technoAnswers.id);
@@ -47,6 +49,7 @@ const createTechnology = async () => {
 
   // 3. Install
 
+  await installDependencies(folder, dependencies);
   await installDependencies(folder);
 
   // 4. Output
