@@ -1,8 +1,6 @@
 @import '~saagie-ui/src/scss/index.scss';
 
-// TODO rename to sdk-m
-// TODO use space and not size for padding and margin
-.sui-a-logs {
+.sdk-a-logs {
   background-color: $sui-color-brand-denim-800;
   color: $sui-color-brand-denim-100;
   border-radius: $sui-border-radius-md;
@@ -10,16 +8,27 @@
   height: 100%;
 
   &__line {
-    padding-left: $sui-size-xxs;
+    padding-left: $sui-space-xs;
     display: flex;
     font-size: $sui-font-size-sm;
 
+    $this: &;
+
     &:hover {
       background-color: $sui-color-brand-denim-700;
+
+      #{$this}-clock {
+        visibility: visible;
+      }
+    }
+
+    &-clock {
+      color: $sui-color-brand-denim-500;
+      visibility: hidden;
     }
 
     &-index {
-      min-width: $sui-size-xs;
+      min-width: $sui-space-xxl;
       text-align: right;
       color: $sui-color-brand-denim-500;
       user-select: none;

@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react';
+import { Icon, Tooltip } from 'saagie-ui/react';
 import PropTypes from 'prop-types';
 import { useLogsContext } from '../../contexts/LogsContext';
 
@@ -24,12 +25,14 @@ export const Line = ({ index, line }) => {
     setSize(index, contentRef.current.getBoundingClientRect().height);
   }, [index, setSize, windowWidth]);
 
-
   return (
-    <div className="sui-a-logs__line">
-      <div className="sui-a-logs__line-index">{index + 1}</div>
+    <div className="sdk-a-logs__line">
+      <Tooltip defaultPlacement="left" label={line.time ? line.time : 'Not available'}>
+        <div className="sdk-a-logs__line-clock"><Icon name="fa-clock-o" /></div>
+      </Tooltip>
+      <div className="sdk-a-logs__line-index">{index + 1}</div>
       <div
-        className={`sui-a-logs__line-content ${line.stream === STREAM.STDERR ? 'as--error' : ''}`}
+        className={`sdk-a-logs__line-content ${line.stream === STREAM.STDERR ? 'as--error' : ''}`}
         ref={contentRef}
       >
         {line.log}

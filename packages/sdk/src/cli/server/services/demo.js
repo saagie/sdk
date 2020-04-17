@@ -56,6 +56,7 @@ demoApp.get('/datasets/:id/logs', (req, res) => {
     // eslint-disable-next-line security/detect-object-injection
     log: `[LOGS] Log for the dataset ${selectedDataset.id}: ${logs[randomLogsIndex]}`,
     output: randomLogsIndex % 2 === 0 ? 'stdout' : 'stderr',
+    time: (new Date()).toISOString(),
   });
 
   res.send({
