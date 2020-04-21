@@ -10,7 +10,7 @@ const output = require('../../utils/output');
 module.exports = async (folder, dependencies = []) => {
   output.log('\n🚀 Dependencies installation');
 
-  execSync(`npm install ${dependencies.join(' ')} --no-package-lock --no-audit --loglevel=error --save-exact`, {
+  execSync(`npm install ${dependencies.join(' ')} --no-audit --loglevel=error --save-exact`, {
     cwd: path.resolve(process.cwd(), folder),
     stdio: 'inherit',
   });
