@@ -43,7 +43,7 @@ exports.generateMetadataFile = async () => {
   const technologiesPaths = await globby([`./${TECHNOLOGY.FILENAME_GLOB}`]) || [];
   const technologyPath = technologiesPaths[0];
 
-  const contextsPaths = await globby([`./**/${CONTEXT.FILENAME_GLOB}`]) || [];
+  const contextsPaths = await globby([`./**/${CONTEXT.FILENAME_GLOB}`, '!**/node_modules']) || [];
 
   const technologyContent = fse.readFileSync(technologyPath, 'utf8');
 
