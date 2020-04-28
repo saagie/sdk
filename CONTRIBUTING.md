@@ -62,3 +62,25 @@ Go to [@saagie/sdk on Verdaccio](http://localhost:4873/-/web/detail/@saagie/sdk)
 ```sh
 yarn verdaccio:unpublish
 ```
+
+## Publishing
+
+The published version will be automagically calculated using the recently closed
+PR that are not released yet.
+Each PR should have one (and only one) of
+[the following label](https://github.com/saagie/sdk/labels?q=major.minor.patch):
+
+* `patch`
+* `minor`
+* `major`
+
+If a PR as the label `release` on it, then, the GitHub Actions CI will
+automatically create a new release on NPM and GitHub.
+
+### Publication Examples
+
+1. Suppose we are currently at version `0.3.0`, and there are only 1 PR with the
+   `patch` label, then the released version will be `0.3.1`.
+2. Suppose we are currently at version `0.3.0`, and there are 2 PR one with the
+   `patch` label and the other one with the `minor` label, then the released
+   version will be `0.4.0`.
