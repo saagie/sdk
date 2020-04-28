@@ -3,5 +3,5 @@ id: {{id}}
 label: {{label}}
 description: "{{description}}"
 available: true
-type: JOB
+type: EXTERNAL_JOB
 icon: job
