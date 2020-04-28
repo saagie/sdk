@@ -6,7 +6,7 @@
 [build]: https://github.com/saagie/sdk/actions?query=workflow%3A%22Master+Build%22
 [npm]: https://www.npmjs.com/package/@saagie/sdk
 
-The **Saagie Technology SDK** allows you to implements **new technologies** easly within the [Saagie](https://www.saagie.com/) platform.
+The **Saagie Technology SDK** allows you to implements **new technologies** easily within the [Saagie](https://www.saagie.com/) platform.
 
 ---
 
@@ -18,7 +18,7 @@ The **Saagie Technology SDK** allows you to implements **new technologies** easl
 
 ## 🤩 Create your first technology
 
-### 👉 Init your technology
+### 👉 Initialize your technology
 
 ```sh
 npx @saagie/sdk init
@@ -36,34 +36,39 @@ npm run start
 npm run build
 ```
 
+### 👉 Create a new context
+
+```sh
+npm run new:context
+```
+
 ---
 
 ## 📚 Technologies & Contexts documentation
 
-**[→ Access the SDK documentation](#coming-soon)**
+**[▶️ Access the SDK documentation](https://saagie.zendesk.com/hc/en-us/articles/360013330039-Create-and-manage-technologies)**
 
-Quick links: [📚 technology.yaml](#coming-soon) | [📚 context.yaml](#coming-soon)
+Quick links:
+
+* [📚 technology.yaml](https://saagie.zendesk.com/hc/en-us/articles/360013330039-Create-and-manage-technologies#_attributes)
+* [📚 context.yaml](https://saagie.zendesk.com/hc/en-us/articles/360013330039-Create-and-manage-technologies#external-tech)
 
 ---
 
 ## 💻 CLI Commands
 
-### → Init
-
-```sh
-saagie-sdk init
 ```
+Usage: saagie-sdk [options] [command]
 
-### → Start
+Options:
+  -V, --version    output the version number
+  -h, --help       display help for command
 
-```sh
-saagie-sdk start
-```
-
-### → Build
-
-```sh
-saagie-sdk build
+Commands:
+  init             Create an empty Saagie External Technology project
+  start [options]  Run local application
+  build            Package your technology
+  help [command]   display help for command
 ```
 
 ---
