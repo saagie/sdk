@@ -12,7 +12,7 @@ The **Saagie Technology SDK** allows you to implements **new technologies** easi
 
 ## Requirements
 
-* **[Node.js](https://nodejs.org/)** - Minimum version: `12.15.0`
+* **[Node.js](https://nodejs.org/)** - Minimum version: `12.15.0` (the latest `lts` is recommended)
 
 ---
 

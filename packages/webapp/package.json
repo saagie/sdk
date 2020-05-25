@@ -18,8 +18,8 @@
     "uuid": "7.0.3"
   },
   "scripts": {
-    "dev": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-scripts start",
-    "build": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-scripts build",
+    "dev": "cross-env REACT_APP_GIT_SHA=$(git rev-parse --short HEAD) react-scripts start",
+    "build": "cross-env REACT_APP_GIT_SHA=$(git rev-parse --short HEAD) react-scripts build",
     "postbuild": "cp -r build/. ../sdk/build-webapp",
     "eject": "react-scripts eject",
     "lint": "eslint ./src",
@@ -42,6 +42,7 @@
     ]
   },
   "devDependencies": {
+    "cross-env": "7.0.2",
     "eslint": "6.8.0",
     "eslint-config-airbnb": "18.0.1",
     "eslint-plugin-import": "2.20.1",
