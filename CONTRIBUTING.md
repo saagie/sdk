@@ -7,9 +7,10 @@
 ## Install dependencies
 
 ```sh
-yarn      # install npm dependencies
-yarn bs   # bootstrap repository with lerna to link local dependencies
-yarn link # to use saagie-sdk everywhere ;)
+yarn            # install npm dependencies
+yarn bs         # bootstrap repository with lerna to link local dependencies
+cd packages/sdk # go to the @saagie/sdk project
+yarn link       # to use saagie-sdk everywhere ;)
 ```
 
 ## Run tests
@@ -84,3 +85,16 @@ automatically create a new release on NPM and GitHub.
 2. Suppose we are currently at version `0.3.0`, and there are 2 PR one with the
    `patch` label and the other one with the `minor` label, then the released
    version will be `0.4.0`.
+
+## Troubleshooting
+
+### Windows
+
+`npm` uses `cmd` that doesn't support command substitution that we use to get
+the `git` commit hash for the build. You need to tell `npm` to use `powershell`
+for this to work. [Learn more here](https://github.com/kentcdodds/cross-env#windows-issues)
+and [here](https://github.com/kentcdodds/cross-env/issues/192#issuecomment-513341729).
+
+```
+npm config set script-shell "C:\\windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+```
