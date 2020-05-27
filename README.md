@@ -24,24 +24,30 @@ The **Saagie Technology SDK** allows you to implements **new technologies** easi
 npx @saagie/sdk init
 ```
 
-If it does not work (for example on Windows) go to the folder where you want your technology to be located: 
+If it does not work (`npx` is a little capricious on system with space in the path) go to the folder where you want your technology to be located:
 
 ```sh
 npm init -y
 npm install @saagie/sdk
 ```
 
-Update the package.json to include this script command :
+Update the `package.json` to include this script command :
 
 ```json
 {
-  "...",
+  "...": "...",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "init": "saagie-sdk init"
   },
-  "..."
+  "...": "..."
 }
+```
+
+Now run to start the technology prompt:
+
+```sh
+npm run init
 ```
 
 ### 👉 Run your technology locally
