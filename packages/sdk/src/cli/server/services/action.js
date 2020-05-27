@@ -1,6 +1,6 @@
 const fse = require('fs-extra');
 const path = require('path');
-const Parcel = require('parcel-bundler');
+const { build } = require('esbuild');
 const { Response } = require('../../../sdk');
 
 const output = require('../../utils/output');
@@ -10,7 +10,6 @@ module.exports = async (req, res) => {
   try {
     const scriptPath = path.resolve(process.cwd(), req.body.script);
 
-
     if (!await fse.pathExists(scriptPath || '')) {
       const message = `Unable to find file ${scriptPath}, please check the path in context.yaml`;
       output.error(message);
@@ -18,27 +17,23 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const parcel = new Parcel(
-      scriptPath,
-      {
-        outDir: path.resolve(process.cwd(), BUNDLE_FOLDER),
-        outFile: `${req.body.script.split('.').slice(0, -1).join('.')}.js`,
-        minify: true,
-        watch: false,
-        target: 'node',
-        bundleNodeModules: true,
-        sourceMaps: false,
-        autoInstall: false,
-      },
-    );
+    const outfile = path.resolve(process.cwd(), BUNDLE_FOLDER, path.basename(req.body.script));
 
-    const bundle = await parcel.bundle();
+    await build({
+      entryPoints: [scriptPath],
+      outfile,
+      platform: 'node',
+      minify: true,
+      bundle: true,
+      sourcemap: true,
+    });
 
-    delete require.cache[bundle.name];
+    // eslint-disable-next-line security/detect-object-injection
+    delete require.cache[outfile];
 
     // We need this non literal require so we can execute the given script.
     // eslint-disable-next-line security/detect-non-literal-require
-    const importedScript = require(bundle.name);
+    const importedScript = require(outfile);
 
     const data = await importedScript[req.body.function || 'default'](req.body.params);
 
