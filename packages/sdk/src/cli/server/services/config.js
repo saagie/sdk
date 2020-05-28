@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
   });
 
   const labelSortedContextData = contextsData.sort(
-    (a, b) => a && a.label && a.label.localeCompare(b && b.label),
+    (a, b) => a && a.label && a.label.toString().localeCompare(b && b.label),
   );
 
   res.send({ technology, contexts: labelSortedContextData });

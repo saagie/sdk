@@ -128,6 +128,9 @@ export const SmartField = ({
 
       return (
         <FormControlSelect
+          // Used to avoid long label to be cropped when selected. Closes #65.
+          // By adding this prop, it also remove the horizontal scrollbar.
+          menuPortalTarget={document.body}
           name={name}
           onChange={({ payload }) => {
             onUpdate({ name, value: payload });
