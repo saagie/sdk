@@ -18,6 +18,9 @@ const datasets = [
   {
     id: '4', name: 'Fourth Dataset', status: undefined, logs: [],
   },
+  {
+    id: '5', name: 'Fifth Dataset with a very long name containing spaces. Helpful to check the behavior of the Select Box input type.', status: undefined, logs: [],
+  },
 ];
 
 const logs = [
