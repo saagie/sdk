@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import {
@@ -36,18 +36,53 @@ export const SmartField = ({
     helper,
     options,
     dependsOn,
+    value,
   },
 }) => {
   const [error, setError] = useState();
-  const currentForm = formValues?.[formName] || {};
 
-  const currentFormRef = useRef();
-  currentFormRef.current = currentForm;
+  const currentForm = formValues?.[formName] || {};
 
   const shouldBeDisplayed = !dependsOn || dependsOn?.every((x) => currentForm[x]);
   const dependsOnValues = JSON.stringify(dependsOn?.map((x) => currentForm[x]));
 
-  const fieldValue = currentForm[name];
+  // State for input data fetching. This is used to auto fill the inputs.
+  const [formControlInputValue, setFormControlInputValue] = useState('');
+  const [formControlInputLoading, setFormControlInputLoading] = useState(Boolean(value && typeof value === 'object' && value.script));
+
+  const currentFormRef = useRef();
+  currentFormRef.current = currentForm;
+
+  const fieldValue = currentForm[name] || formControlInputValue;
+
+  useEffect(() => {
+    const fetchValue = async () => {
+      if (value && typeof value === 'object' && value.script && shouldBeDisplayed) {
+        try {
+          const { data } = await axios.post('/api/action', {
+            script: `${contextFolderPath}/${value.script}`,
+            function: value.function,
+            params: {
+              featuresValues: currentFormRef.current,
+            },
+          });
+
+          setFormControlInputValue(data);
+        } catch (err) {
+          setError(err.response?.data);
+        }
+
+        setFormControlInputLoading(false);
+      }
+    };
+
+    fetchValue();
+  }, [contextFolderPath, value, shouldBeDisplayed]);
+
+  const handleFormControlInput = (e) => {
+    setFormControlInputValue('');
+    onUpdate({ name, value: e.target.value });
+  };
 
   const getField = () => {
     switch (type) {
@@ -57,7 +92,9 @@ export const SmartField = ({
           name={name}
           value={fieldValue || ''}
           autoComplete={name}
-          onChange={(e) => onUpdate({ name, value: e.target.value })}
+          onChange={handleFormControlInput}
+          required={required}
+          isLoading={formControlInputLoading}
         />
       );
 
@@ -68,7 +105,8 @@ export const SmartField = ({
           value={fieldValue || ''}
           autoComplete={name}
           type="url"
-          onChange={(e) => onUpdate({ name, value: e.target.value })}
+          onChange={handleFormControlInput}
+          isLoading={formControlInputLoading}
         />
       );
 
@@ -157,7 +195,7 @@ export const SmartField = ({
           name={name}
           isClearable
           options={[{ value: formValues?.endpoint, label: 'Use Endpoint Form' }]}
-          onChange={(value) => onUpdate({ name, value: value ? formValues?.endpoint : undefined })}
+          onChange={(val) => onUpdate({ name, value: val ? formValues?.endpoint : undefined })}
         />
       );
 
