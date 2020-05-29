@@ -8,7 +8,9 @@ const isYAMLFileValid = require('../validators/isYAMLFileValid');
 const { generateMetadataFile } = require('../utils/yaml');
 const { buildJS } = require('../utils/bundler');
 
-module.exports = async () => {
+module.exports = async ({ bundler }) => {
+  global.bundler = bundler;
+
   // Check if the user is in a technology folder.
   if (!await isRoot()) {
     output.error('fatal: not a technology folder');

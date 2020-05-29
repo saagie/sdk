@@ -35,6 +35,11 @@ program.command('start')
   .action(start);
 
 program.command('build')
+  .option(
+    '-b, --bundler <bundler>',
+    `The bundler to use (${Object.values(BUNDLERS).map((b) => `"${b}"`).join(', ')})`,
+    BUNDLERS.PARCEL,
+  )
   .description('Package your technology')
   .action(build);
 
