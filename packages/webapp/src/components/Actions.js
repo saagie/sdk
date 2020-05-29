@@ -168,7 +168,7 @@ export const Actions = () => {
                   {
                     Object.values(JobStatus).find(
                       (value) => value.toLowerCase() === jobStatus?.data?.toLowerCase())
-                      ? <Status name={jobStatus?.data ?? ''} size="xl" />
+                      ? <Status name={jobStatus?.data?.toLowerCase() ?? ''} size="xl" />
                       : (
                         <Status name="" size="xl">
                           {jobStatus?.data?.toUpperCase()}
