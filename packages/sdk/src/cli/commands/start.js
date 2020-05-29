@@ -4,7 +4,9 @@ const { error, success, info } = require('../utils/output');
 const server = require('../server');
 const isRoot = require('../validators/isRoot');
 
-module.exports = async ({ port = DEFAULT_PORT }) => {
+module.exports = async ({ port = DEFAULT_PORT, bundler }) => {
+  global.bundler = bundler;
+
   // Check if the user is in a technology folder.
   if (!await isRoot()) {
     error('fatal: not a technology folder');

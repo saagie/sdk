@@ -23,4 +23,8 @@ module.exports = {
   },
   BUILD_FOLDER: './build',
   BUNDLE_FOLDER: './.bundle',
+  BUNDLERS: {
+    PARCEL: 'parcel',
+    ESBUILD: 'esbuild',
+  },
 };
