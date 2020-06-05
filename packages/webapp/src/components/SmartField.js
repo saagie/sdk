@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {
+  useEffect, useState, useRef, useCallback,
+} from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import {
@@ -55,9 +57,14 @@ export const SmartField = ({
 
   const fieldValue = currentForm[name] || formControlInputValue;
 
-  useEffect(() => {
-    const fetchValue = async () => {
-      if (value && typeof value === 'object' && value.script && shouldBeDisplayed) {
+  const handleFormControlInput = useCallback((e) => {
+    setFormControlInputValue('');
+    onUpdate({ name, value: e.target.value });
+  }, [onUpdate, name]);
+
+  const triggerInputDataFetching = () => {
+    if (value && typeof value === 'object' && value.script && shouldBeDisplayed && formControlInputLoading) {
+      const fetchValue = async () => {
         try {
           const { data } = await axios.post('/api/action', {
             script: `${contextFolderPath}/${value.script}`,
@@ -67,26 +74,23 @@ export const SmartField = ({
             },
           });
 
-          setFormControlInputValue(data);
+          onUpdate({ name, value: data });
         } catch (err) {
           setError(err.response?.data);
         }
 
         setFormControlInputLoading(false);
-      }
-    };
+      };
 
-    fetchValue();
-  }, [contextFolderPath, value, shouldBeDisplayed]);
-
-  const handleFormControlInput = (e) => {
-    setFormControlInputValue('');
-    onUpdate({ name, value: e.target.value });
+      fetchValue();
+    }
   };
 
   const getField = () => {
     switch (type) {
     case 'TEXT':
+      triggerInputDataFetching();
+
       return (
         <FormControlInput
           name={name}
@@ -99,6 +103,8 @@ export const SmartField = ({
       );
 
     case 'URL':
+      triggerInputDataFetching();
+
       return (
         <FormControlInput
           name={name}
@@ -120,8 +126,7 @@ export const SmartField = ({
         />
       );
 
-    case 'SELECT':
-      // eslint-disable-next-line no-case-declarations
+    case 'SELECT': {
       const selectProps = Array.isArray(options)
         // Hard coded options in context.yaml
         ? {
@@ -181,7 +186,7 @@ export const SmartField = ({
           {...selectProps}
         />
       );
-
+    }
     case 'ENDPOINT':
       if (formName === 'endpoint') {
         return (
