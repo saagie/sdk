@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState, useRef, useCallback,
+  useState, useRef, useCallback,
 } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
