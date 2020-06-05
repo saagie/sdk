@@ -8,8 +8,6 @@ const { error } = require('./output');
 exports.buildJS = async () => {
   const paths = await globby(['./**/*.js', `!${BUILD_FOLDER}`, '!node_modules']);
 
-  console.log(global.bundler);
-
   switch (global.bundler) {
     case BUNDLERS.ESBUILD: {
       try {
