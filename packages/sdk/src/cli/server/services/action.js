@@ -1,5 +1,6 @@
 const fse = require('fs-extra');
 const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 const { Response } = require('../../../sdk');
 const output = require('../../utils/output');
 const { ENGINES } = require('../../utils/engines');
@@ -17,7 +18,11 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const outfile = path.resolve(process.cwd(), BUNDLE_FOLDER, path.basename(req.body.script));
+    const outfile = path.resolve(
+      process.cwd(),
+      BUNDLE_FOLDER,
+      `${uuidv4()}-${path.basename(req.body.script)}`,
+    );
 
     const engine = ENGINES[global.bundler] || ENGINES[BUNDLERS.PARCEL];
 
@@ -42,6 +47,10 @@ module.exports = async (req, res) => {
       default:
         res.send(data);
     }
+
+    // Removing the outfile scripts because they are uniquely generated per
+    // request so we do not want to clutter the user disk space.
+    await fse.remove(outfile);
   } catch (err) {
     output.error(err);
 
