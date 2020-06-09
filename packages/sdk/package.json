@@ -1,6 +1,6 @@
 {
   "name": "@saagie/sdk",
-  "version": "0.11.3",
+  "version": "0.11.4",
   "bin": {
     "saagie-sdk": "src/cli/cli.js"
   },
