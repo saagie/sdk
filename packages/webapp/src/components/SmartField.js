@@ -88,6 +88,21 @@ export const SmartField = ({
 
   const getField = () => {
     switch (type) {
+    case 'TEXTAREA':
+      triggerInputDataFetching();
+
+      return (
+        <FormControlInput
+          name={name}
+          tag="textarea"
+          value={fieldValue || ''}
+          autoComplete={name}
+          onChange={handleFormControlInput}
+          required={required}
+          isLoading={formControlInputLoading}
+        />
+      );
+
     case 'TEXT':
       triggerInputDataFetching();
 

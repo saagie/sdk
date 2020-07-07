@@ -20,7 +20,6 @@ export const useYAMLConfigContext = () => useContext(YAMLConfigContext);
 export const YAMLConfigContextProvider = ({ children }) => {
   const [selectedContext, setSelectedContext] = useState();
 
-
   const { status, data: config } = useQuery('config', () => axios('/api/config'));
 
   const { setItem, getItem } = useLocalStorage(
