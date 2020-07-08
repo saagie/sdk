@@ -90,15 +90,15 @@ export const SmartField = ({
   const getField = () => {
     switch (type) {
     case 'RADIO': {
-      const selectProps = Array.isArray(options) ? options : [];
+      const radioProps = Array.isArray(options) ? options : [];
       return (
-        selectProps?.map((radio) => (
+        radioProps?.map((radio) => (
           <FormCheck
             isRadio
             key={radio.value}
             value={radio.value}
             name={name}
-            onChange={handleFormControlInput}
+            onChange={(e) => onUpdate({ name, value: e.target.value })}
           >{radio.label || ''}
           </FormCheck>
         ))
