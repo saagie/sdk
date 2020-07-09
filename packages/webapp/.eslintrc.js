@@ -18,7 +18,7 @@ module.exports = {
     "indent": [1, 2],
     "max-len": [1],
     "no-console": [0],
-    "no-multiple-empty-lines": [1],
+    "no-multiple-empty-lines": [2],
     "no-trailing-spaces": [1],
     "no-underscore-dangle": [0],
     "no-unused-vars": [1],
