@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import {
   FormGroup,
+  FormCheck,
   FormControlInput,
   FormPassword,
   FormControlSelect,
@@ -88,6 +89,21 @@ export const SmartField = ({
 
   const getField = () => {
     switch (type) {
+    case 'RADIO': {
+      const radioProps = Array.isArray(options) ? options : [];
+      return (
+        radioProps?.map((radio) => (
+          <FormCheck
+            isRadio
+            key={radio.value}
+            value={radio.value}
+            name={name}
+            onChange={(e) => onUpdate({ name, value: e.target.value })}
+          >{radio.label || ''}
+          </FormCheck>
+        ))
+      );
+    }
     case 'TEXTAREA':
       triggerInputDataFetching();
 
