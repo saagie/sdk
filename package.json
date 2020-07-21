@@ -6,7 +6,7 @@
     "build": "yarn build:webapp && yarn build:sdk",
     "build:webapp": "lerna run build --scope @saagie/sdk-webapp --stream",
     "build:sdk": "lerna run build --scope @saagie/sdk --stream",
-    "deploy": "yarn build && lerna publish",
+    "deploy": "yarn build && lerna publish --force-publish *",
     "dev": "lerna run dev --scope @saagie/* --stream --parallel",
     "lint": "lerna run lint --scope @saagie/* --stream --parallel -- --max-warnings 0",
     "test": "lerna run test --scope @saagie/* --stream --parallel",
