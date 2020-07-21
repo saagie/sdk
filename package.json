@@ -6,11 +6,11 @@
     "build": "yarn build:webapp && yarn build:sdk",
     "build:webapp": "lerna run build --scope @saagie/sdk-webapp --stream",
     "build:sdk": "lerna run build --scope @saagie/sdk --stream",
-    "deploy": "yarn build && lerna publish --force-publish *",
+    "deploy": "yarn build && lerna publish --force-publish",
     "dev": "lerna run dev --scope @saagie/* --stream --parallel",
     "lint": "lerna run lint --scope @saagie/* --stream --parallel -- --max-warnings 0",
     "test": "lerna run test --scope @saagie/* --stream --parallel",
-    "verdaccio:publish": "yarn deploy --canary --force-publish --registry http://localhost:4873",
+    "verdaccio:publish": "yarn deploy --canary --registry http://localhost:4873",
     "verdaccio:unpublish": "version=$(npm view @saagie/sdk dist-tags.canary --registry http://localhost:4873) && npm unpublish @saagie/sdk@${version} --registry=http://localhost:4873"
   },
   "workspaces": [
