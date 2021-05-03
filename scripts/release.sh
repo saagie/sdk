@@ -8,8 +8,8 @@ VERSION=`auto version`
 
 if [ ! -z "$VERSION" ]; then
   echo 'Configure git to commit/push'
-  git config --global user.name "Yoann Fleury"
-  git config --global user.email "yoann.fleury@saagie.com"
+  git config --global user.name "Software Factory"
+  git config --global user.email "software-factory@saagie.com"
 
   echo 'Adding registry with authentication'
   echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
