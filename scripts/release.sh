@@ -13,7 +13,7 @@ if [ ! -z "$VERSION" ]; then
 
   echo 'Adding registry with authentication'
   echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
-  yarn deploy --yes $VERSION -m '%v [skip ci]'
+  yarn deploy --no-verify-access --yes $VERSION -m '%v [skip ci]'
   auto release
 
   echo 'Remove registry with authentation'
