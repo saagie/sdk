@@ -27,21 +27,21 @@ job:
       label: Dataset
       required: true
       options:
-        script: ./jobForm.js
+        script: ./bundle.js
         function: getDatasets
       dependsOn:
         - endpoint
 instance:
   actions:
     onStart:
-      script: ./instanceActions.js
+      script: ./bundle.js
       function: start
     onStop:
-      script: ./instanceActions.js
+      script: ./bundle.js
       function: stop
     getStatus:
-      script: ./instanceActions.js
+      script: ./bundle.js
       function: getStatus
     getLogs:
-      script: ./instanceActions.js
+      script: ./bundle.js
       function: getLogs

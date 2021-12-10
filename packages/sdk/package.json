@@ -1,6 +1,6 @@
 {
   "name": "@saagie/sdk",
-  "version": "0.12.4",
+  "version": "0.12.5-alpha.0+2aea9ed",
   "bin": {
     "saagie-sdk": "src/cli/cli.js"
   },
@@ -9,21 +9,15 @@
     "node": ">=12.15.0"
   },
   "scripts": {
-    "dev": "rollup -c -w",
-    "build": "rollup -c",
     "lint": "eslint ./src",
     "test": "jest",
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
-    "@rollup/plugin-commonjs": "12.0.0",
-    "@rollup/plugin-json": "4.0.3",
-    "@rollup/plugin-node-resolve": "8.0.0",
     "body-parser": "1.19.0",
     "chalk": "4.0.0",
     "commander": "5.0.0",
     "copy-template-dir": "1.4.0",
-    "esbuild": "0.4.2",
     "express": "4.17.1",
     "figures": "3.2.0",
     "fs-extra": "9.0.0",
@@ -31,12 +25,11 @@
     "inquirer": "7.1.0",
     "jsonpath": "1.0.2",
     "nocache": "2.1.0",
-    "parcel-bundler": "1.12.5",
-    "rollup": "2.11.2",
     "semver": "7.3.2",
     "serve-static": "1.14.1",
     "slugify": "1.4.0",
     "uuid": "8.1.0",
+    "vm2": "^3.9.5",
     "yaml": "1.8.3"
   },
   "devDependencies": {
@@ -53,5 +46,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "2aea9ed089a2e2f10a222711263d52ffed36ca37"
 }

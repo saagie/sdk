@@ -18,8 +18,8 @@
     "examples/*"
   ],
   "devDependencies": {
-    "lerna": "3.20.2",
-    "auto": "9.23.0"
+    "auto": "9.23.0",
+    "lerna": "3.20.2"
   },
   "repository": {
     "type": "git",

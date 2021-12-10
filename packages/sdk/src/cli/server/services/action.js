@@ -1,10 +1,29 @@
 const fse = require('fs-extra');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
-const { Response } = require('../../../sdk');
+const { Stream } = require('stream');
 const output = require('../../utils/output');
-const { ENGINES } = require('../../utils/engines');
-const { BUNDLE_FOLDER, BUNDLERS } = require('../../constants');
+const { runScript } = require('../../utils/runScript');
+
+const Response = {
+  success: (data) => ({
+    status: 'SUCCESS',
+    data,
+  }),
+  empty: (message) => ({
+    status: 'EMPTY',
+    message,
+  }),
+  error: (message, { error }) => ({
+    status: 'ERROR',
+    message,
+    error,
+  }),
+};
+
+function onError(err, res) {
+  output.error(err);
+  res.status(500).send(Response.error(err.message, { error: err.stack }));
+}
 
 module.exports = async (req, res) => {
   try {
@@ -18,42 +37,16 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const outfile = path.resolve(
-      process.cwd(),
-      BUNDLE_FOLDER,
-      `${uuidv4()}-${path.basename(req.body.script)}`,
-    );
-
-    const engine = ENGINES[global.bundler] || ENGINES[BUNDLERS.PARCEL];
-
-    const bundleName = await engine(scriptPath, outfile);
-
-    // eslint-disable-next-line security/detect-object-injection
-    delete require.cache[bundleName];
-
-    // We need this non literal require so we can execute the given script.
-    // eslint-disable-next-line security/detect-non-literal-require
-    const importedScript = require(bundleName);
-
-    const data = await importedScript[req.body.function || 'default'](req.body.params);
-
-    switch (data.status) {
-      case 'ERROR':
-        res.status(500).send(data);
-        break;
-      case 'EMPTY':
-        res.status(400).send(data);
-        break;
-      default:
-        res.send(data);
+    const scriptData = fse.readFileSync(scriptPath);
+    const data = await runScript(scriptData, req.body.function, req.body.params);
+    if (data instanceof Stream) {
+      data.pause();
+      data.on('error', (err) => onError(err, res));
+      data.pipe(res);
+    } else {
+      res.send(Response.success(data));
     }
-
-    // Removing the outfile scripts because they are uniquely generated per
-    // request so we do not want to clutter the user disk space.
-    await fse.remove(outfile);
   } catch (err) {
-    output.error(err);
-
-    res.status(500).send(Response.error(err.message, { error: err.stack }));
+    onError(err, res);
   }
 };

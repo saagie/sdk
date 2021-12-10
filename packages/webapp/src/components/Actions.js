@@ -102,7 +102,7 @@ export const Actions = () => {
       instance: lastInstance,
     },
   }), {
-    onSuccess: (res) => setLogs(res.data),
+    onSuccess: (res) => setLogs(res.logs),
     onError: (err) => addError({ ...err, on: { action: 'Get Logs', date: new Date() } }),
   });
 
