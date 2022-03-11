@@ -4,35 +4,26 @@ import PropTypes from 'prop-types';
 
 const propTypes = {
   index: PropTypes.number.isRequired,
-  line: PropTypes.shape({
-    log: PropTypes.string.isRequired,
-    stream: PropTypes.string,
-    time: PropTypes.string,
-  }).isRequired,
+  line: PropTypes.string.isRequired,
 };
 
-const STREAM = Object.freeze({
-  STDOUT: 'stdout',
-  STDERR: 'stderr',
-});
-
-export const Line = ({ index, line }) => {
+export function Line({ index, line }) {
   const contentRef = useRef();
 
   return (
     <div className="sdk-a-logs__line">
-      <Tooltip defaultPlacement="left" label={line.time ? line.time : 'Not available'}>
+      <Tooltip defaultPlacement="left">
         <div className="sdk-a-logs__line-clock"><Icon name="fa-clock-o" /></div>
       </Tooltip>
       <div className="sdk-a-logs__line-index">{index + 1}</div>
       <div
-        className={`sdk-a-logs__line-content ${line.stream === STREAM.STDERR ? 'as--error' : ''}`}
+        className="sdk-a-logs__line-content"
         ref={contentRef}
       >
-        {line.log}
+        {line}
       </div>
     </div>
   );
-};
+}
 
 Line.propTypes = propTypes;

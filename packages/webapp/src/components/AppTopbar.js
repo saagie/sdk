@@ -4,21 +4,17 @@ import {
   FormHelper,
   FormControlSelect,
   Tooltip,
-  Icon,
-  Button,
+  Icon, Button,
 } from 'saagie-ui/react';
 import { useYAMLConfigContext } from '../contexts/YAMLConfigContext';
-import { useFormContext } from '../contexts/FormContext';
 
 const propTypes = {};
 const defaultProps = {};
 
-export const AppTopbar = () => {
+export function AppTopbar() {
   const {
-    config, selectedContext, changeContext,
+    config, currentContext, changeContext, reloadConfig,
   } = useYAMLConfigContext();
-
-  const { clearForm } = useFormContext();
 
   return (
     <PageTopbar
@@ -62,31 +58,27 @@ export const AppTopbar = () => {
               </strong>
             </label>
             {config?.contexts?.length > 0 && (
-              <>
-                <div className="sui-h-mb-none" style={{ minWidth: '10rem' }}>
-                  <FormControlSelect
-                    onChange={({ value }) => changeContext(value)}
-                    menuPortalTarget={document.body}
-                    options={config?.contexts?.map(({ id, label }) => ({
-                      value: id,
-                      label,
-                    }))}
-                    value={{ value: selectedContext?.id, label: selectedContext?.label }}
-                  />
-                </div>
-                <div className="sui-h-mb-none">
-                  <Button onClick={clearForm}>
-                    Clear Forms
-                  </Button>
-                </div>
-              </>
+              <div className="sui-h-mb-none" style={{ minWidth: '10rem' }}>
+                <FormControlSelect
+                  onChange={({ value }) => changeContext(value)}
+                  menuPortalTarget={document.body}
+                  options={config?.contexts?.map(({ id, label }) => ({
+                    value: id,
+                    label,
+                  }))}
+                  value={{ value: currentContext?.id, label: currentContext?.label }}
+                />
+              </div>
             )}
+            <div className="sui-h-mb-none" style={{ minWidth: '10rem' }}>
+              <Button onClick={reloadConfig}>Reload</Button>
+            </div>
           </div>
         </div>
       )}
     />
   );
-};
+}
 
 AppTopbar.propTypes = propTypes;
 AppTopbar.defaultProps = defaultProps;

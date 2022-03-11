@@ -6,9 +6,8 @@ const figures = require('figures');
 
 const init = require('./commands/init');
 const start = require('./commands/start');
-const build = require('./commands/build');
 const output = require('./utils/output');
-const { ERROR_CODE, BUNDLERS } = require('./constants');
+const { ERROR_CODE } = require('./constants');
 
 const { version, engines } = require('../../package.json');
 
@@ -26,22 +25,8 @@ program.command('init')
 
 program.command('start')
   .option('-p, --port <port>', 'The port to use')
-  .option(
-    '-b, --bundler <bundler>',
-    `The bundler to use (${Object.values(BUNDLERS).map((b) => `"${b}"`).join(', ')})`,
-    BUNDLERS.PARCEL,
-  )
   .description('Run local application')
   .action(start);
-
-program.command('build')
-  .option(
-    '-b, --bundler <bundler>',
-    `The bundler to use (${Object.values(BUNDLERS).map((b) => `"${b}"`).join(', ')})`,
-    BUNDLERS.PARCEL,
-  )
-  .description('Package your technology')
-  .action(build);
 
 // Output error and help on unknown command.
 program.on('command:*', () => {

@@ -1,268 +1,190 @@
-import React, {
-  useState, useRef, useCallback,
-} from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
 import {
   FormGroup,
   FormCheck,
   FormControlInput,
   FormPassword,
-  FormControlSelect,
+  FormControlSelect, FormFeedback,
 } from 'saagie-ui/react';
+import { useScriptCall } from '../contexts/ScriptCallHistoryContext';
+import { useFormContext } from '../contexts/FormContext';
 
 const propTypes = {
-  onUpdate: PropTypes.func,
   formName: PropTypes.string.isRequired,
-  formValues: PropTypes.object,
-  contextFolderPath: PropTypes.string,
-  field: PropTypes.object,
+  parameter: PropTypes.object,
+  dependencyReady: PropTypes.bool,
 };
 
 const defaultProps = {
-  onUpdate: () => {},
-  formValues: {},
-  contextFolderPath: '',
-  field: {},
+  parameter: {},
+  dependencyReady: true,
 };
 
-export const SmartField = ({
-  onUpdate = () => {},
-  formValues = {},
+export function SmartField({
   formName,
-  contextFolderPath,
-  field: {
+  dependencyReady,
+  parameter: {
     type,
-    name,
+    id,
     label,
-    required,
-    helper,
-    options,
+    mandatory,
+    comment,
+    dynamicValues,
+    staticValues,
     dependsOn,
-    value,
+    defaultValue,
   },
-}) => {
-  const [error, setError] = useState();
+}) {
+  const { formValues, updateForm } = useFormContext();
+
+  const missingDependencies = dependsOn
+    ?.filter((paramId) => !formValues?.[formName]?.[paramId]) ?? [];
+
+  const ready = dependencyReady && missingDependencies.length === 0;
+
+  const { data: fetchedDynamicValues, error: fetchError } = useScriptCall(
+    [formValues, dynamicValues],
+    dynamicValues,
+    formValues,
+    ready,
+  );
 
   const currentForm = formValues?.[formName] || {};
-
-  const shouldBeDisplayed = !dependsOn || dependsOn?.every((x) => currentForm[x]);
-  const dependsOnValues = JSON.stringify(dependsOn?.map((x) => currentForm[x]));
-
-  // State for input data fetching. This is used to auto fill the inputs.
-  const [formControlInputValue, setFormControlInputValue] = useState('');
-  const [formControlInputLoading, setFormControlInputLoading] = useState(Boolean(value && typeof value === 'object' && value.script));
 
   const currentFormRef = useRef();
   currentFormRef.current = currentForm;
 
-  const fieldValue = currentForm[name] || formControlInputValue;
+  const fieldValue = currentForm[id];
 
-  const handleFormControlInput = useCallback((e) => {
-    setFormControlInputValue('');
-    onUpdate({ name, value: e.target.value });
-  }, [onUpdate, name]);
-
-  const triggerInputDataFetching = () => {
-    if (value && typeof value === 'object' && value.script && shouldBeDisplayed && formControlInputLoading) {
-      const fetchValue = async () => {
-        try {
-          const { data } = await axios.post('/api/action', {
-            script: `${contextFolderPath}/${value.script}`,
-            function: value.function,
-            params: {
-              featuresValues: currentFormRef.current,
-            },
-          });
-
-          onUpdate({ name, value: data });
-        } catch (err) {
-          setError(err.response?.data);
-        }
-
-        setFormControlInputLoading(false);
-      };
-
-      fetchValue();
-    }
-  };
+  const requireError = !fieldValue && mandatory;
 
   const getField = () => {
     switch (type) {
-    case 'RADIO': {
-      const radioProps = Array.isArray(options) ? options : [];
+    case 'TOGGLE': {
       return (
-        radioProps?.map((radio) => (
-          <FormCheck
-            isRadio
-            key={radio.value}
-            value={radio.value}
-            name={name}
-            onChange={(e) => onUpdate({ name, value: e.target.value })}
-          >{radio.label || ''}
-          </FormCheck>
-        ))
+        <FormCheck
+          key={id}
+          name={id}
+          defaultChecked={defaultValue}
+          onChange={(e) => updateForm(formName, { name: id, value: e.target.value === 'on' })}
+          disabled={!ready}
+        >{label || ''}
+        </FormCheck>
       );
     }
-    case 'TEXTAREA':
-      triggerInputDataFetching();
-
-      return (
-        <FormControlInput
-          name={name}
-          tag="textarea"
-          value={fieldValue || ''}
-          autoComplete={name}
-          onChange={handleFormControlInput}
-          required={required}
-          isLoading={formControlInputLoading}
-        />
-      );
 
     case 'TEXT':
-      triggerInputDataFetching();
-
       return (
         <FormControlInput
-          name={name}
+          name={id}
           value={fieldValue || ''}
-          autoComplete={name}
-          onChange={handleFormControlInput}
-          required={required}
-          isLoading={formControlInputLoading}
-        />
-      );
-
-    case 'URL':
-      triggerInputDataFetching();
-
-      return (
-        <FormControlInput
-          name={name}
-          value={fieldValue || ''}
-          autoComplete={name}
-          type="url"
-          onChange={handleFormControlInput}
-          isLoading={formControlInputLoading}
+          onChange={(e) => updateForm(formName, { name: id, value: e.target.value })}
+          required={mandatory}
+          disabled={!ready}
         />
       );
 
     case 'PASSWORD':
       return (
         <FormPassword
-          name={name}
+          name={id}
           value={fieldValue || ''}
-          autoComplete={name}
-          onChange={(e) => onUpdate({ name, value: e.target.value })}
+          autoComplete={id}
+          onChange={(e) => updateForm(formName, { name: id, value: e.target.value })}
+          disabled={!ready}
         />
       );
 
-    case 'SELECT': {
-      const selectProps = Array.isArray(options)
-        // Hard coded options in context.yaml
-        ? {
-          options: options?.map((option) => (
-            { value: option.id, label: option.label, payload: option }
-          )),
-        }
-        // Dynamic options in custom JavaScript files
-        : {
-          isAsync: true,
-          cacheOptions: true,
-          defaultOptions: true,
-          loadOptions: async () => {
-            setError(null);
-
-            if (
-              !shouldBeDisplayed
-              || !options
-              || !options.script
-              || !options.function
-            ) {
-              return options;
-            }
-
-            try {
-              const { data } = await axios.post('/api/action', {
-                script: `${contextFolderPath}/${options.script}`,
-                function: options.function,
-                params: {
-                  featuresValues: currentFormRef.current,
-                },
-              });
-
-              return data?.map((x) => ({ value: x.id, label: x.label, payload: x }));
-            } catch (err) {
-              setError(err.response?.data);
-            }
-
-            return [];
-          },
-        };
-
+    case 'STATIC_SELECT': {
+      const defaultStaticValue = defaultValue
+        ? staticValues?.filter((v) => v.id === defaultValue)?.[0]
+        : null;
       return (
         <FormControlSelect
           // Used to avoid long label to be cropped when selected. Closes #65.
           // By adding this prop, it also remove the horizontal scrollbar.
           menuPortalTarget={document.body}
-          name={name}
-          onChange={({ payload }) => {
-            onUpdate({ name, value: payload });
-          }}
-          value={fieldValue ? {
-            label: fieldValue.label,
-            value: fieldValue.id,
-            payload: fieldValue,
-          } : null}
-          {...selectProps}
+          name={id}
+          onChange={({ value }) => updateForm(formName, { name: id, value })}
+          value={fieldValue ? staticValues?.filter((v) => v.id === fieldValue)?.[0] : null}
+          defaultValue={defaultStaticValue}
+          options={staticValues?.map((x) => ({ value: x.id, label: x.label, payload: x }))}
+          disabled={!ready}
         />
       );
     }
-    case 'ENDPOINT':
-      if (formName === 'endpoint') {
-        return (
-          <div className="sui-m-message as--light as--danger">
-            You can&apos;t use a type <code>ENDPOINT</code> in endpoint features.
-          </div>
-        );
+    case 'DYNAMIC_SELECT': {
+      let options = [];
+      let dynamicValue = null;
+      let dynamicValuesError = null;
+      if (fetchedDynamicValues) {
+        if (Array.isArray(fetchedDynamicValues.data)) {
+          options = fetchedDynamicValues?.data
+            ?.map((x) => ({ value: x.id, label: x.label, payload: x }))
+            ?? [];
+          dynamicValue = fieldValue
+            ? fetchedDynamicValues?.data?.filter((v) => v.id === fieldValue)?.[0]
+            : null;
+        } else {
+          dynamicValuesError = `Expecting an array of { id, label } returned by the function '${dynamicValues.function}', but was '${fetchedDynamicValues.data}'`;
+        }
       }
       return (
-        <FormControlSelect
-          name={name}
-          isClearable
-          options={[{ value: formValues?.endpoint, label: 'Use Endpoint Form' }]}
-          onChange={(val) => onUpdate({ name, value: val ? formValues?.endpoint : undefined })}
-        />
+        <>
+          <FormControlSelect
+            // Used to avoid long label to be cropped when selected. Closes #65.
+            // By adding this prop, it also remove the horizontal scrollbar.
+            menuPortalTarget={document.body}
+            name={id}
+            onChange={({ value }) => updateForm(formName, { name: id, value })}
+            value={dynamicValue}
+            options={options}
+            disabled={!ready}
+          />
+          {dynamicValuesError && <FormFeedback color="danger">{dynamicValuesError}</FormFeedback>}
+        </>
       );
-
-    case 'ARTIFACT':
-      return type;
-
-    case 'COMMAND_LINE':
-      return type;
+    }
 
     default:
       return type;
     }
   };
 
-  if (!shouldBeDisplayed) {
-    return '';
+  let validationState;
+  if (fetchError) {
+    validationState = 'danger';
+  } else if (!ready) {
+    validationState = 'warning';
+  } else if (requireError) {
+    validationState = 'danger';
+  }
+
+  let feedbackMessage;
+  if (fetchError) {
+    feedbackMessage = fetchError.message;
+  } else if (!dependencyReady) {
+    feedbackMessage = 'Dependant form not ready';
+  } else if (missingDependencies?.length > 0) {
+    feedbackMessage = `Missing dependencies: ${missingDependencies}`;
+  } else if (requireError) {
+    feedbackMessage = 'Required';
   }
 
   return (
     <FormGroup
-      key={dependsOnValues}
-      label={label}
-      helper={helper}
-      isOptional={!required}
-      validationState={error ? 'danger' : undefined}
-      feedbackMessage={error ? error.message : undefined}
+      key={id}
+      label={type === 'TOGGLE' ? '' : label}
+      helper={comment}
+      isOptional={!mandatory}
+      validationState={validationState}
+      feedbackMessage={feedbackMessage}
     >
       {getField()}
     </FormGroup>
   );
-};
+}
 
 SmartField.propTypes = propTypes;
 SmartField.defaultProps = defaultProps;
