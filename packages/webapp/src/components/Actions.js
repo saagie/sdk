@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { PageEmptyState, Button, Tooltip } from 'saagie-ui/react';
+import React, { useState } from 'react';
+import {
+  Button, EmptyState, FormFeedback, Tooltip,
+} from 'saagie-ui/react';
 import { Status } from 'saagie-ui/react/projects';
-import axios from 'axios';
-import { useMutation } from 'react-query';
-import { v4 as uuidv4 } from 'uuid';
+import PropTypes from 'prop-types';
 import { useYAMLConfigContext } from '../contexts/YAMLConfigContext';
 import { useFormContext } from '../contexts/FormContext';
 import { Logs } from './Logs/index';
-import { useErrorContext } from '../contexts/ErrorContext';
+import { useScriptCallMutation } from '../contexts/ScriptCallHistoryContext';
 
-const propTypes = {};
+const propTypes = {
+  ready: PropTypes.bool.isRequired,
+};
+
 const defaultProps = {};
 
 const JobStatus = {
@@ -23,186 +26,209 @@ const JobStatus = {
   FAILED: 'FAILED',
 };
 
-function useDebug() {
-  const query = new URLSearchParams(window.location.search);
-  return query.get('debug') !== null;
-}
-
-export const Actions = () => {
-  const [lastInstance, setLastInstance] = useState();
+export function Actions({ ready }) {
+  const [payload, setPayload] = useState();
+  const [jobStatus, setJobStatus] = useState();
   const [logs, setLogs] = useState();
+  const [error, setError] = useState();
 
-  const isDebugMode = useDebug();
-
-  const { selectedContext } = useYAMLConfigContext();
+  const { currentContext } = useYAMLConfigContext();
   const { formValues } = useFormContext();
-  const { addError } = useErrorContext();
+
+  const { actions } = currentContext || {};
 
   const {
-    __folderPath: contextFolderPath,
-    instance,
-  } = selectedContext || {};
-
-  const { actions } = instance || {};
-  const {
-    onStart,
-    onStop,
+    start,
+    stop,
     getStatus,
     getLogs,
   } = actions || {};
 
-  const createInstance = () => {
-    const newInstance = {
-      id: uuidv4(),
-    };
+  const {
+    mutateAsync: callGetStatus,
+    status: getJobStatusStatus,
+  } = useScriptCallMutation(getStatus,
+    {
+      connection: formValues.connection,
+      parameters: formValues.parameters,
+      payload,
+    },
+    (data) => { setError(null); setJobStatus(data.data); },
+    (err) => setError(`getStatus error: ${err?.response?.data?.message}`),
+  );
 
-    setLastInstance(newInstance);
+  const {
+    mutateAsync: callStart,
+    status: runJobStatus,
+  } = useScriptCallMutation(start,
+    {
+      connection: formValues.connection,
+      parameters: formValues.parameters,
+    },
+    (data) => { setError(null); setPayload(data.data); },
+    (err) => setError(`start error: ${err?.response?.data?.message}`),
+  );
 
-    return newInstance;
+  const {
+    mutateAsync: callStop,
+    status: stopJobStatus,
+  } = useScriptCallMutation(stop,
+    {
+      connection: formValues.connection,
+      parameters: formValues.parameters,
+      payload,
+    },
+    () => { setError(null); },
+    (err) => setError(`stop error: ${err?.response?.data?.message}`),
+  );
+
+  const {
+    mutateAsync: callGetLogs,
+    status: getJobLogsStatus,
+  } = useScriptCallMutation(getLogs,
+    {
+      connection: formValues.connection,
+      parameters: formValues.parameters,
+      payload,
+    },
+    (res) => { setError(null); setLogs(res.split('\n')); },
+    (err) => setError(`getLogs error: ${err?.response?.data?.message}`),
+  );
+
+  const reset = () => {
+    setPayload(null);
+    setJobStatus(null);
+    setLogs(null);
+    setError(null);
   };
 
-  const [getJobStatus, { status: getJobStatusStatus, data: jobStatus }] = useMutation(() => axios.post('/api/action', {
-    script: `${contextFolderPath}/${getStatus?.script}`,
-    function: getStatus?.function,
-    params: {
-      job: { featuresValues: formValues.job },
-      instance: lastInstance,
-    },
-  }), {
-    onError: (err) => addError({ ...err, on: { action: 'Get Status', date: new Date() } }),
-  });
+  function awaitFinishedStatus(resolve, reject) {
+    callGetStatus()
+      .then((status) => {
+        if (status?.data === 'SUCCEEDED' || status?.data === 'KILLED' || status?.data === 'FAILED') {
+          resolve();
+        } else {
+          setTimeout(() => awaitFinishedStatus(resolve, reject), 2000);
+        }
+      })
+      .catch((err) => reject(err));
+  }
 
-  const [runJob, { status: runJobStatus, data: instancePayloadResponse }] = useMutation(() => axios.post('/api/action', {
-    script: `${contextFolderPath}/${onStart?.script}`,
-    function: onStart?.function,
-    params: {
-      job: { featuresValues: formValues.job },
-      instance: createInstance(),
-    },
-  }), {
-    onError: (err) => addError({ ...err, on: { action: 'Start', date: new Date() } }),
-  });
-
-  const [stopJob, { status: stopJobStatus }] = useMutation(() => axios.post('/api/action', {
-    script: `${contextFolderPath}/${onStop?.script}`,
-    function: onStop?.function,
-    params: {
-      job: { featuresValues: formValues.job },
-      instance: lastInstance,
-    },
-  }), {
-    onError: (err) => addError({ ...err, on: { action: 'Stop', date: new Date() } }),
-  });
-
-  const [getJobLogs, { status: getJobLogsStatus }] = useMutation(() => axios.post('/api/action', {
-    script: `${contextFolderPath}/${getLogs?.script}`,
-    function: getLogs?.function,
-    params: {
-      job: { featuresValues: formValues.job },
-      instance: lastInstance,
-    },
-  }), {
-    onSuccess: (res) => setLogs(res.data),
-    onError: (err) => addError({ ...err, on: { action: 'Get Logs', date: new Date() } }),
-  });
-
-  useEffect(() => {
-    setLastInstance((i) => ({
-      ...i,
-      payload: instancePayloadResponse?.data,
-    }));
-  }, [instancePayloadResponse]);
+  const runJob = async () => {
+    await callStart();
+    await new Promise(awaitFinishedStatus);
+    await callGetLogs();
+  };
 
   return (
     <>
-      {
-        isDebugMode ? (
-          <PageEmptyState title="Debug">
-            <pre className="sui-h-text-left">
-              {JSON.stringify(selectedContext, null, 2)}
-            </pre>
-          </PageEmptyState>
-        ) : (
-          <>
-            <div className="sui-g-grid as--start as--middle as--auto">
-              <div className="sui-g-grid__item">
-                <Button
-                  color="action-play"
-                  onClick={() => runJob()}
-                  isLoading={runJobStatus === 'loading'}
-                >
-                  Start
-                </Button>
-              </div>
-              {onStop && (
-                <div className="sui-g-grid__item">
-                  <Button
-                    color="action-stop"
-                    onClick={() => stopJob()}
-                    isLoading={stopJobStatus === 'loading'}
-                  >
-                    Stop
-                  </Button>
-                </div>
-              )}
-              <div className="sui-g-grid__item">
-                <Button
-                  onClick={() => getJobStatus()}
-                  isLoading={getJobStatusStatus === 'loading'}
-                >
-                  Get Status
-                </Button>
-              </div>
-              {getLogs && (
-                <div className="sui-g-grid__item">
-                  <Button
-                    onClick={() => getJobLogs()}
-                    isLoading={getJobLogsStatus === 'loading'}
-                  >
-                    Get Logs
-                  </Button>
-                </div>
-              )}
-              {jobStatus?.data && (
-                <div className="sui-g-grid__item">
-                  {
-                    Object.values(JobStatus).find(
-                      (value) => value.toLowerCase() === jobStatus?.data?.toLowerCase())
-                      ? <Status name={jobStatus?.data?.toLowerCase() ?? ''} size="xl" />
-                      : (
-                        <Status name="" size="xl">
-                          {jobStatus?.data?.toUpperCase()}
-                          <Tooltip
-                            defaultPlacement="left"
-                            label={(
-                              <div>
-                                Not supported, go to <a href="https://go.saagie.com/design-system" target="_blank" rel="noopener noreferrer">Saagie Design System</a> for supported status
-                              </div>
-                            )}
-                            hideDelay
-                            hideDelayCustomTimeOut={1}
-                          >
-                            <i className="sui-a-icon as--fa-info-circle as--end" />
-                          </Tooltip>
-                        </Status>
-                      )
-                  }
-                </div>
-              )}
-            </div>
-            <div className="sui-g-grid">
-              <div className="sui-g-grid__item">
-                <div style={{ height: '60vh' }}>
-                  <Logs logs={logs} />
-                </div>
-              </div>
-            </div>
-          </>
-        )
-      }
+      <h3>
+        <div className="sui-g-grid as--no-wrap">
+          <span className="sui-g-grid__item">
+            Instance Actions
+          </span>
+          <Button className="sui-g-grid__item as--push as--middle" onClick={() => reset()}>Reset</Button>
+        </div>
+      </h3>
+      <div className="sui-g-grid as--start as--middle as--auto">
+        <div className="sui-g-grid__item">
+          <Button
+            color="action-play"
+            onClick={() => runJob()}
+            isDisabled={!ready || !!payload}
+          >
+            Run
+          </Button>
+        </div>
+        {jobStatus && (
+          <div className="sui-g-grid__item as--push">
+            {
+              Object.values(JobStatus).find(
+                (value) => value.toLowerCase() === jobStatus.toLowerCase())
+                ? <Status name={jobStatus.toLowerCase() ?? ''} size="xl" />
+                : (
+                  <Status name="" size="xl">
+                    {jobStatus.toUpperCase()}
+                    <Tooltip
+                      defaultPlacement="left"
+                      label={(
+                        <div>
+                          Not supported, go to <a href="https://go.saagie.com/design-system" target="_blank" rel="noopener noreferrer">Saagie Design System</a> for supported status
+                        </div>
+                      )}
+                      hideDelay
+                      hideDelayCustomTimeOut={1}
+                    >
+                      <i className="sui-a-icon as--fa-info-circle as--end" />
+                    </Tooltip>
+                  </Status>
+                )
+            }
+          </div>
+        )}
+      </div>
+      <div className="sui-g-grid as--start as--middle as--auto">
+        <div className="sui-g-grid__item">
+          <Button
+            onClick={() => callStart()}
+            isLoading={runJobStatus === 'loading'}
+            isDisabled={!ready || !!payload}
+          >
+            <tt>start</tt>
+          </Button>
+        </div>
+        {stop && (
+          <div className="sui-g-grid__item">
+            <Button
+              onClick={() => callStop()}
+              isLoading={stopJobStatus === 'loading'}
+              isDisabled={!ready || !payload}
+            >
+              <tt>stop</tt>
+            </Button>
+          </div>
+        )}
+        {getStatus && (
+          <div className="sui-g-grid__item">
+            <Button
+              onClick={() => callGetStatus()}
+              isLoading={getJobStatusStatus === 'loading'}
+              isDisabled={!ready || !payload}
+            >
+              <tt>getStatus</tt>
+            </Button>
+          </div>
+        )}
+        {getLogs && (
+          <div className="sui-g-grid__item">
+            <Button
+              onClick={() => callGetLogs()}
+              isLoading={getJobLogsStatus === 'loading'}
+              isDisabled={!ready || !payload}
+            >
+              <tt>getLogs</tt>
+            </Button>
+          </div>
+        )}
+      </div>
+      { error && <FormFeedback color="danger">{error}</FormFeedback>}
+      <div className="sui-g-grid">
+        <div className="sui-g-grid__item">
+          {payload
+            ? (<pre>{JSON.stringify(payload, null, 2)}</pre>)
+            : (<EmptyState icon="settings-exec" content="No instance payload" />)}
+        </div>
+      </div>
+      <div className="sui-g-grid">
+        <div className="sui-g-grid__item">
+          <div style={{ height: '60vh' }}>
+            <Logs logs={logs} />
+          </div>
+        </div>
+      </div>
     </>
   );
-};
+}
 
 Actions.propTypes = propTypes;
 Actions.defaultProps = defaultProps;

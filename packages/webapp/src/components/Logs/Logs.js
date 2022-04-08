@@ -17,7 +17,7 @@ const defaultProps = {
   logs: [],
 };
 
-export const Logs = ({ logs }) => {
+export function Logs({ logs }) {
   if (!logs || logs.length <= 0) {
     return (
       <EmptyState icon="logs" content="No logs available" />
@@ -47,7 +47,7 @@ export const Logs = ({ logs }) => {
       </AutoSizer>
     </div>
   );
-};
+}
 
 Logs.propTypes = propTypes;
 Logs.defaultProps = defaultProps;

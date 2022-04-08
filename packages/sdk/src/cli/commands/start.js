@@ -2,13 +2,11 @@ const chalk = require('chalk');
 const { DEFAULT_PORT, ERROR_CODE } = require('../constants');
 const { error, success, info } = require('../utils/output');
 const server = require('../server');
-const isRoot = require('../validators/isRoot');
+const isInTechnology = require('../validators/isInTechnology');
 
-module.exports = async ({ port = DEFAULT_PORT, bundler }) => {
-  global.bundler = bundler;
-
+module.exports = async ({ port = DEFAULT_PORT }) => {
   // Check if the user is in a technology folder.
-  if (!await isRoot()) {
+  if (!await isInTechnology()) {
     error('fatal: not a technology folder');
     process.exit(ERROR_CODE.NOT_A_TECHNOLOGY_FOLDER);
   }

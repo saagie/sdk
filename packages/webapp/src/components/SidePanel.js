@@ -10,10 +10,17 @@ import {
   useDisclosure,
   Tooltip,
 } from 'saagie-ui/react';
-import { useErrorContext } from '../contexts/ErrorContext';
+import { useScriptCallHistoryContext } from '../contexts/ScriptCallHistoryContext';
 
-export const SidePanel = () => {
-  const [selectedError, setSelectedError] = useState();
+const loggerName = (name) => {
+  if (name.startsWith('console.')) {
+    return name.substring(8).toUpperCase();
+  }
+  return name;
+};
+
+export function SidePanel() {
+  const [selectedScriptCall, setSelectedScriptCall] = useState();
 
   const { isOpen, open, close } = useDisclosure();
   const {
@@ -23,50 +30,31 @@ export const SidePanel = () => {
   } = useDisclosure();
 
   const {
-    errors,
-    clearErrors,
-  } = useErrorContext();
+    history,
+    clearHistory,
+  } = useScriptCallHistoryContext();
 
-  const handleOpenModal = (error) => {
-    console.log(error);
-    setSelectedError(error);
+  const handleOpenModal = (scriptCall) => {
+    setSelectedScriptCall(scriptCall);
 
     openModal();
   };
 
-  const isObject = (value) => typeof value === 'object' && value !== null;
+  const getErrorSummary = (error) => `${error?.name ?? ''}${error?.name && error?.message ? ' - ' : ''}${error?.message ?? ''}`;
 
-  const objectToLabelValue = (anObject) => {
-    if (!anObject) {
-      return null;
+  const getScriptCallSummary = (scriptCall) => {
+    let message = '';
+    if (scriptCall?.error) {
+      message = ` - ${getErrorSummary(scriptCall?.error)}`;
     }
-
-    if (isObject(anObject)) {
-      const keys = Object.keys(anObject);
-
-      return keys.map((key) => {
-        const value = anObject[key];
-        return (
-          <LabelValue key={key} label={key.toUpperCase()}>
-            <pre>{!isObject(value) ? value : JSON.stringify(value)}</pre>
-          </LabelValue>
-        );
-      });
-    }
-
-    try {
-      return objectToLabelValue(JSON.parse(anObject));
-    } catch (err) {
-      return objectToLabelValue({
-        label: 'Raw Value',
-        value: anObject,
-      });
-    }
+    return `${scriptCall?.function}${message}`;
   };
 
-  const getErrorSummary = (error) => `${error?.on?.action} - ${error?.response?.status} - ${error?.response?.statusText}`;
+  const {
+    name: errorName, message: errorMessage, stack: errorStack, ...error
+  } = selectedScriptCall?.error ?? {};
 
-  const sidePanelLabel = 'Instance Actions Debug Panel';
+  const sidePanelLabel = 'Script Call History';
 
   return (
     <>
@@ -95,35 +83,33 @@ export const SidePanel = () => {
         </div>
         <div className="sui-o-side-panel__body">
           <div className="sui-o-side-panel__scroll">
-            {errors.length === 0 && (
+            {history.length === 0 && (
               <div className="sui-m-message">
                 Any action or error will be shown in this panel. Try to click on
                 the <code>Run</code> button to try.
               </div>
             )}
             <div>
-              {errors.map((error) => (
+              {history.map((scriptCall) => (
                 <div
                   className="sui-h-mb-md"
-                  key={error.id}
+                  key={scriptCall.id}
                 >
-                  <Tooltip label={error?.on?.date?.toISOString()} defaultPlacement="right">
-                    <div
-                      role="button"
-                      tabIndex="0"
-                      className="sdk-m-card as--error"
-                      onClick={() => handleOpenModal(error)}
-                      onKeyDown={(event) => {
-                        if (event.keyCode !== 13) {
-                          return;
-                        }
+                  <div
+                    role="button"
+                    tabIndex="0"
+                    className={`sdk-m-card ${scriptCall.error ? 'as--error' : 'as--success'}`}
+                    onClick={() => handleOpenModal(scriptCall)}
+                    onKeyDown={(event) => {
+                      if (event.keyCode !== 13) {
+                        return;
+                      }
 
-                        handleOpenModal(error);
-                      }}
-                    >
-                      {getErrorSummary(error)}
-                    </div>
-                  </Tooltip>
+                      handleOpenModal(scriptCall);
+                    }}
+                  >
+                    {getScriptCallSummary(scriptCall)}
+                  </div>
                 </div>
               ))}
             </div>
@@ -132,7 +118,7 @@ export const SidePanel = () => {
         <div className="sui-o-side-panel__footer">
           <div className="sui-g-grid">
             <div className="sui-g-grid__item as--pull">
-              <Button onClick={clearErrors}>Clear Errors</Button>
+              <Button onClick={clearHistory}>Clear History</Button>
             </div>
           </div>
         </div>
@@ -141,30 +127,52 @@ export const SidePanel = () => {
       <Modal isOpen={isModalOpen} onClose={closeModal} size="xxl">
         <ModalHeader>
           <ModalCloseButton />
-          <ModalTitle>{getErrorSummary(selectedError)}</ModalTitle>
+          <ModalTitle>{getScriptCallSummary(selectedScriptCall)}</ModalTitle>
         </ModalHeader>
         <ModalBody>
-          <details open className="sui-h-mt-lg">
-            <summary>Response Body</summary>
-            {objectToLabelValue(selectedError?.response?.data)}
-          </details>
-          <hr />
-          <details>
-            <summary>Response Headers</summary>
-            {objectToLabelValue(selectedError?.response?.headers)}
-          </details>
-          <hr />
-          <details>
-            <summary>Request Body</summary>
-            {objectToLabelValue(selectedError?.response?.config?.data)}
-          </details>
-          <hr />
-          <details className="sui-h-mb-lg">
-            <summary>Request Headers</summary>
-            {objectToLabelValue(selectedError?.response?.config?.headers)}
-          </details>
+          <LabelValue label="Script">
+            <pre>{selectedScriptCall?.script}</pre>
+          </LabelValue>
+          <LabelValue label="Function">
+            <pre>{selectedScriptCall?.function}</pre>
+          </LabelValue>
+          <LabelValue label="Params">
+            <pre>{JSON.stringify(selectedScriptCall?.params, null, 2)}</pre>
+          </LabelValue>
+          {selectedScriptCall?.data
+            && (
+              <LabelValue label="Result">
+                <pre>{JSON.stringify(selectedScriptCall?.data, null, 2)}</pre>
+              </LabelValue>
+            )}
+          {(errorName || errorMessage)
+            && (
+              <LabelValue label="Result: ERROR">
+                <pre>{getErrorSummary(selectedScriptCall?.error)}</pre>
+              </LabelValue>
+            )}
+          {errorStack
+            && (
+              <LabelValue label="Result: Stack">
+                <pre>{errorStack}</pre>
+              </LabelValue>
+            )}
+          {Object.keys(error).length > 0
+            && (
+              <LabelValue label="Result: error data">
+                <pre>{JSON.stringify(error)}</pre>
+              </LabelValue>
+            )}
+          {selectedScriptCall?.logs?.length > 0
+            && (
+              <LabelValue label="Console">
+                <pre>
+                  {selectedScriptCall?.logs.map((log) => `[${loggerName(log.name)}] ${log.message}\n`)}
+                </pre>
+              </LabelValue>
+            )}
         </ModalBody>
       </Modal>
     </>
   );
-};
+}

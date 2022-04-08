@@ -10,10 +10,10 @@ module.exports = async () => {
   output.log('');
 
   output.log(chalk`
-👇 {bold New external technology}
-${figures.pointerSmall} {bold label} {gray will be displayed in the User Interface}
+👇 {bold New connection type}
+${figures.pointerSmall} {bold label} {gray will be diplayed in the User Interface}
 ${figures.pointerSmall} {bold id} {gray must be {bold unique} in your repository}
-${figures.pointerSmall} {bold description} {gray will be displayed in the User Interface}
+${figures.pointerSmall} {bold description} {gray will be diplayed in the User Interface}
 `);
 
   return inquirer
@@ -22,7 +22,7 @@ ${figures.pointerSmall} {bold description} {gray will be displayed in the User I
         type: 'input',
         name: 'label',
         message: 'label',
-        default: 'My Technology',
+        default: 'My Connection Type',
         filter: (input) => input.trim(),
         validate: isRequired(),
       },

@@ -1,0 +1,31 @@
+version: v2
+id: {{id}}
+label: {{label}}
+description: "{{description}}"
+type: CONNECTION_TYPE
+
+parameters:
+  - type: TEXT
+    id: url
+    label: Url
+    mandatory: true
+    defaultValue: http://localhost:4000
+  - type: STATIC_SELECT
+    id: region
+    label: Region
+    mandatory: true
+    staticValues:
+      - id: us
+        label: United States
+      - id: eu
+        label: Europe
+      - id: asia
+        label: Asia
+  - type: TEXT
+    id: username
+    label: Username
+    mandatory: true
+  - type: PASSWORD
+    id: password
+    label: Password
+    mandatory: true

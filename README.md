@@ -12,7 +12,7 @@ The **Saagie Technology SDK** allows you to implements **new technologies** easi
 
 ## Requirements
 
-* **[Node.js](https://nodejs.org/)** - Minimum version: `12.15.0` (the latest `lts` is recommended)
+* **[Node.js](https://nodejs.org/)** - Minimum version: `16`
 
 ---
 
@@ -37,7 +37,6 @@ Update the `package.json` to include this script command :
 {
   "...": "...",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "init": "saagie-sdk init"
   },
   "...": "..."
@@ -53,7 +52,7 @@ npm run init
 ### 👉 Run your technology locally
 
 ```sh
-npm run start
+npm run dev
 ```
 
 ### 👉 Build your technology

@@ -1,59 +1,49 @@
 const fse = require('fs-extra');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
-const { Response } = require('../../../sdk');
+const { Stream } = require('stream');
 const output = require('../../utils/output');
-const { ENGINES } = require('../../utils/engines');
-const { BUNDLE_FOLDER, BUNDLERS } = require('../../constants');
+const { stringify, runScript } = require('../../utils/runScript');
+
+const Response = {
+  success: (data, logs) => ({
+    data,
+    logs,
+  }),
+  error: (error, logs) => ({
+    error,
+    logs,
+  }),
+};
+
+function onError(error, res, logs) {
+  output.error(error);
+  res.status(420).send(Response.error(stringify(error), logs));
+}
 
 module.exports = async (req, res) => {
+  const logs = [];
   try {
     const scriptPath = path.resolve(process.cwd(), req.body.script);
 
     if (!await fse.pathExists(scriptPath || '')) {
       const message = `Unable to find file ${scriptPath}, please check the path in context.yaml`;
       output.error(message);
-      res.status(500).send(Response.error(message, { error: message }));
+      res.status(421).send(Response.error({ message }));
 
       return;
     }
 
-    const outfile = path.resolve(
-      process.cwd(),
-      BUNDLE_FOLDER,
-      `${uuidv4()}-${path.basename(req.body.script)}`,
-    );
-
-    const engine = ENGINES[global.bundler] || ENGINES[BUNDLERS.PARCEL];
-
-    const bundleName = await engine(scriptPath, outfile);
-
-    // eslint-disable-next-line security/detect-object-injection
-    delete require.cache[bundleName];
-
-    // We need this non literal require so we can execute the given script.
-    // eslint-disable-next-line security/detect-non-literal-require
-    const importedScript = require(bundleName);
-
-    const data = await importedScript[req.body.function || 'default'](req.body.params);
-
-    switch (data.status) {
-      case 'ERROR':
-        res.status(500).send(data);
-        break;
-      case 'EMPTY':
-        res.status(400).send(data);
-        break;
-      default:
-        res.send(data);
+    const logger = (log) => logs.push(log);
+    const scriptData = fse.readFileSync(scriptPath);
+    const data = await runScript(scriptData, req.body.function, req.body.params, logger);
+    if (data instanceof Stream) {
+      data.pause();
+      data.on('error', (err) => onError(err, res, logs));
+      data.pipe(res);
+    } else {
+      res.send(Response.success(data, logs));
     }
-
-    // Removing the outfile scripts because they are uniquely generated per
-    // request so we do not want to clutter the user disk space.
-    await fse.remove(outfile);
   } catch (err) {
-    output.error(err);
-
-    res.status(500).send(Response.error(err.message, { error: err.stack }));
+    onError(err, res, logs);
   }
 };

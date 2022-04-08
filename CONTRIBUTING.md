@@ -2,7 +2,7 @@
 
 ## Requirements
 
-* **[Node.js](https://nodejs.org/)** - Minimum version: `12.15.0`
+* **[Node.js](https://nodejs.org/)** - Minimum version: `16`
 
 ## Install dependencies
 
@@ -31,7 +31,8 @@ Then go to your technology folder and run:
 
 ```sh
 yarn link @saagie/sdk
-SAAGIE_ENV=development yarn start
+export SAAGIE_ENV=development
+yarn dev
 ```
 
 ## Test NPM publish with Verdaccio
@@ -58,7 +59,13 @@ yarn verdaccio:publish
 
 Go to [@saagie/sdk on Verdaccio](http://localhost:4873/-/web/detail/@saagie/sdk) to see your package published.
 
-### 4. Revert dry-run publish
+### 4. Testing with npx
+
+```sh
+npx @saagie/sdk init -- --registry http://localhost:4873/
+```
+
+### 5. Revert dry-run publish
 
 ```sh
 yarn verdaccio:unpublish

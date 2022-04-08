@@ -1,5 +1,5 @@
 import React, {
-  createContext, useContext, useState, useEffect, useCallback,
+  createContext, useContext, useState, useCallback, useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from 'react-query';
@@ -17,39 +17,42 @@ const defaultProps = {
 export const YAMLConfigContext = createContext();
 export const useYAMLConfigContext = () => useContext(YAMLConfigContext);
 
-export const YAMLConfigContextProvider = ({ children }) => {
+export function YAMLConfigContextProvider({ children }) {
   const [selectedContext, setSelectedContext] = useState();
 
-  const { status, data: config } = useQuery('config', () => axios('/api/config'));
+  const { status: configStatus, data: config, refetch: reloadConfig } = useQuery('config', () => axios('/api/config'), { refetchOnWindowFocus: false });
 
-  const { setItem, getItem } = useLocalStorage(
+  const { setItem: setStoredContextId, getItem: getStoredContextId } = useLocalStorage(
     `${config?.technology?.id}.selectedContextId`,
   );
-
-  useEffect(() => {
-    const contextId = getItem();
-    const context = config?.contexts?.find((c) => c.id === contextId);
-    setSelectedContext((state) => state ?? context ?? config?.contexts?.[0]);
-  }, [config, getItem]);
 
   const changeContext = useCallback((id) => {
     const context = config?.contexts?.find((c) => c.id === id);
     setSelectedContext(context);
-    setItem(context.id);
-  }, [config, setItem]);
+    setStoredContextId(context.id);
+  }, [config, setStoredContextId]);
+
+  const currentContext = selectedContext
+    ?? config?.contexts?.find((c) => c.id === getStoredContextId())
+    ?? config?.contexts?.[0];
+
+  const currentConnectionType = config?.connectionTypes
+    ?.filter((c) => c.id === currentContext?.connectionTypeId)?.[0];
 
   return (
-    <YAMLConfigContext.Provider value={{
+    <YAMLConfigContext.Provider value={useMemo(() => ({
       config,
-      selectedContext,
+      currentContext,
+      currentConnectionType,
       changeContext,
-      status,
-    }}
+      configStatus,
+      reloadConfig,
+    }), [config, currentContext, currentConnectionType, changeContext, configStatus, reloadConfig])}
     >
       {children}
     </YAMLConfigContext.Provider>
   );
-};
+}
 
 YAMLConfigContextProvider.propTypes = propTypes;
 YAMLConfigContextProvider.defaultProps = defaultProps;
