@@ -28,7 +28,6 @@
   "bugs": {
     "url": "https://github.com/saagie/sdk/issues"
   },
-  "author": "Yoann Fleury <yoann.fleury@saagie.com>",
   "auto": {
     "plugins": [
       "npm",
