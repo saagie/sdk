@@ -35,10 +35,11 @@ export function FormContextProvider({ children }) {
 
   const updateForm = useCallback((form, { name, value }) => {
     setFormValues((state) => {
+      const s = state ?? getItem() ?? {};
       const newState = {
-        ...(state || {}),
+        ...s,
         [form]: {
-          ...(state || {})[form],
+          ...s[form],
           [name]: value,
         },
       };
@@ -47,7 +48,7 @@ export function FormContextProvider({ children }) {
 
       return newState;
     });
-  }, [setItem]);
+  }, [setItem, getItem]);
 
   const filteredFormValues = useMemo(() => {
     const allFormValues = formValues ?? getItem() ?? {};
