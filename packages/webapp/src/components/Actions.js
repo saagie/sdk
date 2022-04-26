@@ -117,7 +117,9 @@ export function Actions({ ready }) {
   const runJob = async () => {
     await callStart();
     await new Promise(awaitFinishedStatus);
-    await callGetLogs();
+    if (getLogs) {
+      await callGetLogs();
+    }
   };
 
   return (
