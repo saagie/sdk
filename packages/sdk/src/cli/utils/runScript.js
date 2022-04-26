@@ -12,6 +12,9 @@ const LOG_EVENT_NAMES = [
 
 // fonction to convert Errors into a simple object of strings, in order to keep informations while serialized
 const stringify = (value) => {
+  if (value === null) {
+    return 'null';
+  }
   if (typeof value === 'object') {
     if (value instanceof Error) {
       return {
