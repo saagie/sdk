@@ -32,7 +32,10 @@ export function Index() {
     configStatus, currentContext, currentConnectionType,
   } = useYAMLConfigContext();
   const { formValues, clearForm } = useFormContext();
-  const { infoStatus, data: info } = useQuery('info', () => axios('/api/info'), { refetchOnWindowFocus: false });
+  const { infoStatus, data: info } = useQuery('info', () => axios('/api/info'), {
+    refetchOnWindowFocus: false,
+    retry: false,
+  });
 
   if (configStatus === 'loading') {
     return (

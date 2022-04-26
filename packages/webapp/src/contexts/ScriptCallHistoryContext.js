@@ -67,6 +67,7 @@ export const useScriptCall = (queryKey, scriptCall, params, enabled, onSuccess, 
       message: response?.message,
       data: response?.data,
       error: response?.error,
+      logs: response?.logs,
     });
   }, [addScriptCall]);
 
@@ -76,15 +77,12 @@ export const useScriptCall = (queryKey, scriptCall, params, enabled, onSuccess, 
     params,
   };
 
-  return useQuery(queryKey, () =>
-    axios.post('/api/action', postData), {
+  return useQuery(queryKey, () => axios.post('/api/action', postData), {
     enabled: enabled && !!currentContext && !!scriptCall,
     onSuccess: (res) => {
-      if (res) {
-        addScriptCallResponse(postData, res);
-        if (onSuccess) {
-          onSuccess(res);
-        }
+      addScriptCallResponse(postData, res);
+      if (onSuccess) {
+        onSuccess(res);
       }
     },
     onError: (err) => {
@@ -93,6 +91,7 @@ export const useScriptCall = (queryKey, scriptCall, params, enabled, onSuccess, 
         onError(err);
       }
     },
+    retry: false,
     refetchOnWindowFocus: false,
   });
 };
