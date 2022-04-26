@@ -20,7 +20,14 @@ export const useYAMLConfigContext = () => useContext(YAMLConfigContext);
 export function YAMLConfigContextProvider({ children }) {
   const [selectedContext, setSelectedContext] = useState();
 
-  const { status: configStatus, data: config, refetch: reloadConfig } = useQuery('config', () => axios('/api/config'), { refetchOnWindowFocus: false });
+  const {
+    status: configStatus,
+    data: config,
+    refetch: reloadConfig,
+  } = useQuery('config', () => axios('/api/config'), {
+    refetchOnWindowFocus: false,
+    retry: false,
+  });
 
   const { setItem: setStoredContextId, getItem: getStoredContextId } = useLocalStorage(
     `${config?.technology?.id}.selectedContextId`,
