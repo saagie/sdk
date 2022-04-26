@@ -10,23 +10,47 @@ import {
   useDisclosure,
   Tooltip,
 } from 'saagie-ui/react';
-import { useScriptCallHistoryContext } from '../contexts/ScriptCallHistoryContext';
+import {
+  useScriptCallHistoryContext,
+  useScriptCallMutation,
+} from '../contexts/ScriptCallHistoryContext';
 
 const loggerName = (name) => {
   if (name.startsWith('console.')) {
-    return name.substring(8).toUpperCase();
+    return name.substring(8)
+      .toUpperCase();
   }
   return name;
 };
 
-export function SidePanel() {
-  const [selectedScriptCall, setSelectedScriptCall] = useState();
+const parseJsonSafely = (data) => {
+  try {
+    return JSON.parse(data);
+  } catch (e) {
+    return null;
+  }
+};
 
-  const { isOpen, open, close } = useDisclosure();
+export function SidePanel() {
+  const [selectedScriptCallIndex, setSelectedScriptCallIndex] = useState();
+  const [sandboxScript, setSandboxScript] = useState();
+  const [sandboxFunction, setSandboxFunction] = useState();
+  const [sandboxArg, setSandboxArg] = useState();
+
+  const {
+    isOpen,
+    open,
+    close,
+  } = useDisclosure();
   const {
     isOpen: isModalOpen,
     open: openModal,
     close: closeModal,
+  } = useDisclosure();
+  const {
+    isOpen: isSandboxModalOpen,
+    open: openSandboxModal,
+    close: closeSandboxModal,
   } = useDisclosure();
 
   const {
@@ -34,9 +58,8 @@ export function SidePanel() {
     clearHistory,
   } = useScriptCallHistoryContext();
 
-  const handleOpenModal = (scriptCall) => {
-    setSelectedScriptCall(scriptCall);
-
+  const handleOpenModal = (scriptCallIndex) => {
+    setSelectedScriptCallIndex(scriptCallIndex);
     openModal();
   };
 
@@ -50,11 +73,32 @@ export function SidePanel() {
     return `${scriptCall?.function}${message}`;
   };
 
+  const historyIndex = selectedScriptCallIndex + (selectedScriptCallIndex < 0 ? history.length : 0);
+  const selectedScriptCall = history[historyIndex];
   const {
-    name: errorName, message: errorMessage, stack: errorStack, ...error
+    name: errorName,
+    message: errorMessage,
+    stack: errorStack,
+    ...error
   } = selectedScriptCall?.error ?? {};
 
   const sidePanelLabel = 'Script Call History';
+
+  const {
+    mutateAsync: callSandboxScript,
+  } = useScriptCallMutation({
+    script: sandboxScript,
+    function: sandboxFunction,
+  },
+  parseJsonSafely(sandboxArg),
+  );
+
+  const callSandbox = async () => {
+    closeSandboxModal();
+    await callSandboxScript();
+    setSelectedScriptCallIndex(-1);
+    openModal();
+  };
 
   return (
     <>
@@ -90,7 +134,7 @@ export function SidePanel() {
               </div>
             )}
             <div>
-              {history.map((scriptCall) => (
+              {history.map((scriptCall, scriptCallIndex) => (
                 <div
                   className="sui-h-mb-md"
                   key={scriptCall.id}
@@ -99,7 +143,7 @@ export function SidePanel() {
                     role="button"
                     tabIndex="0"
                     className={`sdk-m-card ${scriptCall.error ? 'as--error' : 'as--success'}`}
-                    onClick={() => handleOpenModal(scriptCall)}
+                    onClick={() => handleOpenModal(scriptCallIndex)}
                     onKeyDown={(event) => {
                       if (event.keyCode !== 13) {
                         return;
@@ -120,9 +164,34 @@ export function SidePanel() {
             <div className="sui-g-grid__item as--pull">
               <Button onClick={clearHistory}>Clear History</Button>
             </div>
+            <div className="sui-g-grid__item as--push">
+              <Button onClick={openSandboxModal}>Sandbox</Button>
+            </div>
           </div>
         </div>
       </div>
+
+      <Modal isOpen={isSandboxModalOpen} onClose={closeSandboxModal} size="xxl">
+        <ModalHeader>
+          <ModalCloseButton />
+          <ModalTitle>Sandbox</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <div className="sui-m-form-group">
+            <label className="sui-a-form-label as--lg">JS file path</label>
+            <input className="sui-a-form-control" value={sandboxScript} onChange={(e) => setSandboxScript(e.target.value)} />
+          </div>
+          <div className="sui-m-form-group">
+            <label className="sui-a-form-label as--lg">Function</label>
+            <input className="sui-a-form-control" value={sandboxFunction} onChange={(e) => setSandboxFunction(e.target.value)} />
+          </div>
+          <div className="sui-m-form-group">
+            <label className="sui-a-form-label as--lg">Argument</label>
+            <input className="sui-a-form-control" value={sandboxArg} onChange={(e) => setSandboxArg(e.target.value)} />
+          </div>
+          <Button onClick={callSandbox}>Call</Button>
+        </ModalBody>
+      </Modal>
 
       <Modal isOpen={isModalOpen} onClose={closeModal} size="xxl">
         <ModalHeader>
