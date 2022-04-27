@@ -1,4 +1,5 @@
 const { NodeVM } = require('vm2');
+const { Stream } = require('stream');
 
 const LOG_EVENT_NAMES = [
   'console.debug',
@@ -10,22 +11,32 @@ const LOG_EVENT_NAMES = [
   'console.trace',
 ];
 
-// fonction to convert Errors into a simple object of strings, in order to keep informations while serialized
+// function to convert Errors into a simple object of strings, in order to keep information while serialized
 const stringify = (value) => {
   if (value === null) {
     return 'null';
   }
+  if (value instanceof Stream) {
+    return '<[stream]>';
+  }
+  if (value instanceof Buffer) {
+    return '<[buffer]>';
+  }
+  if (value instanceof Array || value instanceof Int8Array || value instanceof Uint8Array
+    || value instanceof Uint8ClampedArray || value instanceof Int16Array
+    || value instanceof Uint16Array || value instanceof Int32Array
+    || value instanceof Uint32Array || value instanceof Float32Array
+    || value instanceof Float32Array || value instanceof Float64Array) {
+    return value.slice(0, 100).map((it) => stringify(it));
+  }
+  if (value instanceof Error) {
+    return {
+      name: value.name,
+      message: value.message,
+      stack: value.stack,
+    };
+  }
   if (typeof value === 'object') {
-    if (value instanceof Error) {
-      return {
-        name: value.name,
-        message: value.message,
-        stack: value.stack,
-      };
-    }
-    if (value.constructor === Array) {
-      return value.map((it) => stringify(it));
-    }
     const o = {};
     Object.keys(value).forEach((key) => {
       // eslint-disable-next-line security/detect-object-injection
