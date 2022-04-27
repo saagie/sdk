@@ -14,6 +14,7 @@ import {
   useScriptCallHistoryContext,
   useScriptCallMutation,
 } from '../contexts/ScriptCallHistoryContext';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const loggerName = (name) => {
   if (name.startsWith('console.')) {
@@ -36,6 +37,7 @@ export function SidePanel() {
   const [sandboxScript, setSandboxScript] = useState();
   const [sandboxFunction, setSandboxFunction] = useState();
   const [sandboxArg, setSandboxArg] = useState();
+  const { setItem: setSandboxLocalData, getItem: getSandboxLocalData } = useLocalStorage('sandbox');
 
   const {
     isOpen,
@@ -84,13 +86,31 @@ export function SidePanel() {
 
   const sidePanelLabel = 'Script Call History';
 
+  const sandboxLocalData = getSandboxLocalData();
+  const setSandboxData = (script, fun, arg) => {
+    if (fun !== null) {
+      setSandboxFunction(fun);
+    }
+    if (script !== null) {
+      setSandboxScript(script);
+    }
+    if (arg !== null) {
+      setSandboxArg(arg);
+    }
+    setSandboxLocalData({
+      script: script || sandboxScript || sandboxLocalData?.script,
+      fun: fun || sandboxFunction || sandboxLocalData?.fun,
+      arg: arg || sandboxArg || sandboxLocalData?.arg,
+    });
+  };
+
   const {
     mutateAsync: callSandboxScript,
   } = useScriptCallMutation({
-    script: sandboxScript,
-    function: sandboxFunction,
+    script: sandboxScript ?? sandboxLocalData?.script,
+    function: sandboxFunction ?? sandboxLocalData?.fun,
   },
-  parseJsonSafely(sandboxArg),
+  parseJsonSafely(sandboxArg ?? sandboxLocalData?.arg),
   );
 
   const callSandbox = async () => {
@@ -179,15 +199,15 @@ export function SidePanel() {
         <ModalBody>
           <div className="sui-m-form-group">
             <label className="sui-a-form-label as--lg">JS file path</label>
-            <input className="sui-a-form-control" value={sandboxScript} onChange={(e) => setSandboxScript(e.target.value)} />
+            <input className="sui-a-form-control" value={sandboxScript ?? sandboxLocalData?.script} onChange={(e) => setSandboxData(e.target.value, null, null)} />
           </div>
           <div className="sui-m-form-group">
             <label className="sui-a-form-label as--lg">Function</label>
-            <input className="sui-a-form-control" value={sandboxFunction} onChange={(e) => setSandboxFunction(e.target.value)} />
+            <input className="sui-a-form-control" value={sandboxFunction ?? sandboxLocalData?.fun} onChange={(e) => setSandboxData(null, e.target.value, null)} />
           </div>
           <div className="sui-m-form-group">
             <label className="sui-a-form-label as--lg">Argument</label>
-            <input className="sui-a-form-control" value={sandboxArg} onChange={(e) => setSandboxArg(e.target.value)} />
+            <input className="sui-a-form-control" value={sandboxArg ?? sandboxLocalData?.arg} onChange={(e) => setSandboxData(null, null, e.target.value)} />
           </div>
           <Button onClick={callSandbox}>Call</Button>
         </ModalBody>
