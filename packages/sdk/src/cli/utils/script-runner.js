@@ -26,6 +26,7 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger, stream
     execArgv: [],
   });
   let lastStreamedChunkDate = null;
+  const streamedLogs = [];
 
   function setupKillTimeout(timeout) {
     return setTimeout(() => {
@@ -53,7 +54,8 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger, stream
     } else if (m.type === 'chunk') {
       childProcess.send({ ack: 1 });
       if (lastStreamedChunkDate == null) {
-        stream.write('[');
+        // not very MVC, but we're respecting here the format of 'Response.success' of the HTTP API
+        stream.write('{"data":[');
       } else {
         stream.write(',');
       }
@@ -62,13 +64,24 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger, stream
     } else if (m.type === 'finished') {
       clearTimeout(kto);
       if (lastStreamedChunkDate != null) {
-        stream.write(']');
+        stream.write('],"logs":[');
+        streamedLogs.forEach((log, i) => {
+          if (i > 0) {
+            stream.write(',');
+          }
+          stream.write(JSON.stringify(log));
+        });
+        stream.write(']}');
         stream.end();
       }
       resolve(null);
       childProcess.kill();
     } else if (m.type === 'log') {
-      scriptLogger(m.name, m.message);
+      if (lastStreamedChunkDate != null) {
+        streamedLogs.push(m);
+      } else {
+        scriptLogger(m.name, m.message);
+      }
     } else if (m.type === 'error') {
       clearTimeout(kto);
       if (lastStreamedChunkDate != null) {

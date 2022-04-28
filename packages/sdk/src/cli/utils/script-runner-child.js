@@ -1,7 +1,5 @@
 const { NodeVM } = require('vm2');
-const {
-  Readable, Transform, Writable,
-} = require('stream');
+const { Readable, Writable } = require('stream');
 const { stringify, stringifyConsoleArgs } = require('./script-utils');
 
 const LOG_EVENT_NAMES = [
@@ -161,37 +159,6 @@ function onError(e) {
   exitAfterTimeout();
 }
 
-const ToLogStream = () => {
-  const logBuffer = [];
-  const _pushLog = (transform) => {
-    transform.push({ log: logBuffer.join(''), stream: 'STDOUT', time: new Date().toISOString() });
-    logBuffer.length = 0;
-  };
-  return new Transform({
-    objectMode: true,
-    transform(chunk, encoding, callback) {
-      const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, encoding);
-      let log = buffer.toString();
-      while (log.length > 0) {
-        const i = log.search(/\r\n|\n\r|\n|\r/);
-        if (i >= 0) {
-          logBuffer.push(log.substring(0, i));
-          _pushLog(this);
-          log = log.substring(0, i + 1);
-        } else {
-          logBuffer.push(log);
-          log = '';
-        }
-      }
-      callback();
-    },
-    flush(callback) {
-      _pushLog(this);
-      callback();
-    },
-  });
-};
-
 process.on('uncaughtException', onError);
 
 const maxObjectsInTransit = 1000;
@@ -207,14 +174,12 @@ process.on('message', async (m) => {
     try {
       const result = await runInVM(m.scriptData, m.fun, m.args);
       if (result instanceof Readable) {
-        const logStream = ToLogStream();
-        result.pause();
-        result.pipe(logStream);
         const processStream = ToParentProcessStream(flow);
         processStream.on('finish', onFinish);
         processStream.on('error', onError);
+        result.pause();
         result.on('error', onError);
-        logStream.pipe(processStream);
+        result.pipe(processStream);
       } else {
         process.send({ type: 'result', result: JSON.stringify(stringify(result)) });
         exitAfterTimeout();

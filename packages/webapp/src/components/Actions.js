@@ -91,7 +91,7 @@ export function Actions({ ready }) {
       parameters: formValues.parameters,
       payload,
     },
-    (res) => { setError(null); setLogs(res.split('\n')); },
+    (res) => { setError(null); setLogs(res.data); },
     (err) => setError(`getLogs error: ${err?.response?.data?.message}`),
   );
 

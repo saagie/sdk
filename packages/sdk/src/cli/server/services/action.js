@@ -15,6 +15,7 @@ const Response = {
 };
 
 module.exports = async (req, res) => {
+  res.set('Content-Type', 'application/json');
   const logs = [];
   let result = null;
   const scriptPath = path.resolve(process.cwd(), req.body.script);
@@ -47,7 +48,6 @@ module.exports = async (req, res) => {
     res.status(420).send(Response.error(stringify(e), logs));
   }
   if (result != null) {
-    res.set('Content-Type', 'application/json');
     res.send(Response.success(result.content, logs));
   }
 };
