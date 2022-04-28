@@ -49,7 +49,7 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger, stream
   childProcess.on('message', (m) => {
     if (m.type === 'result') {
       clearTimeout(kto);
-      resolve({ content: JSON.parse(m.result) });
+      resolve({ content: m.result ? JSON.parse(m.result) : null });
       childProcess.kill();
     } else if (m.type === 'chunk') {
       childProcess.send({ ack: 1 });
