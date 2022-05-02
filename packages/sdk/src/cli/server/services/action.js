@@ -45,7 +45,14 @@ module.exports = async (req, res) => {
     if (e == null) {
       return;
     }
-    res.status(420).send(Response.error(stringify(e), logs));
+    try {
+      res.status(420)
+        .send(Response.error(stringify(e), logs));
+    } catch (ee) {
+      // we may not be able to sent a proper http error response, as the response may have been already started to be streamed.
+      // eslint-disable-next-line no-console
+      console.error('Unexpected http response error', ee, '. Script error is:', e);
+    }
   }
   if (result != null) {
     res.send(Response.success(result.content, logs));
