@@ -163,7 +163,7 @@ export function SmartField({
 
   let feedbackMessage;
   if (fetchError) {
-    feedbackMessage = fetchError.message;
+    feedbackMessage = fetchError.response?.data?.error?.message ?? fetchError.message;
   } else if (!dependencyReady) {
     feedbackMessage = 'Dependant form not ready';
   } else if (missingDependencies?.length > 0) {
