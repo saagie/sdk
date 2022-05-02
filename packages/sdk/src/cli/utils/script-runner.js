@@ -14,7 +14,8 @@ class ScriptExecError extends Error {
 }
 exports.ScriptExecError = ScriptExecError;
 
-const childProcessTimeout = 10000; // FIXME: to be retrieve from conf
+const idleChildProcessTimeout = 10 * 1000; // FIXME: to be retrieve from conf
+const maxChildProcessTimeout = 60 * 1000; // FIXME: to be retrieve from conf
 
 // eslint-disable-next-line max-len
 exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger, stream) => new Promise((resolve, reject) => {
@@ -25,27 +26,32 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger, stream
     env: {},
     execArgv: [],
   });
+  const startDate = new Date();
   let lastStreamedChunkDate = null;
   const streamedLogs = [];
-
+  let kto = null;
   function setupKillTimeout(timeout) {
     return setTimeout(() => {
       if (lastStreamedChunkDate == null) {
         childProcess.kill(9);
       } else {
         const now = new Date();
-        const timeWithoutChunk = now.getTime() - lastStreamedChunkDate.getTime();
-        if (timeWithoutChunk > timeout) {
+        const totalDurationTime = now.getTime() - startDate.getTime();
+        if (totalDurationTime > maxChildProcessTimeout) {
           childProcess.kill(9);
         } else {
-          // eslint-disable-next-line no-use-before-define
-          kto = setupKillTimeout(childProcessTimeout - timeWithoutChunk);
+          const timeWithoutChunk = now.getTime() - lastStreamedChunkDate.getTime();
+          if (timeWithoutChunk > timeout) {
+            childProcess.kill(9);
+          } else {
+            kto = setupKillTimeout(idleChildProcessTimeout - timeWithoutChunk);
+          }
         }
       }
     }, timeout);
   }
 
-  let kto = setupKillTimeout(childProcessTimeout);
+  kto = setupKillTimeout(idleChildProcessTimeout);
   childProcess.on('message', (m) => {
     if (m.type === 'result') {
       clearTimeout(kto);
