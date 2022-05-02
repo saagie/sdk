@@ -54,7 +54,7 @@ export function Actions({ ready }) {
       payload,
     },
     (data) => { setError(null); setJobStatus(data.data); },
-    (err) => setError(`getStatus error: ${err?.response?.data?.message}`),
+    (err) => setError(`getStatus error: ${err?.response?.data?.error?.message}`),
   );
 
   const {
@@ -66,7 +66,7 @@ export function Actions({ ready }) {
       parameters: formValues.parameters,
     },
     (data) => { setError(null); setPayload(data.data); },
-    (err) => setError(`start error: ${err?.response?.data?.message}`),
+    (err) => setError(`start error: ${err?.response?.data?.error?.message}`),
   );
 
   const {
@@ -79,7 +79,7 @@ export function Actions({ ready }) {
       payload,
     },
     () => { setError(null); },
-    (err) => setError(`stop error: ${err?.response?.data?.message}`),
+    (err) => setError(`stop error: ${err?.response?.data?.error?.message}`),
   );
 
   const {
@@ -101,7 +101,7 @@ export function Actions({ ready }) {
         ),
       );
     },
-    (err) => setError(`getLogs error: ${err?.response?.data?.message}`),
+    (err) => setError(`getLogs error: ${err?.response?.data?.error?.message}`),
   );
 
   const reset = () => {
