@@ -9,6 +9,7 @@ import { SmartForm } from '../components/SmartForm';
 import { Actions } from '../components/Actions';
 import { useYAMLConfigContext } from '../contexts/YAMLConfigContext';
 import { useFormContext } from '../contexts/FormContext';
+import { CheckConnection } from '../components/CheckConnection';
 
 const propTypes = {};
 const defaultProps = {};
@@ -82,7 +83,13 @@ export function Index() {
               </div>
             </h3>
             {currentConnectionType
-              ? <SmartForm name="connection" parameters={currentConnectionType?.parameters} />
+              ? (
+                <>
+                  <SmartForm name="connection" parameters={currentConnectionType?.parameters} />
+                  <hr />
+                  <CheckConnection ready={connectionTypeReady} />
+                </>
+              )
               : <Message color="danger">Error: connection type &apos;{currentContext?.connectionTypeId}&apos; not found</Message>}
           </div>
           <div className="sui-g-grid__item as--2_7">
