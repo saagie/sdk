@@ -2,6 +2,9 @@ const Stream = require('stream');
 
 // function to convert Errors into a simple object of strings, in order to keep information while serialized
 const stringify = (value) => {
+  if (value === undefined) {
+    return 'undefined';
+  }
   if (value === null) {
     return 'null';
   }
