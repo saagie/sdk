@@ -1,6 +1,8 @@
+// eslint-disable-next-line max-classes-per-file
 const { NodeVM } = require('vm2');
-const { Readable, Writable } = require('stream');
+const { Readable, Writable, Transform } = require('stream');
 const { stringify, stringifyConsoleArgs } = require('./script-utils');
+const { NonObjectModeReadableError } = require('./errors');
 
 const LOG_EVENT_NAMES = [
   'console.debug',
@@ -79,10 +81,10 @@ async function runInVM(scriptData, fun, args) {
   });
   LOG_EVENT_NAMES.forEach((eventLogName) => {
     vm.on(eventLogName, (...eventArgs) => {
-      process.send({ type: 'log', name: eventLogName, message: stringifyConsoleArgs(eventArgs) });
+      process.send({ type: 'stdout', name: eventLogName, message: stringifyConsoleArgs(eventArgs) });
     });
   });
-  // required by axios but not properly mocked by wm2
+  // required by axios but not properly mocked by vm2
   // NB try to keep this on one line, so the line numbers of the script are preserved
   const pre = 'process.stdin={};process.stdout={};process.stderr={};';
 
@@ -133,16 +135,43 @@ class StreamFlowControl {
   }
 }
 
-const ToParentProcessStream = (flow) => new Writable({
-  objectMode: true,
-  write(chunk, enc, next) {
-    process.send({
-      type: 'chunk',
-      chunk,
+class ParentProcessSender extends Writable {
+  constructor(process, flow) {
+    super({ objectMode: true });
+    this.process = process;
+    this.flow = flow;
+  }
+
+  _write(log, _, callback) {
+    this.process.send({
+      type: 'log',
+      log,
     });
-    flow.onSent(1, next);
-  },
-});
+    this.flow.onSent(1, callback);
+  }
+}
+
+class LogValidationStream extends Transform {
+  constructor() {
+    super({ objectMode: true });
+  }
+
+  _transform(log, _, callback) {
+    const { timestamp, log: message } = log;
+
+    if (!timestamp || typeof timestamp !== 'number') {
+      callback(new TypeError('Log field \'timestamp\' must be a number'));
+      return;
+    }
+    if (!message || typeof message !== 'string') {
+      callback(new TypeError('Log field \'log\' must be a string'));
+      return;
+    }
+
+    this.push(log);
+    callback();
+  }
+}
 
 function exitAfterTimeout() {
   // be safer than sorry, if not killed by the parent, let's end in 10s
@@ -173,13 +202,16 @@ process.on('message', async (m) => {
   if (m.scriptData) {
     try {
       const result = await runInVM(m.scriptData, m.fun, m.args);
-      if (result instanceof Readable) {
-        const processStream = ToParentProcessStream(flow);
-        processStream.on('finish', onFinish);
-        processStream.on('error', onError);
-        result.pause();
-        result.on('error', onError);
-        result.pipe(processStream);
+      if (result instanceof Readable && result.readableObjectMode) {
+        result
+          .on('error', onError)
+          .pipe(new LogValidationStream())
+          .pipe(new ParentProcessSender(process, flow)
+            .on('finish', onFinish)
+            .on('error', onError));
+      } else if (result instanceof Readable) {
+        onError(new NonObjectModeReadableError('Stream of logs should be in object mode for proper log processing.'));
+        exitAfterTimeout();
       } else {
         process.send({ type: 'result', result: JSON.stringify(stringify(result)) });
         exitAfterTimeout();
