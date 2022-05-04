@@ -1,18 +1,6 @@
-// eslint-disable-next-line max-classes-per-file
 const { fork } = require('child_process');
 const path = require('path');
-
-class ScriptExecError extends Error {
-  constructor(scriptId, fun, name, message, stack) {
-    super(message);
-    this.scriptId = scriptId;
-    this.fun = fun;
-    this.name = name;
-    this.message = message;
-    this.stack = stack;
-  }
-}
-exports.ScriptExecError = ScriptExecError;
+const { ScriptExecError, ScriptHaltError } = require('./errors');
 
 const idleChildProcessTimeout = 10 * 1000; // FIXME: to be retrieve from conf
 const maxChildProcessTimeout = 60 * 1000; // FIXME: to be retrieve from conf
@@ -28,7 +16,7 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger, stream
   });
   const startDate = new Date();
   let lastStreamedChunkDate = null;
-  const streamedLogs = [];
+  const childProcessStdOut = [];
   let kto = null;
   function setupKillTimeout(timeout) {
     return setTimeout(() => {
@@ -57,34 +45,41 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger, stream
       clearTimeout(kto);
       resolve({ content: m.result ? JSON.parse(m.result) : null });
       childProcess.kill();
-    } else if (m.type === 'chunk') {
+    } else if (m.type === 'log') {
       childProcess.send({ ack: 1 });
+
       if (lastStreamedChunkDate == null) {
         // not very MVC, but we're respecting here the format of 'Response.success' of the HTTP API
         stream.write('{"data":[');
       } else {
         stream.write(',');
       }
+
       lastStreamedChunkDate = new Date();
       stream.write(JSON.stringify(m.chunk));
     } else if (m.type === 'finished') {
       clearTimeout(kto);
-      if (lastStreamedChunkDate != null) {
-        stream.write('],"logs":[');
-        streamedLogs.forEach((log, i) => {
-          if (i > 0) {
-            stream.write(',');
-          }
-          stream.write(JSON.stringify(log));
-        });
-        stream.write(']}');
-        stream.end();
+
+      // no chunks received, prefix missing, let's add it
+      if (lastStreamedChunkDate == null) {
+        stream.write('{"data":[');
       }
+      stream.write('],"logs":[');
+
+      childProcessStdOut.forEach((log, i) => {
+        if (i > 0) {
+          stream.write(',');
+        }
+        stream.write(JSON.stringify(log));
+      });
+      stream.write(']}');
+
+      stream.end();
       resolve(null);
       childProcess.kill();
-    } else if (m.type === 'log') {
+    } else if (m.type === 'stdout') {
       if (lastStreamedChunkDate != null) {
-        streamedLogs.push(m);
+        childProcessStdOut.push(m);
       } else {
         scriptLogger(m.name, m.message);
       }
@@ -105,14 +100,14 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger, stream
     if (lastStreamedChunkDate != null) {
       stream.end();
     }
-    reject(new ScriptExecError(scriptId, fun, 'ScriptHaltError', err.message, null));
+    reject(new ScriptHaltError(scriptId, fun, err.message));
   });
   childProcess.on('disconnect', () => {
     clearTimeout(kto);
     if (lastStreamedChunkDate != null) {
       stream.end();
     }
-    reject(new ScriptExecError(scriptId, fun, 'ScriptHaltError', 'disconnected', null));
+    reject(new ScriptHaltError(scriptId, fun, 'disconnected'));
   });
   childProcess.on('exit', (c) => {
     clearTimeout(kto);
@@ -120,7 +115,7 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger, stream
       stream.end();
     }
     if (c !== 0) {
-      reject(new ScriptExecError(scriptId, fun, 'ScriptHaltError', `exit code ${c}`, null));
+      reject(new ScriptHaltError(scriptId, fun, `exit code ${c}`));
     }
   });
   childProcess.send({ scriptData, fun, args });

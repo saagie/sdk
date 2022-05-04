@@ -1,5 +1,6 @@
 const axios = require('axios');
 const axiosHttp = require('axios/lib/adapters/http');
+const Stream = require('stream');
 
 const client = axios.create({
   adapter: axiosHttp,
@@ -72,13 +73,14 @@ exports.stop = async ({ connection, parameters, payload }) => {
     if (e.response?.status === 420) {
       // the job exists but is already stopped. Handle this case gracefully
       console.log('Job already stopped');
-      return;
+      return {};
     } else {
       console.log('HTTP error:', e.response?.status, e.response?.statusText, e.response?.data);
       throw e;
     }
   }
   console.log('Response:', response.data);
+  return {};
 };
 
 /**
@@ -145,10 +147,43 @@ exports.getLogs = async ({ connection, parameters, payload}) => {
       // make the data a stream to avoid buffering in memory
       responseType: 'stream',
     });
+
+    const logBuffer = [];
+
+    const _pushLog = (transform) => {
+      const str = logBuffer.join('');
+      if (str.length > 0) {
+        const [timestamp, log] = str.split(/\s\-\s/);
+        transform.push({ timestamp: parseInt(timestamp), log: log });
+      }
+      logBuffer.length = 0;
+    };
+
+    const logger = new Stream.Transform({
+      readableObjectMode: true,
+      writableObjectMode: false,
+      transform(chunk, encoding, callback) {
+        const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, encoding);
+        let lines = buffer.toString().split(/\r\n|\n\r|\n|\r/);
+
+        while (lines.length > 1) {
+          logBuffer.push(lines.shift());
+          _pushLog(this);
+        }
+        // append last (potentially uncomplete) line sub into buffer without pushing downstream
+        logBuffer.push(lines.shift());
+        callback();
+      },
+      flush(callback) {
+        // flushing remaining subs
+        _pushLog(this);
+        callback();
+      },
+    });
+
+    return response.data.pipe(logger);
   } catch (e) {
     console.log('HTTP error:', e.response?.status, e.response?.statusText, e.response?.data);
     throw e;
   }
-
-  return response.data;
 };

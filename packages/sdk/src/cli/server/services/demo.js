@@ -97,10 +97,11 @@ const jobStates = [];
 
 const log = (state, message) => {
   let msg = message;
+  const now = new Date();
   if (state.logDate) {
-    msg = `${new Date().toLocaleTimeString()} ${message}`;
+    msg = `${message} at ${now.toLocaleTimeString()}.`;
   }
-  state.logs.push(msg);
+  state.logs.push(`${now.getTime()} - ${msg}`);
 };
 
 const run = (method, n, i, a, state) => {
