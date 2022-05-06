@@ -87,7 +87,8 @@ export function Index() {
                 <>
                   <SmartForm name="connection" parameters={currentConnectionType?.parameters} />
                   <hr />
-                  <CheckConnection ready={connectionTypeReady} />
+                  {currentConnectionType?.actions?.checkConnection
+                    && <CheckConnection ready={connectionTypeReady} />}
                 </>
               )
               : <Message color="danger">Error: connection type &apos;{currentContext?.connectionTypeId}&apos; not found</Message>}
