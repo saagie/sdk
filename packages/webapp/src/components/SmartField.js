@@ -9,6 +9,7 @@ import {
 } from 'saagie-ui/react';
 import { useScriptCall } from '../contexts/ScriptCallHistoryContext';
 import { useFormContext } from '../contexts/FormContext';
+import { useYAMLConfigContext } from '../contexts/YAMLConfigContext';
 
 const propTypes = {
   formName: PropTypes.string.isRequired,
@@ -37,6 +38,7 @@ export function SmartField({
   },
 }) {
   const { formValues, updateForm } = useFormContext();
+  const { currentContext } = useYAMLConfigContext();
 
   const missingDependencies = dependsOn
     ?.filter((paramId) => !formValues?.[formName]?.[paramId]) ?? [];
@@ -45,6 +47,7 @@ export function SmartField({
 
   const { data: fetchedDynamicValues, error: fetchError } = useScriptCall(
     [formValues, dynamicValues],
+    currentContext?.__folderPath,
     dynamicValues,
     formValues,
     ready,

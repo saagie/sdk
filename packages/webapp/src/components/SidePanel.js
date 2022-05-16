@@ -106,11 +106,12 @@ export function SidePanel() {
 
   const {
     mutateAsync: callSandboxScript,
-  } = useScriptCallMutation({
-    script: sandboxScript ?? sandboxLocalData?.script,
-    function: sandboxFunction ?? sandboxLocalData?.fun,
-  },
-  parseJsonSafely(sandboxArg ?? sandboxLocalData?.arg),
+  } = useScriptCallMutation('',
+    {
+      script: sandboxScript ?? sandboxLocalData?.script,
+      function: sandboxFunction ?? sandboxLocalData?.fun,
+    },
+    parseJsonSafely(sandboxArg ?? sandboxLocalData?.arg),
   );
 
   const callSandbox = async () => {

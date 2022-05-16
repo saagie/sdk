@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import { v4 as uuid } from 'uuid';
 import { useMutation, useQuery } from 'react-query';
 import axios from 'axios';
-import { useYAMLConfigContext } from './YAMLConfigContext';
 
 const propTypes = {
   children: PropTypes.node,
@@ -18,12 +17,12 @@ const defaultProps = {
 export const ScriptCallHistoryContext = createContext();
 export const useScriptCallHistoryContext = () => useContext(ScriptCallHistoryContext);
 
-export const useScriptCallMutation = (scriptCall, params, onSuccess, onError) => {
-  const { currentContext } = useYAMLConfigContext();
+export const useScriptCallMutation = (folderPath, scriptCall, params, onSuccess, onError) => {
   const { addScriptCall } = useScriptCallHistoryContext();
 
+  const scriptFullPath = folderPath ? `${folderPath}/${scriptCall?.script}` : scriptCall?.script;
   const postData = {
-    script: `${currentContext?.__folderPath}/${scriptCall?.script}`,
+    script: scriptFullPath,
     function: scriptCall?.function,
     params,
   };
@@ -55,8 +54,9 @@ export const useScriptCallMutation = (scriptCall, params, onSuccess, onError) =>
   });
 };
 
-export const useScriptCall = (queryKey, scriptCall, params, enabled, onSuccess, onError) => {
-  const { currentContext } = useYAMLConfigContext();
+export const useScriptCall = (
+  queryKey, folderPath, scriptCall, params, enabled, onSuccess, onError,
+) => {
   const { addScriptCall } = useScriptCallHistoryContext();
 
   const addScriptCallResponse = useCallback((postData, response) => {
@@ -72,13 +72,13 @@ export const useScriptCall = (queryKey, scriptCall, params, enabled, onSuccess, 
   }, [addScriptCall]);
 
   const postData = {
-    script: `${currentContext?.__folderPath}/${scriptCall?.script}`,
+    script: `${folderPath}/${scriptCall?.script}`,
     function: scriptCall?.function,
     params,
   };
 
   return useQuery(queryKey, () => axios.post('/api/action', postData), {
-    enabled: enabled && !!currentContext && !!scriptCall,
+    enabled: enabled && !!scriptCall,
     onSuccess: (res) => {
       addScriptCallResponse(postData, res);
       if (onSuccess) {
