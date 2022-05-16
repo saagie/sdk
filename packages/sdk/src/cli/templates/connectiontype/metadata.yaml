@@ -29,3 +29,8 @@ parameters:
     id: password
     label: Password
     mandatory: true
+
+actions:
+  checkConnection:
+    script: ./dist/module.js
+    function: checkConnection
