@@ -97,7 +97,7 @@ Inside that directory, you can run several commands:
   {cyan yarn dev}
     Start the development server.
 
-  {cyan yarn run build}
+  {cyan yarn build}
     Bundle the technology for the Saagie platform.
 
   {cyan yarn run new:context}
@@ -166,6 +166,19 @@ const createConnectionType = async () => {
 {bold {green 🎉 ${connectionAnswers.label} connection type generated with success 🎉}}
 
 New connection type available in {italic ${folder}}
+Inside that directory, you can run several commands:
+
+  {cyan yarn dev}
+    Start the build watch.
+
+  {cyan yarn build}
+    Bundle the javascript file.
+
+We suggest that you begin by typing:
+
+  {cyan cd} {italic ${folder}}
+  {cyan yarn install}
+  {cyan yarn dev}
   `);
 };
 
