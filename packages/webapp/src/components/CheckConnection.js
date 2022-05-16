@@ -23,7 +23,9 @@ export function CheckConnection({ ready }) {
   const {
     mutateAsync: callCheckConnection,
     status: getCheckConnectionStatus,
-  } = useScriptCallMutation(actions.checkConnection,
+  } = useScriptCallMutation(
+    currentConnectionType?.__folderPath,
+    actions.checkConnection,
     {
       connection: formValues.connection,
     },
@@ -51,8 +53,8 @@ export function CheckConnection({ ready }) {
         </div>
       </div>
       { error && <FormFeedback color="danger">{error}</FormFeedback>}
-      { status === true && <FormFeedback color="success">{JSON.stringify(status, null, 2)}</FormFeedback>}
-      { status && status !== true && <FormFeedback color="warning">{JSON.stringify(status, null, 2)}</FormFeedback>}
+      { status?.ok === true && <FormFeedback color="success">{JSON.stringify(status, null, 2)}</FormFeedback>}
+      { status && status?.ok !== true && <FormFeedback color="warning">{JSON.stringify(status, null, 2)}</FormFeedback>}
     </>
   );
 }

@@ -47,7 +47,9 @@ export function Actions({ ready }) {
   const {
     mutateAsync: callGetStatus,
     status: getJobStatusStatus,
-  } = useScriptCallMutation(getStatus,
+  } = useScriptCallMutation(
+    currentContext?.__folderPath,
+    getStatus,
     {
       connection: formValues.connection,
       parameters: formValues.parameters,
@@ -60,7 +62,9 @@ export function Actions({ ready }) {
   const {
     mutateAsync: callStart,
     status: runJobStatus,
-  } = useScriptCallMutation(start,
+  } = useScriptCallMutation(
+    currentContext?.__folderPath,
+    start,
     {
       connection: formValues.connection,
       parameters: formValues.parameters,
@@ -72,7 +76,9 @@ export function Actions({ ready }) {
   const {
     mutateAsync: callStop,
     status: stopJobStatus,
-  } = useScriptCallMutation(stop,
+  } = useScriptCallMutation(
+    currentContext?.__folderPath,
+    stop,
     {
       connection: formValues.connection,
       parameters: formValues.parameters,
@@ -85,7 +91,9 @@ export function Actions({ ready }) {
   const {
     mutateAsync: callGetLogs,
     status: getJobLogsStatus,
-  } = useScriptCallMutation(getLogs,
+  } = useScriptCallMutation(
+    currentContext?.__folderPath,
+    getLogs,
     {
       connection: formValues.connection,
       parameters: formValues.parameters,
