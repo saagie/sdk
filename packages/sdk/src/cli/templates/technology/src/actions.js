@@ -135,7 +135,7 @@ exports.getStatus = async ({ connection, parameters, payload}) => {
  * @param {Object} params.connection - Contains values configuring the associated connection.
  * @param {Object} params.parameters - Contains the parameters of the external job.
  * @param {Object} params.payload - Contains the payload returned by the start function.
- * @return {Stream} - a stream of data for the logs
+ * @return {Stream} - a stream of objects, each object with 'log' field, the string of the line of log, and a 'timestamp' field, the number of millisecond from 1 Jan 1970 to the log event.
  */
 exports.getLogs = async ({ connection, parameters, payload}) => {
   console.log('getLogs of job #', payload.jobId);
@@ -154,7 +154,7 @@ exports.getLogs = async ({ connection, parameters, payload}) => {
       const str = logBuffer.join('');
       if (str.length > 0) {
         const [timestamp, log] = str.split(/\s\-\s/);
-        transform.push({ timestamp: parseInt(timestamp), log: log });
+        transform.push({ timestamp: parseInt(timestamp), log });
       }
       logBuffer.length = 0;
     };

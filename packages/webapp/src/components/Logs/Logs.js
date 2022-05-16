@@ -8,7 +8,7 @@ import { Line } from './Line';
 const propTypes = {
   logs: PropTypes.arrayOf(PropTypes.shape({
     log: PropTypes.string.isRequired,
-    date: PropTypes.string,
+    timestamp: PropTypes.number,
   })),
 };
 
@@ -38,7 +38,7 @@ export function Logs({ logs }) {
             >
               {({ index, style }) => (
                 <div style={style}>
-                  <Line index={index} line={logs[index].log} />
+                  <Line index={index} line={logs[index].log} timestamp={logs[index].timestamp} />
                 </div>
               )}
             </List>
