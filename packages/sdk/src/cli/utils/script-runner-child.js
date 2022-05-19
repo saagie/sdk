@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 const { NodeVM } = require('vm2');
-const { Readable, Writable, Transform } = require('stream');
+const { Readable, Writable } = require('stream');
 const { stringify, stringifyConsoleArgs } = require('./script-utils');
 const { NonObjectModeReadableError } = require('./errors');
 
@@ -142,34 +142,24 @@ class ParentProcessSender extends Writable {
     this.flow = flow;
   }
 
-  _write(log, _, callback) {
+  _write(chunk, _, callback) {
     this.process.send({
-      type: 'log',
-      log,
+      type: 'chunk',
+      chunk,
     });
     this.flow.onSent(1, callback);
   }
 }
 
-class LogValidationStream extends Transform {
-  constructor() {
+class SingleEntityStream extends Readable {
+  constructor(entity) {
     super({ objectMode: true });
+    this.entity = entity;
   }
 
-  _transform(log, _, callback) {
-    const { timestamp, log: message } = log;
-
-    if (!timestamp || typeof timestamp !== 'number') {
-      callback(new TypeError('Log field \'timestamp\' must be a number'));
-      return;
-    }
-    if (!message || typeof message !== 'string') {
-      callback(new TypeError('Log field \'log\' must be a string'));
-      return;
-    }
-
-    this.push(log);
-    callback();
+  _read() {
+    this.push(this.entity);
+    this.push(null);
   }
 }
 
@@ -190,7 +180,7 @@ function onError(e) {
 
 process.on('uncaughtException', onError);
 
-const maxObjectsInTransit = 1000;
+const maxObjectsInTransit = 1000; // FIXME this should be dictated by the speed at which the reader (webapp) is consuming the response, back pressure is not applied end-to-end here, if client buffer (socket, network card or whichever buffer) cannot handle 1000, it will explode because of us
 const flow = new StreamFlowControl(maxObjectsInTransit);
 
 process.on('message', async (m) => {
@@ -201,20 +191,19 @@ process.on('message', async (m) => {
 
   if (m.scriptData) {
     try {
-      const result = await runInVM(m.scriptData, m.fun, m.args);
-      if (result instanceof Readable && result.readableObjectMode) {
+      let result = await runInVM(m.scriptData, m.fun, m.args);
+      if (!(result instanceof Readable)) {
+        result = new SingleEntityStream(result);
+      }
+
+      if (!result.readableObjectMode) {
+        onError(new NonObjectModeReadableError('Stream should be in object mode for proper processing.'));
+        exitAfterTimeout();
+      } else {
         result
-          .on('error', onError)
-          .pipe(new LogValidationStream())
           .pipe(new ParentProcessSender(process, flow)
             .on('finish', onFinish)
             .on('error', onError));
-      } else if (result instanceof Readable) {
-        onError(new NonObjectModeReadableError('Stream of logs should be in object mode for proper log processing.'));
-        exitAfterTimeout();
-      } else {
-        process.send({ type: 'result', result: JSON.stringify(stringify(result)) });
-        exitAfterTimeout();
       }
     } catch (e) {
       onError(e);

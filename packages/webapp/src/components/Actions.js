@@ -55,7 +55,8 @@ export function Actions({ ready }) {
       parameters: formValues.parameters,
       payload,
     },
-    (data) => { setError(null); setJobStatus(data.data); },
+    {},
+    (res) => { setError(null); setJobStatus(res.payload[0]); },
     (err) => setError(`getStatus error: ${err?.response?.data?.error?.message}`),
   );
 
@@ -69,7 +70,8 @@ export function Actions({ ready }) {
       connection: formValues.connection,
       parameters: formValues.parameters,
     },
-    (data) => { setError(null); setPayload(data.data); },
+    {},
+    (res) => { setError(null); setPayload(res.payload[0]); },
     (err) => setError(`start error: ${err?.response?.data?.error?.message}`),
   );
 
@@ -84,6 +86,7 @@ export function Actions({ ready }) {
       parameters: formValues.parameters,
       payload,
     },
+    {},
     () => { setError(null); },
     (err) => setError(`stop error: ${err?.response?.data?.error?.message}`),
   );
@@ -99,15 +102,52 @@ export function Actions({ ready }) {
       parameters: formValues.parameters,
       payload,
     },
+    {
+      download: false,
+    },
+    (res) => {
+      let data = [];
+      if (res.payload[0] instanceof Array) {
+        // logs not streamed by ext script so they are in an array inside data's first element...
+        [data] = res.payload;
+      } else {
+        // logs streamed so data is itself the array of logs
+        data = res.payload;
+      }
+      const invalid = data.find((chunk) =>
+        !chunk.timestamp
+        || typeof chunk.timestamp !== 'number'
+        || !chunk.log
+        || typeof chunk.log !== 'string',
+      );
+      if (!invalid) {
+        setError(null);
+        setLogs(data);
+      } else {
+        setError('Log should respect the following format: {timestamp: number, log: string}.');
+      }
+    },
+    (err) => setError(`getLogs error: ${err?.response?.data?.error?.message}`),
+  );
+
+  const {
+    mutateAsync: callDownloadLogs,
+    status: downloadJobLogsStatus,
+  } = useScriptCallMutation(
+    currentContext?.__folderPath,
+    getLogs,
+    {
+      connection: formValues.connection,
+      parameters: formValues.parameters,
+      payload,
+    },
+    {
+      download: true,
+    },
     (res) => {
       setError(null);
-      setLogs(
-        res.data.flatMap(
-          (log) => log.log
-            .split(/\r\n|\n\r|\n|\r/)
-            .map((l) => ({ ...log, log: l })),
-        ),
-      );
+      // single log "ok, goto file"
+      setLogs(res.payload);
     },
     (err) => setError(`getLogs error: ${err?.response?.data?.error?.message}`),
   );
@@ -222,10 +262,21 @@ export function Actions({ ready }) {
           <div className="sui-g-grid__item">
             <Button
               onClick={() => callGetLogs()}
-              isLoading={getJobLogsStatus === 'loading'}
+              isLoading={getJobLogsStatus === 'loading' || downloadJobLogsStatus === 'loading'}
               isDisabled={!ready || !payload}
             >
               <tt>getLogs</tt>
+            </Button>
+          </div>
+        )}
+        {getLogs && (
+          <div className="sui-g-grid__item">
+            <Button
+              onClick={() => callDownloadLogs()}
+              isLoading={getJobLogsStatus === 'loading' || downloadJobLogsStatus === 'loading'}
+              isDisabled={!ready || !payload}
+            >
+              <tt>getLogs (download)</tt>
             </Button>
           </div>
         )}
