@@ -70,7 +70,7 @@ export function Index() {
       <AppTopbar />
       <PageContent key={currentContext?.id}>
         <div className="sui-g-grid as--gutter-xxl">
-          <div className="sui-g-grid__item as--2_7">
+          <div className="sui-g-grid__item as--2_8">
             <h3>
               <div className="sui-g-grid as--no-wrap">
                 <span className="sui-g-grid__item">
@@ -93,7 +93,7 @@ export function Index() {
               )
               : <Message color="danger">Error: connection type &apos;{currentContext?.connectionTypeId}&apos; not found</Message>}
           </div>
-          <div className="sui-g-grid__item as--2_7">
+          <div className="sui-g-grid__item as--2_8">
             <h3>
               <div className="sui-g-grid as--no-wrap">
                 <span className="sui-g-grid__item">
@@ -107,7 +107,7 @@ export function Index() {
             </h3>
             <SmartForm name="parameters" parameters={currentContext?.parameters} dependencyReady={connectionTypeReady} />
           </div>
-          <div className="sui-g-grid__item as--3_7">
+          <div className="sui-g-grid__item as--4_8">
             <Actions ready={connectionTypeReady && jobFormReady} />
           </div>
         </div>

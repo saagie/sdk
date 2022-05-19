@@ -29,9 +29,10 @@ export function CheckConnection({ ready }) {
     {
       connection: formValues.connection,
     },
-    (data) => {
+    {},
+    (res) => {
       setError(null);
-      setStatus(data.data);
+      setStatus(res.payload);
     },
     (err) => {
       setStatus(null);

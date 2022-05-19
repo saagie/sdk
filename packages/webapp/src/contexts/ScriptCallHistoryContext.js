@@ -17,13 +17,14 @@ const defaultProps = {
 export const ScriptCallHistoryContext = createContext();
 export const useScriptCallHistoryContext = () => useContext(ScriptCallHistoryContext);
 
-export const useScriptCallMutation = (folderPath, scriptCall, params, onSuccess, onError) => {
+export const useScriptCallMutation = (folderPath, scriptCall, params, opts, onSuccess, onError) => {
   const { addScriptCall } = useScriptCallHistoryContext();
 
   const scriptFullPath = folderPath ? `${folderPath}/${scriptCall?.script}` : scriptCall?.script;
   const postData = {
     script: scriptFullPath,
     function: scriptCall?.function,
+    opts,
     params,
   };
 
