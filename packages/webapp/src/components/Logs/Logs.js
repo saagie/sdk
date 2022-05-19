@@ -2,14 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import { EmptyState } from 'saagie-ui/react';
+import { EmptyState, Icon } from 'saagie-ui/react';
 import { Line } from './Line';
 
 const propTypes = {
-  logs: PropTypes.arrayOf(PropTypes.shape({
-    log: PropTypes.string.isRequired,
-    timestamp: PropTypes.number,
-  })),
+  logs: PropTypes.shape({
+    data: PropTypes.arrayOf(PropTypes.shape({
+      log: PropTypes.string.isRequired,
+      timestamp: PropTypes.number,
+    })),
+    hasMore: PropTypes.string.isRequired,
+    download: PropTypes.shape({
+      href: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+    }),
+  }),
 };
 
 const defaultProps = {
@@ -17,7 +24,7 @@ const defaultProps = {
 };
 
 export function Logs({ logs }) {
-  if (!logs || logs.length <= 0) {
+  if (!logs || !logs.data || logs.data.length <= 0) {
     return (
       <EmptyState icon="logs" content="No logs available" />
     );
@@ -26,25 +33,48 @@ export function Logs({ logs }) {
   const ITEM_SIZE = 19;
 
   return (
-    <div className="sdk-a-logs">
-      <AutoSizer>
-        {({ height, width }) =>
-          (
-            <List
-              height={height}
-              itemCount={logs.length}
-              itemSize={ITEM_SIZE}
-              width={width}
-            >
-              {({ index, style }) => (
-                <div style={style}>
-                  <Line index={index} line={logs[index].log} timestamp={logs[index].timestamp} />
-                </div>
-              )}
-            </List>
-          )}
-      </AutoSizer>
-    </div>
+    <>
+      <div className="sui-g-grid as--auto">
+        <div className="sui-g-grid__item as--push">
+          <a href={logs.download.href} download={logs.download.name} className="sui-a-button as--block as--primary">
+            <Icon name="fa-download" />
+            &nbsp;Download full logs
+          </a>
+        </div>
+      </div>
+      <div className="sdk-a-logs">
+        <AutoSizer>
+          {({ height, width }) =>
+            (
+              <List
+                height={height}
+                itemCount={logs.data.length + (logs.hasMore ? 1 : 0)}
+                itemSize={ITEM_SIZE}
+                width={width}
+              >
+                {({ index, style }) => (
+                  <div style={style}>
+                    { index < logs.data.length
+                      ? (
+                        <Line
+                          index={index}
+                          line={logs.data[index].log}
+                          timestamp={logs.data[index].timestamp}
+                        />
+                      )
+                      : (
+                        <Line
+                          index={index}
+                          line="...logs truncated. Get the full content by downloading the log file"
+                        />
+                      )}
+                  </div>
+                )}
+              </List>
+            )}
+        </AutoSizer>
+      </div>
+    </>
   );
 }
 

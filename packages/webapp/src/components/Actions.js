@@ -103,7 +103,7 @@ export function Actions({ ready }) {
       payload,
     },
     {
-      download: false,
+      download: true,
     },
     (res) => {
       let data = [];
@@ -122,32 +122,10 @@ export function Actions({ ready }) {
       );
       if (!invalid) {
         setError(null);
-        setLogs(data);
+        setLogs({ data, download: res.download, hasMore: res.hasMore });
       } else {
         setError('Log should respect the following format: {timestamp: number, log: string}.');
       }
-    },
-    (err) => setError(`getLogs error: ${err?.response?.data?.error?.message}`),
-  );
-
-  const {
-    mutateAsync: callDownloadLogs,
-    status: downloadJobLogsStatus,
-  } = useScriptCallMutation(
-    currentContext?.__folderPath,
-    getLogs,
-    {
-      connection: formValues.connection,
-      parameters: formValues.parameters,
-      payload,
-    },
-    {
-      download: true,
-    },
-    (res) => {
-      setError(null);
-      // single log "ok, goto file"
-      setLogs(res.payload);
     },
     (err) => setError(`getLogs error: ${err?.response?.data?.error?.message}`),
   );
@@ -161,8 +139,9 @@ export function Actions({ ready }) {
 
   function awaitFinishedStatus(resolve, reject) {
     callGetStatus()
-      .then((status) => {
-        if (status?.data === 'SUCCEEDED' || status?.data === 'KILLED' || status?.data === 'FAILED') {
+      .then((response) => {
+        const status = response?.payload?.[0];
+        if (status === 'SUCCEEDED' || status === 'KILLED' || status === 'FAILED') {
           resolve();
         } else {
           setTimeout(() => awaitFinishedStatus(resolve, reject), 2000);
@@ -262,21 +241,10 @@ export function Actions({ ready }) {
           <div className="sui-g-grid__item">
             <Button
               onClick={() => callGetLogs()}
-              isLoading={getJobLogsStatus === 'loading' || downloadJobLogsStatus === 'loading'}
+              isLoading={getJobLogsStatus === 'loading'}
               isDisabled={!ready || !payload}
             >
               <tt>getLogs</tt>
-            </Button>
-          </div>
-        )}
-        {getLogs && (
-          <div className="sui-g-grid__item">
-            <Button
-              onClick={() => callDownloadLogs()}
-              isLoading={getJobLogsStatus === 'loading' || downloadJobLogsStatus === 'loading'}
-              isDisabled={!ready || !payload}
-            >
-              <tt>getLogs (download)</tt>
             </Button>
           </div>
         )}

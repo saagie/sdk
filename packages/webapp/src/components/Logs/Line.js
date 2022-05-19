@@ -5,7 +5,11 @@ import PropTypes from 'prop-types';
 const propTypes = {
   index: PropTypes.number.isRequired,
   line: PropTypes.string.isRequired,
-  timestamp: PropTypes.number.isRequired,
+  timestamp: PropTypes.number,
+};
+
+const defaultProps = {
+  timestamp: undefined,
 };
 
 export function Line({ index, line, timestamp }) {
@@ -28,3 +32,4 @@ export function Line({ index, line, timestamp }) {
 }
 
 Line.propTypes = propTypes;
+Line.defaultProps = defaultProps;
