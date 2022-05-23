@@ -2,7 +2,7 @@
 const { NodeVM } = require('vm2');
 const { Readable, Writable } = require('stream');
 const { stringify, stringifyConsoleArgs } = require('./script-utils');
-const { NonObjectModeReadableError } = require('./errors');
+const { NullOrUndefinedError, NonObjectModeReadableError } = require('./errors');
 
 const LOG_EVENT_NAMES = [
   'console.debug',
@@ -192,6 +192,12 @@ process.on('message', async (m) => {
   if (m.scriptData) {
     try {
       let result = await runInVM(m.scriptData, m.fun, m.args);
+      if (!result) {
+        onError(new NullOrUndefinedError('Script return value should not be null or undefined.'));
+        exitAfterTimeout();
+        return;
+      }
+
       if (!(result instanceof Readable)) {
         result = new SingleEntityStream(result);
       }

@@ -66,11 +66,18 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger) => new
   }
 
   let scriptResponseStream = null;
+  let streamEnded = false;
   let backpressure = false;
   kto = setupKillTimeout(idleChildProcessTimeout);
   childProcess.on('message', (m) => {
     switch (m.type) {
       case 'chunk': {
+        if (streamEnded) {
+          // eslint-disable-next-line no-console
+          console.error(`Stream already closed, ignoring ${m.type} message.`);
+          return;
+        }
+
         if (scriptResponseStream === null) {
           scriptResponseStream = new ChildResponseReceiver(childProcess);
           resolve(scriptResponseStream);
@@ -90,6 +97,13 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger) => new
         break;
       }
       case 'finished': {
+        if (streamEnded) {
+          // eslint-disable-next-line no-console
+          console.error(`Stream already closed, ignoring ${m.type} message.`);
+          return;
+        }
+
+        streamEnded = true;
         clearTimeout(kto);
         if (scriptResponseStream === null) {
           scriptResponseStream = new ChildResponseReceiver(childProcess);
@@ -112,6 +126,7 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger) => new
         } else {
           scriptResponseStream.destroy(err);
         }
+        streamEnded = true;
         childProcess.kill();
         break;
       }
@@ -129,6 +144,7 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger) => new
     } else {
       scriptResponseStream.destroy(e);
     }
+    streamEnded = true;
   });
   childProcess.on('disconnect', () => {
     clearTimeout(kto);
@@ -138,6 +154,7 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger) => new
     } else {
       scriptResponseStream.destroy(err);
     }
+    streamEnded = true;
   });
   childProcess.on('exit', (c) => {
     clearTimeout(kto);
@@ -147,6 +164,7 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger) => new
     } else {
       scriptResponseStream.destroy(err);
     }
+    streamEnded = true;
   });
   childProcess.send({ scriptData, fun, args });
 });

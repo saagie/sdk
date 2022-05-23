@@ -20,6 +20,15 @@ class ScriptHaltError extends ScriptExecError {
 
 exports.ScriptHaltError = ScriptHaltError;
 
+class NullOrUndefinedError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'NullOrUndefinedError';
+  }
+}
+
+exports.NullOrUndefinedError = NullOrUndefinedError;
+
 class NonObjectModeReadableError extends Error {
   constructor(message) {
     super(message);
