@@ -257,7 +257,7 @@ export function SidePanel() {
             && (
               <LabelValue label="Console">
                 <pre style={{ whiteSpace: 'pre-wrap' }}>
-                  {selectedScriptCall?.logs.map((log) => `[${loggerName(log.name)}] ${log.message}\n`)}
+                  {selectedScriptCall?.logs.map((log) => `[${loggerName(log.name)}] ${log.log}\n`)}
                 </pre>
               </LabelValue>
             )}

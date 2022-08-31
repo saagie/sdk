@@ -122,15 +122,15 @@ export function SmartField({
       let dynamicValue = null;
       let dynamicValuesError = null;
       if (fetchedDynamicValues) {
-        if (Array.isArray(fetchedDynamicValues.payload[0])) {
-          options = fetchedDynamicValues?.payload[0]
+        if (Array.isArray(fetchedDynamicValues.payload)) {
+          options = fetchedDynamicValues?.payload
             ?.map((x) => ({ value: x.id, label: x.label, payload: x }))
             ?? [];
           dynamicValue = fieldValue
-            ? fetchedDynamicValues?.payload[0]?.filter((v) => v.id === fieldValue)?.[0]
+            ? fetchedDynamicValues?.payload?.filter((v) => v.id === fieldValue)
             : null;
         } else {
-          dynamicValuesError = `Expecting an array of { id, label } returned by the function '${dynamicValues.function}', but was '${fetchedDynamicValues.payload[0]}'`;
+          dynamicValuesError = `Expecting an array of { id, label } returned by the function '${dynamicValues.function}', but was '${fetchedDynamicValues.payload}'`;
         }
       }
       return (

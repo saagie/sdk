@@ -56,7 +56,7 @@ export function Actions({ ready }) {
       payload,
     },
     {},
-    (res) => { setError(null); setJobStatus(res.payload[0]); },
+    (res) => { setError(null); setJobStatus(res.payload); },
     (err) => setError(`getStatus error: ${err?.response?.data?.error?.message}`),
   );
 
@@ -71,7 +71,7 @@ export function Actions({ ready }) {
       parameters: formValues.parameters,
     },
     {},
-    (res) => { setError(null); setPayload(res.payload[0]); },
+    (res) => { setError(null); setPayload(res.payload); },
     (err) => setError(`start error: ${err?.response?.data?.error?.message}`),
   );
 
@@ -106,14 +106,7 @@ export function Actions({ ready }) {
       download: true,
     },
     (res) => {
-      let data = [];
-      if (res.payload[0] instanceof Array) {
-        // logs not streamed by ext script so they are in an array inside data's first element...
-        [data] = res.payload;
-      } else {
-        // logs streamed so data is itself the array of logs
-        data = res.payload;
-      }
+      const data = res.payload;
       const invalid = data.find((chunk) =>
         !chunk.timestamp
         || typeof chunk.timestamp !== 'number'
