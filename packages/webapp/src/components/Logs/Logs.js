@@ -20,7 +20,7 @@ const propTypes = {
 };
 
 const defaultProps = {
-  logs: [],
+  logs: {},
 };
 
 export function Logs({ logs }) {
@@ -34,17 +34,27 @@ export function Logs({ logs }) {
 
   return (
     <>
-      <div className="sui-g-grid as--auto">
-        <div className="sui-g-grid__item as--push">
-          <a href={logs.download.href} download={logs.download.name} className="sui-a-button as--block as--primary">
-            <Icon name="fa-download" />
-            &nbsp;Download full logs
-          </a>
-        </div>
-      </div>
+      {logs.download
+        && (
+          <div className="sui-g-grid as--auto">
+            <div className="sui-g-grid__item as--push">
+              <a
+                href={logs.download.href}
+                download={logs.download.name}
+                className="sui-a-button as--block as--primary"
+              >
+                <Icon name="fa-download" />
+                &nbsp;Download full logs
+              </a>
+            </div>
+          </div>
+        )}
       <div className="sdk-a-logs">
         <AutoSizer>
-          {({ height, width }) =>
+          {({
+            height,
+            width,
+          }) =>
             (
               <List
                 height={height}
@@ -52,9 +62,12 @@ export function Logs({ logs }) {
                 itemSize={ITEM_SIZE}
                 width={width}
               >
-                {({ index, style }) => (
+                {({
+                  index,
+                  style,
+                }) => (
                   <div style={style}>
-                    { index < logs.data.length
+                    {index < logs.data.length
                       ? (
                         <Line
                           index={index}

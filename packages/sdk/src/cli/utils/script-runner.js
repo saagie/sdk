@@ -1,10 +1,12 @@
 const { fork } = require('child_process');
 const { Readable } = require('stream');
 const path = require('path');
-const { ScriptExecError, ScriptHaltError } = require('./errors');
+const {
+  ScriptExecError,
+  ScriptHaltError,
+} = require('./errors');
 
-const idleChildProcessTimeout = 10 * 1000; // FIXME: to be retrieve from conf
-const maxChildProcessTimeout = 15 * 60 * 1000; // FIXME: to be retrieve from conf
+const childProcessTimeout = 10 * 1000; // FIXME: to be retrieve from conf
 
 class ChildResponseReceiver extends Readable {
   constructor(childProcess) {
@@ -41,37 +43,58 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger) => new
     env: {},
     execArgv: [],
   });
-  const startDate = new Date();
   let lastStreamedLogDate = null;
   let kto = null;
+
   function setupKillTimeout(timeout) {
     return setTimeout(() => {
       if (lastStreamedLogDate == null) {
         childProcess.kill(9);
       } else {
         const now = new Date();
-        const totalDurationTime = now.getTime() - startDate.getTime();
-        if (totalDurationTime > maxChildProcessTimeout) {
+        const timeWithoutChunk = now.getTime() - lastStreamedLogDate.getTime();
+        if (timeWithoutChunk > timeout) {
           childProcess.kill(9);
         } else {
-          const timeWithoutChunk = now.getTime() - lastStreamedLogDate.getTime();
-          if (timeWithoutChunk > timeout) {
-            childProcess.kill(9);
-          } else {
-            kto = setupKillTimeout(idleChildProcessTimeout - timeWithoutChunk);
-          }
+          kto = setupKillTimeout(childProcessTimeout - timeWithoutChunk);
         }
       }
     }, timeout);
   }
 
+  kto = setupKillTimeout(childProcessTimeout);
+  let result = null;
   let scriptResponseStream = null;
   let streamEnded = false;
   let backpressure = false;
-  kto = setupKillTimeout(idleChildProcessTimeout);
   childProcess.on('message', (m) => {
     switch (m.type) {
+      case 'result': {
+        if (scriptResponseStream !== null) {
+          // eslint-disable-next-line no-console
+          console.error(`Streaming already started, ignoring ${m.type} message.`);
+          return;
+        }
+
+        if (result !== null) {
+          // eslint-disable-next-line no-console
+          console.error(`Result already returned, ignoring ${m.type} message.`);
+          return;
+        }
+
+        result = m.result;
+        clearTimeout(kto);
+        resolve(result);
+        childProcess.kill();
+        break;
+      }
       case 'chunk': {
+        if (result !== null) {
+          // eslint-disable-next-line no-console
+          console.error(`Result already returned, ignoring ${m.type} message.`);
+          return;
+        }
+
         if (streamEnded) {
           // eslint-disable-next-line no-console
           console.error(`Stream already closed, ignoring ${m.type} message.`);
@@ -166,5 +189,9 @@ exports.runScript = async (scriptId, scriptData, fun, args, scriptLogger) => new
     }
     streamEnded = true;
   });
-  childProcess.send({ scriptData, fun, args });
+  childProcess.send({
+    scriptData,
+    fun,
+    args,
+  });
 });
