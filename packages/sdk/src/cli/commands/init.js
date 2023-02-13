@@ -185,7 +185,7 @@ We suggest that you begin by typing:
 module.exports = async () => {
   output.log(chalk`
 {bold Saagie 📦 SDK - v${version}}
-📚 {italic Full documentation:} {cyan https://docs.saagie.io/developer/latest/sdk/index.html}`);
+📚 {italic Full documentation:} {cyan https://docs.saagie.io/user/latest/developer/sdk/index.html}`);
 
   const isTechnoAlreadyExist = await isInTechnology();
 

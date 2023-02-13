@@ -71,12 +71,12 @@ npm run new:context
 
 ## 📚 Technologies & Contexts documentation
 
-**[▶️ Access the SDK documentation](https://saagie.zendesk.com/hc/en-us/articles/360013330039-Create-and-manage-technologies)**
+**[▶️ Access the SDK documentation](https://docs.saagie.io/user/latest/developer/sdk/technos/index.html)**
 
 Quick links:
 
-* [📚 technology.yaml](https://saagie.zendesk.com/hc/en-us/articles/360013330039-Create-and-manage-technologies#_attributes)
-* [📚 context.yaml](https://saagie.zendesk.com/hc/en-us/articles/360013330039-Create-and-manage-technologies#external-tech)
+* [📚 technology.yaml](https://docs.saagie.io/user/latest/developer/sdk/technos/references.html#common_attributes_table)
+* [📚 context.yaml](https://docs.saagie.io/user/latest/developer/sdk/technos/references.html#external-jobs-configuration)
 
 ---
 
